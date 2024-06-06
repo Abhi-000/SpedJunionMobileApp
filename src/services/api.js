@@ -59,12 +59,36 @@ export const getAllBooks = (token) => {
 };
 
 export const assignBook = (bookId, studentIds, token) => {
-  console.log("Assign Book API Call:", { bookId, studentIds });
   return api.post(
     "/Book/AssignBook",
     {
       bookId: bookId,
       StudentIds: studentIds.join(","), // Ensure studentIds is a comma-separated string
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
+
+export const getBookSummary = (bookId, token) => {
+  return api.post(
+    "/Book/GetBookSummary",
+    {
+      SortBy: "BookId",
+      SortOrder: "ASC",
+      PageSize: 100,
+      PageCount: 1,
+      Conditions: [
+        {
+          Field: "BookId",
+          Operation: "=",
+          Value: bookId.toString(),
+        },
+      ],
     },
     {
       headers: {

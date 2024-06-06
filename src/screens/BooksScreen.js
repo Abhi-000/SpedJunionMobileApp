@@ -40,7 +40,10 @@ const BooksScreen = ({ token }) => {
 
   const renderBook = ({ item }) => (
     <View style={styles.card}>
-      {/* <Image source={require('../../assets/GetBooks.png')} style={styles.bookImage} /> */}
+      {/* <Image
+        source={require("../../assets/GetBooks.png")}
+        style={styles.bookImage}
+      /> */}
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
         <Text style={styles.bookDetails}>
@@ -55,7 +58,12 @@ const BooksScreen = ({ token }) => {
           >
             <Text style={styles.buttonText}>Assign</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.summaryButton}>
+          <TouchableOpacity
+            style={styles.summaryButton}
+            onPress={() =>
+              navigation.navigate("BookSummary", { bookId: item.bookId, token })
+            }
+          >
             <Text style={styles.buttonText}>Summary</Text>
           </TouchableOpacity>
         </View>

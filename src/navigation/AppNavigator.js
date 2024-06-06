@@ -5,6 +5,8 @@ import LoginScreen from "../screens/LoginScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import AssignBookScreen from "../screens/AssignBookScreen";
 import AssignSuccessScreen from "../screens/AssignSuccessScreen";
+import BookSummaryScreen from "../screens/BookSummaryScreen";
+import StudentsScreen from "../screens/StudentsScreen";
 
 const Stack = createStackNavigator();
 
@@ -29,6 +31,16 @@ const AppNavigator = () => {
       <Stack.Screen
         name="AssignSuccess"
         component={AssignSuccessScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="BookSummary"
+        component={BookSummaryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Students"
+        component={StudentsScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
