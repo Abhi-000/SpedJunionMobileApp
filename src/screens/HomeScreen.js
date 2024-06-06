@@ -1,24 +1,18 @@
+// src/screens/HomeScreen.js
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View } from "react-native";
+import Home from "../components/Home";
+import { useRoute } from "@react-navigation/native";
 
 const HomeScreen = () => {
+  const route = useRoute();
+  const { token } = route.params;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Welcome to the Home Screen!</Text>
+    <View style={{ flex: 1 }}>
+      <Home token={token} />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  text: {
-    fontSize: 24,
-  },
-});
 
 export default HomeScreen;

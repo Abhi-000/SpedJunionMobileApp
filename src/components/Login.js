@@ -4,16 +4,16 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
-  Image,
   TouchableOpacity,
 } from "react-native";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigation = useNavigation();
 
   const handleLogin = async () => {
     try {
@@ -30,6 +30,7 @@ const Login = () => {
       // Assuming the presence of a token indicates a successful login
       if (response.data.token) {
         console.log("Login successful:", response.data);
+        navigation.navigate("Home", { token: response.data.token });
         // Handle the response data as needed
       } else {
         console.log("Login failed: Incorrect credentials");
@@ -41,7 +42,6 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Image style={styles.logo} source={require('../../assets/login.png')} /> */}
       <Text style={styles.title}>
         Login to your account to access all the features in Barber Shop
       </Text>
@@ -75,11 +75,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
   },
   title: {
     fontSize: 16,
