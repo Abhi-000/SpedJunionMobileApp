@@ -13,8 +13,12 @@ const BottomTabNavigator = ({ route }) => {
   return (
     <Tab.Navigator initialRouteName="Home">
       <Tab.Screen name="Home">{() => <HomeScreen token={token} />}</Tab.Screen>
-      <Tab.Screen name="Books" component={BooksScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Books">
+        {() => <BooksScreen token={token} />}
+      </Tab.Screen>
+      <Tab.Screen name="Profile">
+        {() => <ProfileScreen token={token} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };

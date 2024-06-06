@@ -59,3 +59,22 @@ export const getJuniorProfile = (studentId, token) => {
     },
   });
 };
+
+export const getAllBooks = (token) => {
+  return api.post(
+    "/Book/GetAllBooks",
+    {
+      sortBy: "BM.Id",
+      sortOrder: "DESC",
+      pageSize: 25,
+      pageCount: 1,
+      conditions: [],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
