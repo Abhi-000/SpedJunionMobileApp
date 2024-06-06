@@ -9,16 +9,17 @@ import {
   Image,
 } from "react-native";
 import { getAllBooks } from "../services/api";
+import { useNavigation } from "@react-navigation/native";
 
 const BooksScreen = ({ token }) => {
   const [books, setBooks] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         const response = await getAllBooks(token);
-        console.log("Books response:", response.data);
         setBooks(response.data.getAllBooksResponses);
       } catch (error) {
         console.error("Error fetching books:", error);
@@ -46,7 +47,12 @@ const BooksScreen = ({ token }) => {
           For children from ages 3 to 8 years.
         </Text>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.assignButton}>
+          <TouchableOpacity
+            style={styles.assignButton}
+            onPress={() =>
+              navigation.navigate("AssignBook", { bookId: item.bookId, token })
+            }
+          >
             <Text style={styles.buttonText}>Assign</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.summaryButton}>

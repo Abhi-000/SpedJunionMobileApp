@@ -19,28 +19,7 @@ export const getJStudents = (token) => {
       SortOrder: "ASC",
       PageSize: 100,
       PageCount: 1,
-      Conditions: [
-        {
-          Field: "FirstName",
-          Operation: "LIKE",
-          Value: "Su",
-        },
-        {
-          Field: "Class",
-          Operation: "=",
-          Value: "5",
-        },
-        {
-          Field: "Division",
-          Operation: "=",
-          Value: "A",
-        },
-        {
-          Field: "Age",
-          Operation: "BETWEEN",
-          Value: "3 - 10",
-        },
-      ],
+      Conditions: [],
     },
     {
       headers: {
@@ -69,6 +48,23 @@ export const getAllBooks = (token) => {
       pageSize: 25,
       pageCount: 1,
       conditions: [],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
+
+export const assignBook = (bookId, studentIds, token) => {
+  console.log("Assign Book API Call:", { bookId, studentIds });
+  return api.post(
+    "/Book/AssignBook",
+    {
+      bookId: bookId,
+      StudentIds: studentIds.join(","), // Ensure studentIds is a comma-separated string
     },
     {
       headers: {
