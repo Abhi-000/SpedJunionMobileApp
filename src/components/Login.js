@@ -1,4 +1,3 @@
-// src/components/Login.js
 import React, { useState } from "react";
 import {
   View,
@@ -27,13 +26,11 @@ const Login = () => {
 
       console.log("API response:", response.data);
 
-      // Assuming the presence of a token indicates a successful login
       if (response.data.token) {
         console.log("Login successful:", response.data);
-        navigation.navigate("Home", { token: response.data.token });
-        // Handle the response data as needed
+        navigation.navigate("HomeTabs", { token: response.data.token });
       } else {
-        console.log("Login failed: Incorrect credentials");
+        console.log("Login failed: Incorrect credentials or token missing");
       }
     } catch (error) {
       console.error("Error logging in:", error.message);

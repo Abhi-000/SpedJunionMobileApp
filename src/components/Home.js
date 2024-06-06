@@ -61,7 +61,10 @@ const Home = ({ token }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {/* <Image style={styles.profilePic} source={require('../../assets/home.png')} /> */}
+        {/* <Image
+          style={styles.profilePic}
+          source={require("../../assets/home.png")}
+        /> */}
         <View style={styles.headerText}>
           <Text style={styles.name}>{profile.name || "Ibne Riead"}</Text>
           <Text style={styles.techNo}>{profile.techNo || "Tec no: 04"}</Text>
