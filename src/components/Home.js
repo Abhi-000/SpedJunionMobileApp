@@ -4,46 +4,99 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   TextInput,
   TouchableOpacity,
   FlatList,
+  Modal,
+  Button,
+  Image,
 } from "react-native";
 import { getJStudents, getJuniorProfile } from "../services/api";
 
 const Home = ({ token }) => {
   const [students, setStudents] = useState([]);
   const [profile, setProfile] = useState({});
+  const [filters, setFilters] = useState({
+    firstName: "",
+    studentClass: "",
+    division: "",
+    ageRange: "",
+  });
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        console.log("Fetching students with token:", token);
-        const response = await getJStudents(token);
-        console.log("Students response:", response.data);
-        setStudents(response.data.juniorStudentResponse); // Adjust based on actual response structure
-      } catch (error) {
-        console.error("Error fetching students:", error);
-      }
-    };
-
-    const fetchProfile = async (studentId) => {
-      try {
-        console.log("Fetching profile with token:", token);
-        const response = await getJuniorProfile(studentId, token); // Replace 'studentId' with actual ID if needed
-        console.log("Profile response:", response.data);
-        setProfile(response.data); // Adjust based on actual response structure
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      }
-    };
-
     fetchStudents();
-    // Fetch profile for the first student as an example
-    if (students.length > 0) {
-      fetchProfile(students[0].id);
-    }
   }, [token]);
+
+  const fetchStudents = async () => {
+    try {
+      console.log("Fetching students with token:", token);
+      const response = await getJStudents(token, generateConditions());
+      console.log("Students response:", response.data);
+      setStudents(response.data.juniorStudentResponse); // Adjust based on actual response structure
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
+  const fetchProfile = async (studentId) => {
+    try {
+      console.log("Fetching profile with token:", token);
+      const response = await getJuniorProfile(studentId, token); // Replace 'studentId' with actual ID if needed
+      console.log("Profile response:", response.data);
+      setProfile(response.data); // Adjust based on actual response structure
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
+
+  const generateConditions = () => {
+    const conditions = [];
+
+    if (searchText) {
+      conditions.push({
+        Field: "FirstName",
+        Operation: "LIKE",
+        Value: searchText,
+      });
+    }
+
+    if (filters.studentClass) {
+      conditions.push({
+        Field: "Class",
+        Operation: "=",
+        Value: filters.studentClass,
+      });
+    }
+
+    if (filters.division) {
+      conditions.push({
+        Field: "Division",
+        Operation: "=",
+        Value: filters.division,
+      });
+    }
+
+    if (filters.ageRange) {
+      const [minAge, maxAge] = filters.ageRange.split(" - ");
+      conditions.push({
+        Field: "Age",
+        Operation: "BETWEEN",
+        Value: `${minAge} AND ${maxAge}`,
+      });
+    }
+
+    return conditions;
+  };
+
+  const handleFilterChange = (name, value) => {
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+  };
+
+  const handleSearch = () => {
+    fetchStudents();
+  };
 
   const renderStudent = ({ item }) => (
     <View style={styles.student}>
@@ -60,40 +113,62 @@ const Home = ({ token }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        {/* <Image
-          style={styles.profilePic}
-          source={require("../../assets/home.png")}
-        /> */}
-        <View style={styles.headerText}>
-          <Text style={styles.name}>{profile.name || "Ibne Riead"}</Text>
-          <Text style={styles.techNo}>{profile.techNo || "Tec no: 04"}</Text>
-        </View>
-        <TouchableOpacity style={styles.bellIcon}>
-          <Text>🔔</Text>
-        </TouchableOpacity>
-      </View>
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search Students..."
+          placeholder="Search"
+          value={searchText}
+          onChangeText={(text) => setSearchText(text)}
         />
-      </View>
-      <Text style={styles.sectionTitle}>Categories</Text>
-      <View style={styles.categories}>
-        <TouchableOpacity style={styles.category}>
-          <Text>Students</Text>
+        <TouchableOpacity
+          style={styles.filterIcon}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text>⚙️</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.category}>
-          <Text>Books</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.category}>
-          <Text>Uploads</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.category}>
-          <Text>Sessions</Text>
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Filter Options</Text>
+            <TextInput
+              style={styles.filterInput}
+              placeholderTextColor="#aaa"
+              placeholder="Class"
+              value={filters.studentClass}
+              onChangeText={(text) => handleFilterChange("studentClass", text)}
+            />
+            <TextInput
+              style={styles.filterInput}
+              placeholderTextColor="#aaa"
+              placeholder="Division"
+              value={filters.division}
+              onChangeText={(text) => handleFilterChange("division", text)}
+            />
+            <TextInput
+              style={styles.filterInput}
+              placeholderTextColor="#aaa"
+              placeholder="Age Range (e.g., 3 - 10)"
+              value={filters.ageRange}
+              onChangeText={(text) => handleFilterChange("ageRange", text)}
+            />
+            <View style={styles.buttonContainer}>
+              <Button title="Apply Filters" onPress={() => {
+                setModalVisible(false);
+                fetchStudents();
+              }} />
+              <Button title="Cancel" onPress={() => setModalVisible(false)} />
+            </View>
+          </View>
+        </View>
+      </Modal>
       <Text style={styles.sectionTitle}>Students</Text>
       <FlatList
         data={students}
@@ -111,55 +186,36 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
   },
-  header: {
+  searchBar: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
   },
-  profilePic: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  headerText: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  techNo: {
-    fontSize: 14,
-    color: "#666",
-  },
-  bellIcon: {
-    padding: 10,
-  },
-  searchBar: {
-    marginBottom: 20,
-  },
   searchInput: {
+    flex: 1,
     backgroundColor: "#f0f0f0",
     borderRadius: 5,
     padding: 10,
+    fontSize: 16,
+    marginRight: 10,
+  },
+  filterIcon: {
+    padding: 10,
+  },
+  searchButton: {
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  searchButtonText: {
+    color: "#fff",
     fontSize: 16,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  categories: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-  },
-  category: {
-    alignItems: "center",
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#e0e0e0",
   },
   studentList: {
     borderTopWidth: 1,
@@ -169,14 +225,29 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-    flexDirection: "row",
-    alignItems: "center",
   },
   profilePic: {
     width: 40,
     height: 40,
     borderRadius: 20,
     marginRight: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });
 

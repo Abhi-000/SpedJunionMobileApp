@@ -11,7 +11,7 @@ export const login = (username, password) => {
   return api.post("/Users/login", { Username: username, Password: password });
 };
 
-export const getJStudents = (token) => {
+export const getJStudents = (token, conditions = []) => {
   return api.post(
     "/Book/getJStudents",
     {
@@ -19,7 +19,7 @@ export const getJStudents = (token) => {
       SortOrder: "ASC",
       PageSize: 100,
       PageCount: 1,
-      Conditions: [],
+      Conditions: conditions,
     },
     {
       headers: {
@@ -98,3 +98,5 @@ export const getBookSummary = (bookId, token) => {
     }
   );
 };
+
+export default api;
