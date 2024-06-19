@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
@@ -39,27 +40,35 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        Login to your account to access all the features in Barber Shop
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email / Phone Number"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>Log In</Text>
-        </TouchableOpacity>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
+      <View style={styles.topSection}>
+        <Image
+          source={require('../../assets/loginBg.png')} // Add your image here
+          style={styles.iconBoyImage}
+        />
+        <Text style={styles.title}>
+          Login to your account to access all the features in Barber Shop
+        </Text>
+      </View>
+      <View style={styles.loginContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email / Phone Number"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+            <Text style={styles.loginButtonText}>Log In</Text>
+          </TouchableOpacity>
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </View>
       </View>
     </View>
   );
@@ -68,23 +77,50 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#7B5CFA", // Background color from the provided image
+  },
+  topSection: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  iconBoyImage: {
+    width: 150, // Adjust as necessary
+    height: 150, // Adjust as necessary
+    marginBottom: 20,
   },
   title: {
     fontSize: 16,
     textAlign: "center",
+    color: "#FFFFFF",
     marginBottom: 20,
+  },
+  loginContainer: {
+    flex:1,
+    width: "100%", // Adjust as necessary
+    height: "70%",
+    padding: 20,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   input: {
     width: "100%",
     padding: 15,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 5,
+    borderRadius: 25,
     marginBottom: 15,
+    backgroundColor: "#fff",
   },
   actions: {
     width: "100%",
@@ -93,7 +129,7 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: "#00bfa5",
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 25,
     alignItems: "center",
     marginBottom: 10,
     width: "100%",

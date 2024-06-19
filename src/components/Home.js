@@ -10,6 +10,7 @@ import {
   Modal,
   Button,
   Image,
+  ImageBackground,
 } from "react-native";
 import { getJStudents, getJuniorProfile } from "../services/api";
 
@@ -106,25 +107,35 @@ const Home = ({ token }) => {
         }}
         style={styles.profilePic}
       />
-      <Text>{`${item.firstName} ${item.lastName}`}</Text>
-      <Text>{`Class ${item.class} Age ${item.age} years`}</Text>
+      <View style={styles.studentInfo}>
+        <Text style={styles.studentName}>
+          {`${item.firstName} ${item.lastName}`}
+        </Text>
+        <Text style={styles.studentClass}>
+          Class {item.class} | Age {item.age} years
+        </Text>
+      </View>
     </View>
   );
-
-  return (
+  return (    
+    <View style = {styles.mainContainer}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Ibne Riead</Text>
+        <Text style={styles.headerText}>Tec no: 04</Text>
+      </View>
     <View style={styles.container}>
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchInput}
           placeholder="Search"
           value={searchText}
-          onChangeText={(text) => setSearchText(text)}
+          onChangeText={(text) =>setSearchText(text)}
         />
         <TouchableOpacity
           style={styles.filterIcon}
           onPress={() => setModalVisible(true)}
         >
-          <Text>⚙️</Text>
+          <Text style={styles.filterIconText}>⚙️</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Search</Text>
@@ -169,38 +180,87 @@ const Home = ({ token }) => {
           </View>
         </View>
       </Modal>
-      <Text style={styles.sectionTitle}>Students</Text>
+      <View style = {styles.studentsContainer}>
+      <Text style = {{fontWeight:'bold', fontSize:20,}}>Categories</Text>
+      <View style={styles.categories}>
+        
+      <Image
+          source={require('../../assets/studentsCategory.png')} // Add your image here
+          style={styles.category}
+        />
+        <Image
+          source={require('../../assets/booksCategory.png')} // Add your image here
+          style={styles.category}
+        />
+        <Image
+          source={require('../../assets/scanCategory.png')} // Add your image here
+          style={styles.category}
+        />
+        <Image
+          source={require('../../assets/calendarCategory.png')} // Add your image here
+          style={styles.category}
+        />
+      </View>
       <FlatList
-        data={students}
-        renderItem={renderStudent}
-        keyExtractor={(item) => item.id.toString()} // Adjust based on actual ID field
-        style={styles.studentList}
-      />
+  data={students}
+  renderItem={renderStudent}
+  keyExtractor={(item) => item.id.toString()}
+  style={styles.flatList}
+  contentContainerStyle={{ paddingBottom: 20 }}
+  ItemSeparatorComponent={() => <View style={{ height: 10 }} />} // Optional: Adds space between items
+/>
+      </View>
+    </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer:
+  {flex:1,
+top:-20
+  },
   container: {
     flex: 1,
+    justifyContent: "flex-start",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    backgroundColor: "#7B5CFA",
+    paddingTop: 10,
+  },
+  header: {
+    flexDirection: "column",
+    justifyContent: "space-between",
     padding: 20,
-    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    width: "100%",
   },
   searchInput: {
     flex: 1,
     backgroundColor: "#f0f0f0",
-    borderRadius: 5,
+    borderRadius: 25,
     padding: 10,
     fontSize: 16,
     marginRight: 10,
   },
   filterIcon: {
     padding: 10,
+    marginRight: 10,
+  },
+  filterIconText: {
+    fontSize: 24,
   },
   searchButton: {
     backgroundColor: "#007bff",
@@ -212,25 +272,66 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
   },
-  sectionTitle: {
-    fontSize: 16,
+  categories: {
+    flexDirection: "row",
+    justifyContent: "center",
+    padding: 5,
+  },
+  category: {
+    borderRadius:100,
+    width:70,
+    height:70,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginRight: 20,
   },
-  studentList: {
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
+  studentsContainer:
+  {
+    flex: 1,
+    width: "100%",
+    padding: 8,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    backgroundColor: "#FFFFFF",
   },
+  flatList: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  
   student: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 20,
+    marginBottom: 10,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   profilePic: {
     width: 40,
     height: 40,
     borderRadius: 20,
     marginRight: 10,
+  },
+  studentInfo: {
+    flex: 1,
+  },
+  studentName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  studentClass: {
+    fontSize: 16,
+    color: "#666",
   },
   modalContainer: {
     flex: 1,
@@ -248,6 +349,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  filterInput: {
+    padding: 10,
+    fontSize: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
   },
 });
 
