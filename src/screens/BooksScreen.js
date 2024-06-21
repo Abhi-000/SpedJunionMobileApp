@@ -9,25 +9,29 @@ import {
   Image,
 } from "react-native";
 import { getAllBooks } from "../services/api";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 
-const BooksScreen = ({ token }) => {
+const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("Intermediate");
   const navigation = useNavigation();
+  const route = useRoute();
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const response = await getAllBooks(token);
-        setBooks(response.data.getAllBooksResponses);
-      } catch (error) {
-        console.error("Error fetching books:", error);
-      }
-    };
+  const fetchBooks = async (currentToken) => {
+    try {
+      const response = await getAllBooks(currentToken);
+      setBooks(response.data.getAllBooksResponses);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    }
+  };
 
-    fetchBooks();
-  }, [token]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const currentToken = propToken || route.params?.token;
+      fetchBooks(currentToken);
+    }, [propToken])
+  );
 
   const filterBooks = () => {
     if (selectedCategory === "All") {
@@ -40,101 +44,70 @@ const BooksScreen = ({ token }) => {
 
   const renderBook = ({ item }) => (
     <View style={styles.card}>
-      {/* <Image
-        source={require("../../assets/GetBooks.png")}
+      <Image
+        source={require("../../assets/bookSample.png")} // Assuming the image URL is provided in the item
         style={styles.bookImage}
-      /> */}
+      />
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
         <Text style={styles.bookDetails}>
           For children from ages 3 to 8 years.
         </Text>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.assignButton}
-            onPress={() =>
-              navigation.navigate("AssignBook", { bookId: item.bookId, token })
-            }
-          >
-            <Text style={styles.buttonText}>Assign</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.summaryButton}
-            onPress={() =>
-              navigation.navigate("BookSummary", { bookId: item.bookId, token })
-            }
-          >
-            <Text style={styles.buttonText}>Summary</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.assignButton}
+          onPress={() =>
+            navigation.navigate("AssignBook", { bookId: item.bookId, token: propToken || route.params?.token })
+          }
+        >
+          <Text style={styles.buttonText}>Assign</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 
+  const categories = ["All", "Beginner", "Intermediate", "Advanced"];
+
   return (
     <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Image style={styles.backButtonImage} source={require("../../assets/backButton.png")} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Books</Text>
+      </View>
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => setSelectedCategory("All")}
-          style={styles.categoryButton}
-        >
-          <Text
-            style={
-              selectedCategory === "All"
-                ? styles.selectedCategoryText
-                : styles.categoryText
-            }
-          >
-            All
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setSelectedCategory("Beginner")}
-          style={styles.categoryButton}
-        >
-          <Text
-            style={
-              selectedCategory === "Beginner"
-                ? styles.selectedCategoryText
-                : styles.categoryText
-            }
-          >
-            Beginner
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setSelectedCategory("Intermediate")}
-          style={styles.categoryButton}
-        >
-          <Text
-            style={
-              selectedCategory === "Intermediate"
-                ? styles.selectedCategoryText
-                : styles.categoryText
-            }
-          >
-            Intermediate
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setSelectedCategory("Advanced")}
-          style={styles.categoryButton}
-        >
-          <Text
-            style={
-              selectedCategory === "Advanced"
-                ? styles.selectedCategoryText
-                : styles.categoryText
-            }
-          >
-            Advanced
-          </Text>
-        </TouchableOpacity>
+        <FlatList
+          data={categories}
+          horizontal
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => setSelectedCategory(item)}
+              style={[
+                styles.categoryButton,
+                selectedCategory === item && styles.selectedCategoryButton,
+              ]}
+            >
+              <Text
+                style={
+                  selectedCategory === item
+                    ? styles.selectedCategoryText
+                    : styles.categoryText
+                }
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoryList}
+        />
       </View>
       <FlatList
         data={filterBooks()}
         renderItem={renderBook}
         keyExtractor={(item) => item.bookId.toString()}
+        contentContainerStyle={styles.listContainer}
       />
     </View>
   );
@@ -144,18 +117,53 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 10,
+  },
+  topContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    paddingBottom:30,
+    backgroundColor: "#f7f7f7",
+  },
+  backButton: {
+    position: "absolute",
+    left: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  backButtonImage: {
+    width: 50,
+    height: 50,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "black",
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 10,
+    backgroundColor: "#7B5CFA",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  categoryList: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   categoryButton: {
     padding: 10,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  selectedCategoryButton: {
+    backgroundColor: "#fff",
   },
   categoryText: {
-    color: "#000",
+    color: "#fff",
     fontSize: 16,
   },
   selectedCategoryText: {
@@ -163,18 +171,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  listContainer: {
+    paddingHorizontal: 20,
+  },
   card: {
     flexDirection: "row",
-    marginBottom: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ddd",
     padding: 10,
-    backgroundColor: "#f9f9f9",
+    marginBottom: 5,
+    marginHorizontal: 20,
+    alignContent: "center",
+    backgroundColor: "white",
+    marginBottom: 10,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   bookImage: {
     width: 60,
     height: 60,
+    borderRadius: 5,
     marginRight: 10,
   },
   cardContent: {
@@ -191,22 +212,17 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 10,
   },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
   assignButton: {
-    backgroundColor: "#4caf50",
-    padding: 5,
-    borderRadius: 3,
-  },
-  summaryButton: {
-    backgroundColor: "#2196f3",
-    padding: 5,
-    borderRadius: 3,
+    backgroundColor: "#E1E1E1",
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    alignSelf: "flex-start",
   },
   buttonText: {
-    color: "#fff",
+    color: "#00FF8B",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 

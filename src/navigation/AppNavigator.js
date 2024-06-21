@@ -7,6 +7,7 @@ import AssignBookScreen from "../screens/AssignBookScreen";
 import AssignSuccessScreen from "../screens/AssignSuccessScreen";
 import BookSummaryScreen from "../screens/BookSummaryScreen";
 import StudentsScreen from "../screens/StudentsScreen";
+import BooksScreen from "../screens/BooksScreen";
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Login"
         component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Book"
+        component={BooksScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

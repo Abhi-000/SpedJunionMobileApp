@@ -11,7 +11,8 @@ const BottomTabNavigator = ({ route }) => {
   const { token } = route.params;
 
   return (
-    <Tab.Navigator initialRouteName="Home">
+    <Tab.Navigator initialRouteName="Home"
+    screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home">{() => <HomeScreen token={token} />}</Tab.Screen>
       <Tab.Screen name="Books">
         {() => <BooksScreen token={token} />}
