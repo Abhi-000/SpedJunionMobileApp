@@ -1,4 +1,4 @@
-// src/screens/BooksScreen.js
+// src/screens/AssignedBooksScreen.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -9,7 +9,7 @@ import {
   Image,
 } from "react-native";
 import { getAllBooks } from "../services/api";
-import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
@@ -20,18 +20,17 @@ const BooksScreen = ({ token: propToken }) => {
   const fetchBooks = async (currentToken) => {
     try {
       const response = await getAllBooks(currentToken);
+      console.log("Fetched books data:", response.data);
       setBooks(response.data.getAllBooksResponses);
     } catch (error) {
       console.error("Error fetching books:", error);
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const currentToken = propToken || route.params?.token;
-      fetchBooks(currentToken);
-    }, [propToken])
-  );
+  useEffect(() => {
+    const currentToken = propToken || route.params?.token;
+    fetchBooks(currentToken);
+  }, [propToken]);
 
   const filterBooks = () => {
     if (selectedCategory === "All") {
@@ -43,34 +42,26 @@ const BooksScreen = ({ token: propToken }) => {
   };
 
   const renderBook = ({ item }) => (
+    
     <View style={styles.card}>
+      <View style={styles.levelBox}>
+        <Text style={styles.levelText}>{item.difficulty}</Text>
+      </View>
       <Image
         source={require("../../assets/bookSample.png")} // Assuming the image URL is provided in the item
         style={styles.bookImage}
       />
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
-        <Text style={styles.bookDetails}>
-          For children from ages 3 to 8 years.
-        </Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.assignButton}
-            onPress={() =>
-              navigation.navigate("AssignBook", { bookId: item.bookId, token: propToken || route.params?.token })
-            }
-          >
-            <Text style={styles.buttonText}>Assign</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.summaryButton}
-            onPress={() =>
-              navigation.navigate("BookSummary", { bookId: item.bookId, token: propToken || route.params?.token })
-            }
-          >
-            <Text style={styles.buttonText}>Summary</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.bookDetails}>Total Students: {item.totalStudents}</Text>
+        <TouchableOpacity
+          style={styles.studentsButton}
+          onPress={() =>
+            navigation.navigate("Students", { bookId: item.bookId, token: propToken || route.params?.token })
+          }
+        >
+          <Text style={styles.buttonText}>Students</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -80,16 +71,10 @@ const BooksScreen = ({ token: propToken }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Image style={styles.backButtonImage} source={require("../../assets/backButton.png")} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Books</Text>
-        <TouchableOpacity
-          style={styles.assignedButton}
-          onPress={() => navigation.navigate("AssignedBooks", { token: propToken || route.params?.token })}
-        >
-          <Text style={styles.assignedButtonText}>Assigned</Text>
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Assigned Books</Text>
       </View>
       <View style={styles.header}>
         <FlatList
@@ -138,13 +123,15 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
     backgroundColor: "#f7f7f7",
   },
   backButton: {
+    position: "absolute",
+    left: 20,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -156,17 +143,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
-  },
-  assignedButton: {
-    backgroundColor: "#00bfa5",
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-  },
-  assignedButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
   },
   header: {
     flexDirection: "row",
@@ -220,16 +196,36 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
     elevation: 5,
+    position: "relative", // Add position relative to position the level box
+    paddingTop: 40, // Add padding to create space for the level box
+  },
+  levelBox: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    backgroundColor: "#d81b60", // Dark pink color
+    borderRadius: 10, // Reduced rounded edges
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    zIndex: 1, // Ensure it appears above other elements
+  },
+  levelText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   bookImage: {
     width: 60,
     height: 60,
     borderRadius: 5,
     marginRight: 10,
+    marginTop: 10,
   },
   cardContent: {
     flex: 1,
     justifyContent: "center",
+    paddingLeft: 10,
+    paddingTop: 10,
   },
   bookTitle: {
     fontSize: 16,
@@ -241,29 +237,19 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 10,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  assignButton: {
+  studentsButton: {
     backgroundColor: "#E1E1E1",
-    paddingVertical: 5,
-    paddingHorizontal: 15,
+    paddingVertical: 10,
     borderRadius: 20,
-    alignSelf: "flex-start",
-  },
-  summaryButton: {
-    backgroundColor: "#E1E1E1",
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    alignSelf: "flex-start",
-    marginLeft: 10,
+    alignSelf: "stretch",
+    marginHorizontal: 10,
+    marginBottom: 10,
   },
   buttonText: {
     color: "#00FF8B",
     fontSize: 14,
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 

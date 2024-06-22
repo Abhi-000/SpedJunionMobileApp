@@ -8,6 +8,7 @@ import AssignSuccessScreen from "../screens/AssignSuccessScreen";
 import BookSummaryScreen from "../screens/BookSummaryScreen";
 import StudentsScreen from "../screens/StudentsScreen";
 import BooksScreen from "../screens/BooksScreen";
+import AssignedBooksScreen from "../screens/AssignedBooksScreen"; // Import the new screen
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Students"
         component={StudentsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AssignedBooks" // Add the new screen
+        component={AssignedBooksScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
