@@ -14,6 +14,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 const StudentsScreen = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploadedDate, setUploadedDate] = useState(null);
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token, bookDetails } = route.params;
@@ -22,10 +23,18 @@ const StudentsScreen = () => {
     const fetchStudents = async () => {
       try {
         const summaryResponse = await getBookSummary(bookId, token);
-        const studentIds = summaryResponse.data.studentBookSummaryResponses
+        const studentBookSummaryResponses =
+          summaryResponse.data.studentBookSummaryResponses;
+
+        // Extract uploadedDate for the specific bookId
+        const bookUploadInfo = studentBookSummaryResponses.find(
+          (item) => item.bookId === bookId
+        );
+        setUploadedDate(bookUploadInfo?.uploadedDate);
+
+        const studentIds = studentBookSummaryResponses
           .map((item) => item.studentId)
           .filter((id) => id !== undefined && id !== null);
-
         if (studentIds.length > 0) {
           const studentDetails = await getStudentDetailsByIds(
             token,
@@ -61,7 +70,10 @@ const StudentsScreen = () => {
 
   const renderStudentItem = ({ item }) => (
     <View style={styles.studentCard}>
-      <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
+      <Image
+        source={require("../../assets/sampleProfile.png")}
+        style={styles.avatar}
+      />
       <View style={styles.studentInfo}>
         <Text style={styles.studentName}>
           {item.firstName} {item.lastName}
@@ -74,23 +86,29 @@ const StudentsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.backButtonText}>{"<"}</Text>
-      </TouchableOpacity>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Assign Books</Text>
+      <View style={styles.topContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Image
+            style={styles.backButtonImage}
+            source={require("../../assets/backButton.png")}
+          />
+        </TouchableOpacity>
+
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Assign Books</Text>
+        </View>
       </View>
       <View style={styles.card}>
         <View style={styles.levelBox}>
           <Text style={styles.levelText}>{bookDetails.difficulty}</Text>
         </View>
-        {/* <Text style={styles.bookLevel}>{bookDetails.difficulty}</Text> */}
         <Text style={styles.bookTitle}>{bookDetails.name}</Text>
         <Text style={styles.bookDetails}>
-          Assign Date: {bookDetails.assignDate}
+          Assign Date:{" "}
+          {uploadedDate ? new Date(uploadedDate).toLocaleDateString() : "N/A"}
         </Text>
         <Text style={styles.bookDetails}>Students: {students.length}</Text>
       </View>
@@ -101,7 +119,7 @@ const StudentsScreen = () => {
         renderItem={renderStudentItem}
         contentContainerStyle={styles.list}
       />
-      <View style={styles.footer}>
+      {/* <View style={styles.footer}>
         <TouchableOpacity>
           <Text style={styles.footerText}>Home</Text>
         </TouchableOpacity>
@@ -111,7 +129,7 @@ const StudentsScreen = () => {
         <TouchableOpacity>
           <Text style={styles.footerText}>Profile</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -121,8 +139,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  topContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    backgroundColor: "#f7f7f7",
+  },
   backButton: {
-    padding: 10,
+    position: "absolute",
+    left: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  backButtonImage: {
+    width: 50,
+    height: 50,
   },
   backButtonText: {
     fontSize: 18,
@@ -135,18 +169,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
-  },
-  // bookSummary: {
-  //   backgroundColor: "#f8f8f8",
-  //   padding: 15,
-  //   borderRadius: 10,
-  //   marginHorizontal: 20,
-  //   marginBottom: 20,
-  // },
-  bookLevel: {
-    color: "#f00",
-    fontWeight: "bold",
-    marginBottom: 5,
   },
   bookTitle: {
     fontSize: 18,
@@ -169,18 +191,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
     elevation: 5,
-    position: "relative", // Add position relative to position the level box
-    paddingTop: 60, // Add padding to create space for the level box
+    position: "relative",
+    paddingTop: 60,
   },
   levelBox: {
     position: "absolute",
     top: 10,
     left: 10,
-    backgroundColor: "#d81b60", // Dark pink color
-    borderRadius: 10, // Reduced rounded edges
+    backgroundColor: "#d81b60",
+    borderRadius: 10,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    zIndex: 1, // Ensure it appears above other elements
+    zIndex: 1,
   },
   levelText: {
     color: "#fff",
@@ -193,12 +215,22 @@ const styles = StyleSheet.create({
   },
   studentCard: {
     flexDirection: "row",
-    padding: 15,
-    borderRadius: 10,
-    backgroundColor: "#f8f8f8",
+    padding: 10,
+    marginBottom: 5,
     marginHorizontal: 20,
+    alignContent: "center",
+    backgroundColor: "white",
     marginBottom: 10,
-    alignItems: "center",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
+    position: "relative", // Add position relative to position the level box
   },
   avatar: {
     width: 50,

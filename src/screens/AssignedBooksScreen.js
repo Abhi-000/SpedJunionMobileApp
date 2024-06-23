@@ -85,6 +85,7 @@ const BooksScreen = ({ token: propToken }) => {
             source={require("../../assets/backButton.png")}
           />
         </TouchableOpacity>
+
         <Text style={styles.headerTitle}>Assigned Books</Text>
       </View>
       <View style={styles.header}>
