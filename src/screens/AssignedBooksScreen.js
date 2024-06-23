@@ -42,7 +42,6 @@ const BooksScreen = ({ token: propToken }) => {
   };
 
   const renderBook = ({ item }) => (
-    
     <View style={styles.card}>
       <View style={styles.levelBox}>
         <Text style={styles.levelText}>{item.difficulty}</Text>
@@ -53,11 +52,17 @@ const BooksScreen = ({ token: propToken }) => {
       />
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
-        <Text style={styles.bookDetails}>Total Students: {item.totalStudents}</Text>
+        <Text style={styles.bookDetails}>
+          Total Students: {item.totalStudents}
+        </Text>
         <TouchableOpacity
           style={styles.studentsButton}
           onPress={() =>
-            navigation.navigate("Students", { bookId: item.bookId, token: propToken || route.params?.token })
+            navigation.navigate("Students", {
+              bookId: item.bookId,
+              token: propToken || route.params?.token,
+              bookDetails: item,
+            })
           }
         >
           <Text style={styles.buttonText}>Students</Text>
@@ -71,8 +76,14 @@ const BooksScreen = ({ token: propToken }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image style={styles.backButtonImage} source={require("../../assets/backButton.png")} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Image
+            style={styles.backButtonImage}
+            source={require("../../assets/backButton.png")}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Assigned Books</Text>
       </View>

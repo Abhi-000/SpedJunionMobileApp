@@ -87,7 +87,7 @@ const Home = ({ token }) => {
         Value: `${minAge} AND ${maxAge}`,
       });
     }
-
+    console.log(conditions);
     return conditions;
   };
 
@@ -117,109 +117,110 @@ const Home = ({ token }) => {
       </View>
     </View>
   );
-  return (    
-    <View style = {styles.mainContainer}>
+  return (
+    <View style={styles.mainContainer}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Ibne Riead</Text>
         <Text style={styles.headerText}>Tec no: 04</Text>
       </View>
-    <View style={styles.container}>
-      <View style={styles.searchBar}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search"
-          value={searchText}
-          onChangeText={(text) =>setSearchText(text)}
-        />
-        <TouchableOpacity
-          style={styles.filterIcon}
-          onPress={() => setModalVisible(true)}
+      <View style={styles.container}>
+        <View style={styles.searchBar}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            value={searchText}
+            onChangeText={(text) => setSearchText(text)}
+          />
+          <TouchableOpacity
+            style={styles.filterIcon}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.filterIconText}>⚙️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+            <Text style={styles.searchButtonText}>Search</Text>
+          </TouchableOpacity>
+        </View>
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="slide"
         >
-          <Text style={styles.filterIconText}>⚙️</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
-        </TouchableOpacity>
-      </View>
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filter Options</Text>
-            <TextInput
-              style={styles.filterInput}
-              placeholderTextColor="#aaa"
-              placeholder="Class"
-              value={filters.studentClass}
-              onChangeText={(text) => handleFilterChange("studentClass", text)}
-            />
-            <TextInput
-              style={styles.filterInput}
-              placeholderTextColor="#aaa"
-              placeholder="Division"
-              value={filters.division}
-              onChangeText={(text) => handleFilterChange("division", text)}
-            />
-            <TextInput
-              style={styles.filterInput}
-              placeholderTextColor="#aaa"
-              placeholder="Age Range (e.g., 3 - 10)"
-              value={filters.ageRange}
-              onChangeText={(text) => handleFilterChange("ageRange", text)}
-            />
-            <View style={styles.buttonContainer}>
-              <Button title="Apply Filters" onPress={() => {
-                setModalVisible(false);
-                fetchStudents();
-              }} />
-              <Button title="Cancel" onPress={() => setModalVisible(false)} />
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Filter Options</Text>
+              <TextInput
+                style={styles.filterInput}
+                placeholderTextColor="#aaa"
+                placeholder="Class"
+                value={filters.studentClass}
+                onChangeText={(text) =>
+                  handleFilterChange("studentClass", text)
+                }
+              />
+              <TextInput
+                style={styles.filterInput}
+                placeholderTextColor="#aaa"
+                placeholder="Division"
+                value={filters.division}
+                onChangeText={(text) => handleFilterChange("division", text)}
+              />
+              <TextInput
+                style={styles.filterInput}
+                placeholderTextColor="#aaa"
+                placeholder="Age Range (e.g., 3 - 10)"
+                value={filters.ageRange}
+                onChangeText={(text) => handleFilterChange("ageRange", text)}
+              />
+              <View style={styles.buttonContainer}>
+                <Button
+                  title="Apply Filters"
+                  onPress={() => {
+                    setModalVisible(false);
+                    fetchStudents();
+                  }}
+                />
+                <Button title="Cancel" onPress={() => setModalVisible(false)} />
+              </View>
             </View>
           </View>
+        </Modal>
+        <View style={styles.studentsContainer}>
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
+          <View style={styles.categories}>
+            <Image
+              source={require("../../assets/studentsCategory.png")} // Add your image here
+              style={styles.category}
+            />
+            <Image
+              source={require("../../assets/booksCategory.png")} // Add your image here
+              style={styles.category}
+            />
+            <Image
+              source={require("../../assets/scanCategory.png")} // Add your image here
+              style={styles.category}
+            />
+            <Image
+              source={require("../../assets/calendarCategory.png")} // Add your image here
+              style={styles.category}
+            />
+          </View>
+          <FlatList
+            data={students}
+            renderItem={renderStudent}
+            keyExtractor={(item) => item.id.toString()}
+            style={styles.flatList}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            ItemSeparatorComponent={() => <View style={{ height: 10 }} />} // Optional: Adds space between items
+          />
         </View>
-      </Modal>
-      <View style = {styles.studentsContainer}>
-      <Text style = {{fontWeight:'bold', fontSize:20,}}>Categories</Text>
-      <View style={styles.categories}>
-        
-      <Image
-          source={require('../../assets/studentsCategory.png')} // Add your image here
-          style={styles.category}
-        />
-        <Image
-          source={require('../../assets/booksCategory.png')} // Add your image here
-          style={styles.category}
-        />
-        <Image
-          source={require('../../assets/scanCategory.png')} // Add your image here
-          style={styles.category}
-        />
-        <Image
-          source={require('../../assets/calendarCategory.png')} // Add your image here
-          style={styles.category}
-        />
       </View>
-      <FlatList
-  data={students}
-  renderItem={renderStudent}
-  keyExtractor={(item) => item.id.toString()}
-  style={styles.flatList}
-  contentContainerStyle={{ paddingBottom: 20 }}
-  ItemSeparatorComponent={() => <View style={{ height: 10 }} />} // Optional: Adds space between items
-/>
-      </View>
-    </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer:
-  {flex:1,
-top:-20
-  },
+  mainContainer: { flex: 1, top: -20 },
   container: {
     flex: 1,
     justifyContent: "flex-start",
@@ -278,14 +279,13 @@ top:-20
     padding: 5,
   },
   category: {
-    borderRadius:100,
-    width:70,
-    height:70,
+    borderRadius: 100,
+    width: 70,
+    height: 70,
     fontWeight: "bold",
     marginRight: 20,
   },
-  studentsContainer:
-  {
+  studentsContainer: {
     flex: 1,
     width: "100%",
     padding: 8,
@@ -298,7 +298,7 @@ top:-20
     paddingHorizontal: 10,
     paddingTop: 10,
   },
-  
+
   student: {
     flexDirection: "row",
     alignItems: "center",
