@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { getBookSummary, getStudentDetailsByIds } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 const StudentsScreen = () => {
   const [students, setStudents] = useState([]);
@@ -18,6 +20,7 @@ const StudentsScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token, bookDetails } = route.params;
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -85,6 +88,12 @@ const StudentsScreen = () => {
   );
 
   return (
+    <View style={[styles.container, {
+      paddingTop: insets.top,
+      paddingBottom: insets.bottom,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+    }]}>
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <TouchableOpacity
@@ -130,6 +139,7 @@ const StudentsScreen = () => {
           <Text style={styles.footerText}>Profile</Text>
         </TouchableOpacity>
       </View> */}
+    </View>
     </View>
   );
 };

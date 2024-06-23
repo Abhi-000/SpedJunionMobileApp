@@ -12,9 +12,13 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import { getJStudents, getJuniorProfile } from "../services/api";
+import { getJStudents, getJuniorP1rofile } from "../services/api";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+
 
 const Home = ({ token }) => {
+  const insets = useSafeAreaInsets();
   const [students, setStudents] = useState([]);
   const [profile, setProfile] = useState({});
   const [filters, setFilters] = useState({
@@ -118,6 +122,12 @@ const Home = ({ token }) => {
     </View>
   );
   return (
+    <View style={[styles.container, {
+      paddingTop: insets.top,
+      paddingBottom: insets.bottom,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+    }]}>
     <View style={styles.mainContainer}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Ibne Riead</Text>
@@ -216,16 +226,15 @@ const Home = ({ token }) => {
         </View>
       </View>
     </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, top: -20 },
+  mainContainer: { flex: 1,},
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
     backgroundColor: "#7B5CFA",
     paddingTop: 10,
   },

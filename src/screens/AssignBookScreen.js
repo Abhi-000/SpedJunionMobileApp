@@ -11,6 +11,8 @@ import {
 import { getJStudents, assignBook } from "../services/api";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomCheckBox from "../components/CustomCheckBox";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 const AssignBookScreen = () => {
   const [students, setStudents] = useState([]);
@@ -19,7 +21,7 @@ const AssignBookScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token } = route.params;
-
+  const insets = useSafeAreaInsets();
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -55,9 +57,15 @@ const AssignBookScreen = () => {
   );
 
   return (
+    <View style={[styles.container, {
+      paddingTop: insets.top,
+      paddingBottom: insets.bottom,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+    }]}>
     <View style={styles.container}>
       <View style={styles.topContainer}>
-       <TouchableOpacity onPress={() => navigation.navigate('Book', { token: token})} style={styles.backButton} >
+       <TouchableOpacity onPress={() => navigation.navigate('Books', { token: token})} style={styles.backButton} >
          <Image style={styles.backButtonText} source={require("../../assets/backButton.png")}></Image>
         </TouchableOpacity>
       <Text style = {styles.headerTitle}>Students</Text>
@@ -97,6 +105,7 @@ const AssignBookScreen = () => {
       <TouchableOpacity style={styles.assignButton} onPress={handleAssign}>
         <Text style={styles.buttonText}>Assign</Text>
       </TouchableOpacity>
+    </View>
     </View>
   );
 };

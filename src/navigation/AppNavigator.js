@@ -9,7 +9,7 @@ import BookSummaryScreen from "../screens/BookSummaryScreen";
 import StudentsScreen from "../screens/StudentsScreen";
 import BooksScreen from "../screens/BooksScreen";
 import AssignedBooksScreen from "../screens/AssignedBooksScreen"; // Import the new screen
-
+import { SafeAreaWrapper } from "../components/SafeAreaWrapper";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -19,9 +19,9 @@ const AppNavigator = () => {
         name="Login"
         component={LoginScreen}
         options={{ headerShown: false }}
-      />
+      />    
       <Stack.Screen
-        name="Book"
+        name="Books"
         component={BooksScreen}
         options={{ headerShown: false }}
       />

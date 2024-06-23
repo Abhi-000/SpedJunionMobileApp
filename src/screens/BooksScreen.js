@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { getAllBooks } from "../services/api";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
@@ -76,8 +77,14 @@ const BooksScreen = ({ token: propToken }) => {
   );
 
   const categories = ["All", "Beginner", "Intermediate", "Advanced"];
-
+  const insets = useSafeAreaInsets();
   return (
+    <View style={[styles.container, {
+      paddingTop: insets.top,
+      paddingBottom: insets.bottom,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+    }]}>
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
@@ -126,6 +133,7 @@ const BooksScreen = ({ token: propToken }) => {
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={<View style={styles.listHeader} />}
       />
+    </View>
     </View>
   );
 };
