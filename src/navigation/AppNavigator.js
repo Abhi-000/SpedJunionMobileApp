@@ -1,4 +1,3 @@
-// src/navigation/AppNavigator.js
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "../screens/LoginScreen";
@@ -8,8 +7,11 @@ import AssignSuccessScreen from "../screens/AssignSuccessScreen";
 import BookSummaryScreen from "../screens/BookSummaryScreen";
 import StudentsScreen from "../screens/StudentsScreen";
 import BooksScreen from "../screens/BooksScreen";
-import AssignedBooksScreen from "../screens/AssignedBooksScreen"; // Import the new screen
+import AssignedBooksScreen from "../screens/AssignedBooksScreen";
+import ScanScreen from "../screens/ScanScreen";
+import QRCodeInputScreen from "../screens/QRCodeInputScreen"; // Import the QRCodeInputScreen
 import { SafeAreaWrapper } from "../components/SafeAreaWrapper";
+
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -19,7 +21,7 @@ const AppNavigator = () => {
         name="Login"
         component={LoginScreen}
         options={{ headerShown: false }}
-      />    
+      />
       <Stack.Screen
         name="Books"
         component={BooksScreen}
@@ -51,8 +53,18 @@ const AppNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="AssignedBooks" // Add the new screen
+        name="AssignedBooks"
         component={AssignedBooksScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Scan"
+        component={ScanScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="QRCodeInput"
+        component={QRCodeInputScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

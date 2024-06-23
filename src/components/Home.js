@@ -1,4 +1,3 @@
-// src/components/Home.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -12,10 +11,9 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import { getJStudents, getJuniorP1rofile } from "../services/api";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-
+import { getJStudents, getJuniorProfile } from "../services/api";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 const Home = ({ token }) => {
   const insets = useSafeAreaInsets();
@@ -29,6 +27,7 @@ const Home = ({ token }) => {
   });
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchStudents();
@@ -121,117 +120,133 @@ const Home = ({ token }) => {
       </View>
     </View>
   );
+
   return (
-    <View style={[styles.container, {
-      paddingTop: insets.top,
-      paddingBottom: insets.bottom,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-    }]}>
-    <View style={styles.mainContainer}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Ibne Riead</Text>
-        <Text style={styles.headerText}>Tec no: 04</Text>
-      </View>
-      <View style={styles.container}>
-        <View style={styles.searchBar}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search"
-            value={searchText}
-            onChangeText={(text) => setSearchText(text)}
-          />
-          <TouchableOpacity
-            style={styles.filterIcon}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={styles.filterIconText}>⚙️</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            <Text style={styles.searchButtonText}>Search</Text>
-          </TouchableOpacity>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
+      <View style={styles.mainContainer}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Ibne Riead</Text>
+          <Text style={styles.headerText}>Tec no: 04</Text>
         </View>
-        <Modal
-          visible={isModalVisible}
-          transparent={true}
-          animationType="slide"
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Filter Options</Text>
-              <TextInput
-                style={styles.filterInput}
-                placeholderTextColor="#aaa"
-                placeholder="Class"
-                value={filters.studentClass}
-                onChangeText={(text) =>
-                  handleFilterChange("studentClass", text)
-                }
-              />
-              <TextInput
-                style={styles.filterInput}
-                placeholderTextColor="#aaa"
-                placeholder="Division"
-                value={filters.division}
-                onChangeText={(text) => handleFilterChange("division", text)}
-              />
-              <TextInput
-                style={styles.filterInput}
-                placeholderTextColor="#aaa"
-                placeholder="Age Range (e.g., 3 - 10)"
-                value={filters.ageRange}
-                onChangeText={(text) => handleFilterChange("ageRange", text)}
-              />
-              <View style={styles.buttonContainer}>
-                <Button
-                  title="Apply Filters"
-                  onPress={() => {
-                    setModalVisible(false);
-                    fetchStudents();
-                  }}
+        <View style={styles.container}>
+          <View style={styles.searchBar}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search"
+              value={searchText}
+              onChangeText={(text) => setSearchText(text)}
+            />
+            <TouchableOpacity
+              style={styles.filterIcon}
+              onPress={() => setModalVisible(true)}
+            >
+              <Text style={styles.filterIconText}>⚙️</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.searchButton}
+              onPress={handleSearch}
+            >
+              <Text style={styles.searchButtonText}>Search</Text>
+            </TouchableOpacity>
+          </View>
+          <Modal
+            visible={isModalVisible}
+            transparent={true}
+            animationType="slide"
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Filter Options</Text>
+                <TextInput
+                  style={styles.filterInput}
+                  placeholderTextColor="#aaa"
+                  placeholder="Class"
+                  value={filters.studentClass}
+                  onChangeText={(text) =>
+                    handleFilterChange("studentClass", text)
+                  }
                 />
-                <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                <TextInput
+                  style={styles.filterInput}
+                  placeholderTextColor="#aaa"
+                  placeholder="Division"
+                  value={filters.division}
+                  onChangeText={(text) => handleFilterChange("division", text)}
+                />
+                <TextInput
+                  style={styles.filterInput}
+                  placeholderTextColor="#aaa"
+                  placeholder="Age Range (e.g., 3 - 10)"
+                  value={filters.ageRange}
+                  onChangeText={(text) => handleFilterChange("ageRange", text)}
+                />
+                <View style={styles.buttonContainer}>
+                  <Button
+                    title="Apply Filters"
+                    onPress={() => {
+                      setModalVisible(false);
+                      fetchStudents();
+                    }}
+                  />
+                  <Button
+                    title="Cancel"
+                    onPress={() => setModalVisible(false)}
+                  />
+                </View>
               </View>
             </View>
+          </Modal>
+          <View style={styles.studentsContainer}>
+            <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
+            <View style={styles.categories}>
+              <Image
+                source={require("../../assets/studentsCategory.png")} // Add your image here
+                style={styles.category}
+              />
+              <Image
+                source={require("../../assets/booksCategory.png")} // Add your image here
+                style={styles.category}
+              />
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Scan", { token })}
+              >
+                <Image
+                  source={require("../../assets/scanCategory.png")} // Add your image here
+                  style={styles.category}
+                />
+              </TouchableOpacity>
+              <Image
+                source={require("../../assets/calendarCategory.png")} // Add your image here
+                style={styles.category}
+              />
+            </View>
+            <FlatList
+              data={students}
+              renderItem={renderStudent}
+              keyExtractor={(item) => item.id.toString()}
+              style={styles.flatList}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              ItemSeparatorComponent={() => <View style={{ height: 10 }} />} // Optional: Adds space between items
+            />
           </View>
-        </Modal>
-        <View style={styles.studentsContainer}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
-          <View style={styles.categories}>
-            <Image
-              source={require("../../assets/studentsCategory.png")} // Add your image here
-              style={styles.category}
-            />
-            <Image
-              source={require("../../assets/booksCategory.png")} // Add your image here
-              style={styles.category}
-            />
-            <Image
-              source={require("../../assets/scanCategory.png")} // Add your image here
-              style={styles.category}
-            />
-            <Image
-              source={require("../../assets/calendarCategory.png")} // Add your image here
-              style={styles.category}
-            />
-          </View>
-          <FlatList
-            data={students}
-            renderItem={renderStudent}
-            keyExtractor={(item) => item.id.toString()}
-            style={styles.flatList}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            ItemSeparatorComponent={() => <View style={{ height: 10 }} />} // Optional: Adds space between items
-          />
         </View>
       </View>
-    </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1,},
+  mainContainer: { flex: 1 },
   container: {
     flex: 1,
     justifyContent: "flex-start",
@@ -307,7 +322,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 10,
   },
-
   student: {
     flexDirection: "row",
     alignItems: "center",
