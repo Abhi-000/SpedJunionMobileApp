@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   header: {
-    backgroundColor: "#7B5CFA",
+    backgroundColor: "#6A53A2",
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderTopLeftRadius: 25,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   assignButton: {
-    backgroundColor: "#7B5CFA",
+    backgroundColor: "#6A53A2",
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",

@@ -9,7 +9,6 @@ import {
   Modal,
   Button,
   Image,
-  ImageBackground,
 } from "react-native";
 import { getJStudents, getJuniorProfile } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -103,7 +102,7 @@ const Home = ({ token }) => {
   };
 
   const renderStudent = ({ item }) => (
-    <View style={styles.student}>
+    <View style={styles.studentCard}>
       <Image
         // source={{
         //   uri: `https://testing.spedathome.com:7253/api/${item.studentProfilePic}`,
@@ -241,6 +240,7 @@ const Home = ({ token }) => {
                 style={styles.category}
               />
             </View>
+            <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
             <FlatList
               data={students}
               renderItem={renderStudent}
@@ -343,39 +343,43 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 10,
   },
-  student: {
+  studentCard: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 20,
     marginBottom: 10,
-    borderRadius: 20,
+    borderRadius: 10, // Adjusted for cleaner look
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.1, // Subtle shadow
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
   },
   profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
+    width: 50, // Adjusted size for profile picture
+    height: 50,
+    borderRadius: 25,
+    marginRight: 15, // Adjusted spacing
   },
   studentInfo: {
     flex: 1,
   },
   studentName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
+    color: "#333",
   },
   studentClass: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#666",
+    marginTop: 2,
   },
   modalContainer: {
     flex: 1,
