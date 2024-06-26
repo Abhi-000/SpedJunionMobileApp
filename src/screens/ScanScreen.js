@@ -125,17 +125,6 @@ const ScanScreen = ({ token }) => {
         contentContainerStyle={{ paddingBottom: 20 }}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       />
-      <View style={styles.footer}>
-        <TouchableOpacity>
-          <Text style={styles.footerText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.footerText}>Books</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.footerText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };

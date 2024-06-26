@@ -105,9 +105,10 @@ const Home = ({ token }) => {
   const renderStudent = ({ item }) => (
     <View style={styles.student}>
       <Image
-        source={{
-          uri: `https://testing.spedathome.com:7253/api/${item.studentProfilePic}`,
-        }}
+        // source={{
+        //   uri: `https://testing.spedathome.com:7253/api/${item.studentProfilePic}`,
+        // }}
+        source={require("../../assets/sampleProfile.png")}
         style={styles.profilePic}
       />
       <View style={styles.studentInfo}>
@@ -133,10 +134,16 @@ const Home = ({ token }) => {
         },
       ]}
     >
-      <View style={styles.mainContainer}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Ibne Riead</Text>
-          <Text style={styles.headerText}>Tec no: 04</Text>
+      <View style={styles.parentContainer}>
+        <View style={styles.headersParent}>
+          <Image
+            source={require("../../assets/sampleProfile.png")}
+            style={{ width: 60, height: 60 }} // Add your image here
+          />
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Ibne Riead</Text>
+            <Text style={styles.headerText}>Tec no: 04</Text>
+          </View>
         </View>
         <View style={styles.container}>
           <View style={styles.searchBar}>
@@ -213,10 +220,14 @@ const Home = ({ token }) => {
                 source={require("../../assets/studentsCategory.png")} // Add your image here
                 style={styles.category}
               />
-              <Image
-                source={require("../../assets/booksCategory.png")} // Add your image here
-                style={styles.category}
-              />
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Books", { token })}
+              >
+                <Image
+                  source={require("../../assets/booksCategory.png")} // Add your image here
+                  style={styles.category}
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Scan", { token })}
               >
@@ -250,15 +261,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    backgroundColor: "#7B5CFA",
+    backgroundColor: "#6A53A2",
+    paddingTop: 10,
+  },
+  parentContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    backgroundColor: "white",
     paddingTop: 10,
   },
   header: {
     flexDirection: "column",
     justifyContent: "space-between",
-    padding: 20,
+
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
+  },
+  headersParent: {
+    margin: 20,
+    gap: 20,
+    flexDirection: "row",
+    justifyContent: "flex-start",
   },
   headerText: {
     fontSize: 18,
@@ -268,8 +291,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
     width: "100%",
   },
   searchInput: {
@@ -300,14 +321,14 @@ const styles = StyleSheet.create({
   categories: {
     flexDirection: "row",
     justifyContent: "center",
-    padding: 5,
+    padding: 20,
   },
   category: {
     borderRadius: 100,
     width: 70,
     height: 70,
     fontWeight: "bold",
-    marginRight: 20,
+    marginRight: 15,
   },
   studentsContainer: {
     flex: 1,

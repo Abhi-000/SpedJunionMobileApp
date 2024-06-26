@@ -4,6 +4,7 @@ import LoginScreen from "../screens/LoginScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import AssignBookScreen from "../screens/AssignBookScreen";
 import AssignSuccessScreen from "../screens/AssignSuccessScreen";
+import SuccessScreen from "../screens/SuccessScreen";
 import BookSummaryScreen from "../screens/BookSummaryScreen";
 import StudentsScreen from "../screens/StudentsScreen";
 import BooksScreen from "../screens/BooksScreen";
@@ -30,6 +31,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="HomeTabs"
         component={BottomTabNavigator}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Success"
+        component={SuccessScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

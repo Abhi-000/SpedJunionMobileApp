@@ -10,8 +10,7 @@ import {
 } from "react-native";
 import { getBookSummary, getStudentDetailsByIds } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const StudentsScreen = () => {
   const [students, setStudents] = useState([]);
@@ -88,47 +87,52 @@ const StudentsScreen = () => {
   );
 
   return (
-    <View style={[styles.container, {
-      paddingTop: insets.top,
-      paddingBottom: insets.bottom,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-    }]}>
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Image
-            style={styles.backButtonImage}
-            source={require("../../assets/backButton.png")}
-          />
-        </TouchableOpacity>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Image
+              style={styles.backButtonImage}
+              source={require("../../assets/backButton.png")}
+            />
+          </TouchableOpacity>
 
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Assign Books</Text>
+          {/* <View style={styles.header}> */}
+          <Text style={styles.headerText}>Assigned Books</Text>
+          {/* </View> */}
         </View>
-      </View>
-      <View style={styles.card}>
-        <View style={styles.levelBox}>
-          <Text style={styles.levelText}>{bookDetails.difficulty}</Text>
+        <View style={styles.card}>
+          <View style={styles.levelBox}>
+            <Text style={styles.levelText}>{bookDetails.difficulty}</Text>
+          </View>
+          <Text style={styles.bookTitle}>{bookDetails.name}</Text>
+          <Text style={styles.bookDetails}>
+            Assign Date:{" "}
+            {uploadedDate ? new Date(uploadedDate).toLocaleDateString() : "N/A"}
+          </Text>
+          <Text style={styles.bookDetails}>Students: {students.length}</Text>
         </View>
-        <Text style={styles.bookTitle}>{bookDetails.name}</Text>
-        <Text style={styles.bookDetails}>
-          Assign Date:{" "}
-          {uploadedDate ? new Date(uploadedDate).toLocaleDateString() : "N/A"}
-        </Text>
-        <Text style={styles.bookDetails}>Students: {students.length}</Text>
-      </View>
 
-      <FlatList
-        data={students}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderStudentItem}
-        contentContainerStyle={styles.list}
-      />
-      {/* <View style={styles.footer}>
+        <FlatList
+          data={students}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderStudentItem}
+          contentContainerStyle={styles.list}
+        />
+        {/* <View style={styles.footer}>
         <TouchableOpacity>
           <Text style={styles.footerText}>Home</Text>
         </TouchableOpacity>
@@ -139,7 +143,7 @@ const StudentsScreen = () => {
           <Text style={styles.footerText}>Profile</Text>
         </TouchableOpacity>
       </View> */}
-    </View>
+      </View>
     </View>
   );
 };
@@ -177,7 +181,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
   },
   bookTitle: {

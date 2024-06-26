@@ -11,8 +11,7 @@ import {
 import { getJStudents, assignBook } from "../services/api";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomCheckBox from "../components/CustomCheckBox";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AssignBookScreen = () => {
   const [students, setStudents] = useState([]);
@@ -46,7 +45,12 @@ const AssignBookScreen = () => {
   const handleAssign = async () => {
     try {
       await assignBook(bookId, selectedStudents, token);
-      navigation.navigate("AssignSuccess");
+      navigation.navigate("Success", {
+        title: "Successfully Assigned",
+        message: "Successfully Assigned To Students",
+        buttonText: "Continue",
+        token: token,
+      });
     } catch (error) {
       console.error("Error assigning book:", error);
     }
@@ -57,55 +61,70 @@ const AssignBookScreen = () => {
   );
 
   return (
-    <View style={[styles.container, {
-      paddingTop: insets.top,
-      paddingBottom: insets.bottom,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-    }]}>
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
-       <TouchableOpacity onPress={() => navigation.navigate('Books', { token: token})} style={styles.backButton} >
-         <Image style={styles.backButtonText} source={require("../../assets/backButton.png")}></Image>
-        </TouchableOpacity>
-      <Text style = {styles.headerTitle}>Students</Text>
-      </View>
-      <View style={styles.header}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search"
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
-      </View>
-      <FlatList
-        data={filteredStudents}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.listContainer}>
-          <View style={styles.studentItem}>
-            <View style={styles.studentInfo}>
-              <Image
-                source={require("../../assets/sampleProfile.png")} // Placeholder for the student's avatar
-                style={styles.avatar}
-              />
-             
-                <Text style={styles.studentName}>{`${item.firstName} ${item.lastName}`}</Text>
-                <Text style={styles.studentDetails}>{`Class ${item.class} Age ${item.age} years`}</Text>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Books", { token: token })}
+            style={styles.backButton}
+          >
+            <Image
+              style={styles.backButtonText}
+              source={require("../../assets/backButton.png")}
+            ></Image>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Students</Text>
+        </View>
+        <View style={styles.header}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+          />
+        </View>
+        <FlatList
+          data={filteredStudents}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.listContainer}>
+              <View style={styles.studentItem}>
+                <View style={styles.studentInfo}>
+                  <Image
+                    source={require("../../assets/sampleProfile.png")} // Placeholder for the student's avatar
+                    style={styles.avatar}
+                  />
+
+                  <Text
+                    style={styles.studentName}
+                  >{`${item.firstName} ${item.lastName}`}</Text>
+                  <Text
+                    style={styles.studentDetails}
+                  >{`Class ${item.class} Age ${item.age} years`}</Text>
+                </View>
+
+                <CustomCheckBox
+                  isChecked={selectedStudents.includes(item.id)}
+                  onPress={() => handleSelectStudent(item.id)}
+                />
               </View>
-           
-            <CustomCheckBox
-              isChecked={selectedStudents.includes(item.id)}
-              onPress={() => handleSelectStudent(item.id)}
-            />
-             </View>
-          </View>
-        )}
-      />
-      <TouchableOpacity style={styles.assignButton} onPress={handleAssign}>
-        <Text style={styles.buttonText}>Assign</Text>
-      </TouchableOpacity>
-    </View>
+            </View>
+          )}
+        />
+        <TouchableOpacity style={styles.assignButton} onPress={handleAssign}>
+          <Text style={styles.buttonText}>Assign</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -115,8 +134,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  listContainer:{
-    flex:1,
+  listContainer: {
+    flex: 1,
     paddingHorizontal: 20,
   },
   topContainer: {
@@ -125,10 +144,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    paddingBottom:20,
+    paddingBottom: 20,
     backgroundColor: "#f7f7f7",
   },
-   backButton: {
+  backButton: {
     position: "absolute",
     left: 20,
     justifyContent: "center",
@@ -151,7 +170,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
   },
   searchInput: {
-    height:45,
+    height: 45,
     backgroundColor: "#fff",
     borderRadius: 20,
     paddingHorizontal: 15,

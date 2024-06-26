@@ -10,15 +10,14 @@ import {
 } from "react-native";
 import { getAllBooks } from "../services/api";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const BooksScreen = ({ token: propToken }) => {
+const AssignedBooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("Intermediate");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
-
   const fetchBooks = async (currentToken) => {
     try {
       const response = await getAllBooks(currentToken);
@@ -31,6 +30,9 @@ const BooksScreen = ({ token: propToken }) => {
 
   useEffect(() => {
     const currentToken = propToken || route.params?.token;
+    console.log(propToken);
+    console.log(route.params?.token);
+    console.log(currentToken);
     fetchBooks(currentToken);
   }, [propToken]);
 
@@ -76,62 +78,71 @@ const BooksScreen = ({ token: propToken }) => {
   const categories = ["All", "Beginner", "Intermediate", "Advanced"];
 
   return (
-    <View style={[styles.container, {
-      paddingTop: insets.top,
-      paddingBottom: insets.bottom,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-    }]}>
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Image
-            style={styles.backButtonImage}
-            source={require("../../assets/backButton.png")}
-          />
-        </TouchableOpacity>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Books", {
+                token: propToken || route.params?.token,
+              })
+            }
+            style={styles.backButton}
+          >
+            <Image
+              style={styles.backButtonImage}
+              source={require("../../assets/backButton.png")}
+            />
+          </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Assigned Books</Text>
-      </View>
-      <View style={styles.header}>
-        <FlatList
-          data={categories}
-          horizontal
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => setSelectedCategory(item)}
-              style={[
-                styles.categoryButton,
-                selectedCategory === item && styles.selectedCategoryButton,
-              ]}
-            >
-              <Text
-                style={
-                  selectedCategory === item
-                    ? styles.selectedCategoryText
-                    : styles.categoryText
-                }
+          <Text style={styles.headerTitle}>Assigned Books</Text>
+        </View>
+        <View style={styles.header}>
+          <FlatList
+            data={categories}
+            horizontal
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => setSelectedCategory(item)}
+                style={[
+                  styles.categoryButton,
+                  selectedCategory === item && styles.selectedCategoryButton,
+                ]}
               >
-                {item}
-              </Text>
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryList}
+                <Text
+                  style={
+                    selectedCategory === item
+                      ? styles.selectedCategoryText
+                      : styles.categoryText
+                  }
+                >
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryList}
+          />
+        </View>
+        <FlatList
+          data={filterBooks()}
+          renderItem={renderBook}
+          keyExtractor={(item) => item.bookId.toString()}
+          contentContainerStyle={styles.listContainer}
+          ListHeaderComponent={<View style={styles.listHeader} />}
         />
       </View>
-      <FlatList
-        data={filterBooks()}
-        renderItem={renderBook}
-        keyExtractor={(item) => item.bookId.toString()}
-        contentContainerStyle={styles.listContainer}
-        ListHeaderComponent={<View style={styles.listHeader} />}
-      />
-    </View>
     </View>
   );
 };
@@ -274,4 +285,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BooksScreen;
+export default AssignedBooksScreen;
