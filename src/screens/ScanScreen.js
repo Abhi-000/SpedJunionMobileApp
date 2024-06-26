@@ -98,11 +98,20 @@ const ScanScreen = ({ token }) => {
       ]}
     >
       <View style={styles.header}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
           <Text style={styles.backButtonText}>{"<"}</Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Image
+            style={styles.backButtonImage}
+            source={require("../../assets/backButton.png")}
+          />
         </TouchableOpacity>
         <Text style={styles.headerText}>Upload</Text>
         <TouchableOpacity style={styles.historyButton}>
@@ -162,7 +171,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   searchContainer: {
-    backgroundColor: "#7B5CFA",
+    backgroundColor: "#6A53A2",
     padding: 15,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -229,6 +238,10 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 16,
     color: "#000",
+  },
+  backButtonImage: {
+    width: 50,
+    height: 50,
   },
 });
 

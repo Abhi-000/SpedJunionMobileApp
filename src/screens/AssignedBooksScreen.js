@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   studentsButton: {
-    backgroundColor: "#E1E1E1",
+    backgroundColor: "#E7F1ED",
     paddingVertical: 10,
     borderRadius: 20,
     alignSelf: "stretch",
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: "#00FF8B",
+    color: "#63C3A8",
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",

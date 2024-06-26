@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    backgroundColor: "#7B5CFA",
+    backgroundColor: "#6A53A2",
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderTopLeftRadius: 25,
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   assignButton: {
-    backgroundColor: "#E1E1E1",
+    backgroundColor: "#E7F1ED",
     paddingVertical: 5,
     paddingHorizontal: 15,
     borderRadius: 20,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   buttonText: {
-    color: "#00FF8B",
+    color: "#63C3A8",
     fontSize: 14,
     fontWeight: "bold",
   },

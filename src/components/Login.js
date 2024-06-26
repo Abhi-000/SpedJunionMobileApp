@@ -42,7 +42,7 @@ const Login = () => {
     <View style={styles.container}>
       <View style={styles.topSection}>
         <Image
-          source={require('../../assets/loginBg.png')} // Add your image here
+          source={require("../../assets/loginBg.png")} // Add your image here
           style={styles.iconBoyImage}
         />
         <Text style={styles.title}>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#7B5CFA", // Background color from the provided image
+    backgroundColor: "#6A53A2", // Background color from the provided image
   },
   topSection: {
     alignItems: "center",
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loginContainer: {
-    flex:1,
+    flex: 1,
     width: "100%", // Adjust as necessary
     height: "70%",
     padding: 20,

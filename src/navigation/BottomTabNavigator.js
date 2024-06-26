@@ -12,6 +12,7 @@ import AssignedBooksScreen from "../screens/AssignedBooksScreen";
 import ScanScreen from "../screens/ScanScreen";
 import QRCodeInputScreen from "../screens/QRCodeInputScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -66,10 +67,32 @@ const BottomTabNavigator = ({ route }) => {
             iconName = focused ? "person" : "person-outline";
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return (
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: focused ? "#8A2BE2" : "transparent",
+                borderRadius: 10, // Adjust this value for rounded edges
+                paddingVertical: 5, // Adjust vertical padding
+                paddingHorizontal: 15, // Adjust horizontal padding for a rectangular shape
+              }}
+            >
+              <Ionicons
+                name={iconName}
+                size={size}
+                color={focused ? "#FFFFFF" : color}
+              />
+            </View>
+          );
         },
-        tabBarActiveTintColor: "#00FF8B",
+        tabBarActiveTintColor: "#6A53A2",
         tabBarInactiveTintColor: "gray",
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 5,
+          paddingTop: 5,
+        },
       })}
     >
       <Tab.Screen name="Home">{() => <HomeStack token={token} />}</Tab.Screen>
