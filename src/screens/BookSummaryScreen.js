@@ -15,7 +15,7 @@ const BookSummaryScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token } = route.params;
-  console.log("token", token);
+console.log("token",token);
   useEffect(() => {
     const fetchSummary = async () => {
       try {

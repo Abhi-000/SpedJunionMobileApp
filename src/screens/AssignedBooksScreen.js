@@ -10,14 +10,13 @@ import {
 } from "react-native";
 import { getAllBooks } from "../services/api";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const AssignedBooksScreen = ({ token: propToken }) => {
+const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("Intermediate");
   const navigation = useNavigation();
   const route = useRoute();
-  const insets = useSafeAreaInsets();
+
   const fetchBooks = async (currentToken) => {
     try {
       const response = await getAllBooks(currentToken);
@@ -30,9 +29,6 @@ const AssignedBooksScreen = ({ token: propToken }) => {
 
   useEffect(() => {
     const currentToken = propToken || route.params?.token;
-    console.log(propToken);
-    console.log(route.params?.token);
-    console.log(currentToken);
     fetchBooks(currentToken);
   }, [propToken]);
 
@@ -46,6 +42,7 @@ const AssignedBooksScreen = ({ token: propToken }) => {
   };
 
   const renderBook = ({ item }) => (
+    
     <View style={styles.card}>
       <View style={styles.levelBox}>
         <Text style={styles.levelText}>{item.difficulty}</Text>
@@ -56,17 +53,11 @@ const AssignedBooksScreen = ({ token: propToken }) => {
       />
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
-        <Text style={styles.bookDetails}>
-          Total Students: {item.totalStudents}
-        </Text>
+        <Text style={styles.bookDetails}>Total Students: {item.totalStudents}</Text>
         <TouchableOpacity
           style={styles.studentsButton}
           onPress={() =>
-            navigation.navigate("Students", {
-              bookId: item.bookId,
-              token: propToken || route.params?.token,
-              bookDetails: item,
-            })
+            navigation.navigate("Students", { bookId: item.bookId, token: propToken || route.params?.token })
           }
         >
           <Text style={styles.buttonText}>Students</Text>
@@ -78,71 +69,48 @@ const AssignedBooksScreen = ({ token: propToken }) => {
   const categories = ["All", "Beginner", "Intermediate", "Advanced"];
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
-        },
-      ]}
-    >
-      <View style={styles.container}>
-        <View style={styles.topContainer}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Books", {
-                token: propToken || route.params?.token,
-              })
-            }
-            style={styles.backButton}
-          >
-            <Image
-              style={styles.backButtonImage}
-              source={require("../../assets/backButton.png")}
-            />
-          </TouchableOpacity>
-
-          <Text style={styles.headerTitle}>Assigned Books</Text>
-        </View>
-        <View style={styles.header}>
-          <FlatList
-            data={categories}
-            horizontal
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => setSelectedCategory(item)}
-                style={[
-                  styles.categoryButton,
-                  selectedCategory === item && styles.selectedCategoryButton,
-                ]}
-              >
-                <Text
-                  style={
-                    selectedCategory === item
-                      ? styles.selectedCategoryText
-                      : styles.categoryText
-                  }
-                >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            )}
-            keyExtractor={(item) => item}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoryList}
-          />
-        </View>
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Image style={styles.backButtonImage} source={require("../../assets/backButton.png")} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Assigned Books</Text>
+      </View>
+      <View style={styles.header}>
         <FlatList
-          data={filterBooks()}
-          renderItem={renderBook}
-          keyExtractor={(item) => item.bookId.toString()}
-          contentContainerStyle={styles.listContainer}
-          ListHeaderComponent={<View style={styles.listHeader} />}
+          data={categories}
+          horizontal
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => setSelectedCategory(item)}
+              style={[
+                styles.categoryButton,
+                selectedCategory === item && styles.selectedCategoryButton,
+              ]}
+            >
+              <Text
+                style={
+                  selectedCategory === item
+                    ? styles.selectedCategoryText
+                    : styles.categoryText
+                }
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoryList}
         />
       </View>
+      <FlatList
+        data={filterBooks()}
+        renderItem={renderBook}
+        keyExtractor={(item) => item.bookId.toString()}
+        contentContainerStyle={styles.listContainer}
+        ListHeaderComponent={<View style={styles.listHeader} />}
+      />
     </View>
   );
 };
@@ -178,7 +146,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    backgroundColor: "#6A53A2",
+    backgroundColor: "#7B5CFA",
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderTopLeftRadius: 25,
@@ -270,7 +238,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   studentsButton: {
-    backgroundColor: "#E7F1ED",
+    backgroundColor: "#E1E1E1",
     paddingVertical: 10,
     borderRadius: 20,
     alignSelf: "stretch",
@@ -278,11 +246,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: "#63C3A8",
+    color: "#00FF8B",
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
   },
 });
 
-export default AssignedBooksScreen;
+export default BooksScreen;

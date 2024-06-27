@@ -144,34 +144,4 @@ export const getStudentDetailsByIds = async (token, studentIds) => {
   return studentDetails;
 };
 
-export const getChapterDetailsByQR = (qrValue, token) => {
-  return api1.get(`/Book/GetChapterDetailsByQR/${qrValue}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-};
-
-export const uploadAssignments = (token, formData) => {
-  return api1.post("/Book/UploadAssignment", formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
-
-export default {
-  api,
-  api1,
-  login,
-  getJStudents,
-  getJuniorProfile,
-  getAllBooks,
-  assignBook,
-  getBookSummary,
-  getStudentDetailsByIds,
-  getChapterDetailsByQR,
-  uploadAssignments,
-};
+export default { api, api1 };

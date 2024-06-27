@@ -1,17 +1,14 @@
+// src/navigation/AppNavigator.js
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "../screens/LoginScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import AssignBookScreen from "../screens/AssignBookScreen";
 import AssignSuccessScreen from "../screens/AssignSuccessScreen";
-import SuccessScreen from "../screens/SuccessScreen";
 import BookSummaryScreen from "../screens/BookSummaryScreen";
 import StudentsScreen from "../screens/StudentsScreen";
 import BooksScreen from "../screens/BooksScreen";
-import AssignedBooksScreen from "../screens/AssignedBooksScreen";
-import ScanScreen from "../screens/ScanScreen";
-import QRCodeInputScreen from "../screens/QRCodeInputScreen"; // Import the QRCodeInputScreen
-import { SafeAreaWrapper } from "../components/SafeAreaWrapper";
+import AssignedBooksScreen from "../screens/AssignedBooksScreen"; // Import the new screen
 
 const Stack = createStackNavigator();
 
@@ -24,18 +21,13 @@ const AppNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Books"
+        name="Book"
         component={BooksScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="HomeTabs"
         component={BottomTabNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Success"
-        component={SuccessScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -59,18 +51,8 @@ const AppNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="AssignedBooks"
+        name="AssignedBooks" // Add the new screen
         component={AssignedBooksScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Scan"
-        component={ScanScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="QRCodeInput"
-        component={QRCodeInputScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
