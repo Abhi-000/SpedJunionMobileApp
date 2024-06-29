@@ -11,6 +11,7 @@ import BooksScreen from "../screens/BooksScreen";
 import AssignedBooksScreen from "../screens/AssignedBooksScreen";
 import ScanScreen from "../screens/ScanScreen";
 import QRCodeInputScreen from "../screens/QRCodeInputScreen"; // Import the QRCodeInputScreen
+import UploadScreen from "../screens/UploadScreen"; // Import the UploadScreen
 import { SafeAreaWrapper } from "../components/SafeAreaWrapper";
 
 const Stack = createStackNavigator();
@@ -71,6 +72,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="QRCodeInput"
         component={QRCodeInputScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Upload"
+        component={UploadScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

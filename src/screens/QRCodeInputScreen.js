@@ -22,6 +22,7 @@ const QRCodeInputScreen = ({ route }) => {
   const [scanned, setScanned] = useState(false);
   const [chapterDetails, setChapterDetails] = useState(null);
   const [selectedChapters, setSelectedChapters] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -105,30 +106,19 @@ const QRCodeInputScreen = ({ route }) => {
       });
 
       if (!result.canceled) {
-        const formData = new FormData();
-        result.assets.forEach((image, index) => {
-          formData.append("files", {
-            uri: image.uri,
-            name: `photo_${index}.jpg`,
-            type: "image/jpeg",
-          });
+        setSelectedFiles(result.assets);
+        navigation.navigate("Upload", {
+          token,
+          studentId,
+          bookDetails: chapterDetails.bookDetails, // Pass the bookDetails
+          chapterDetails: chapterDetails.chapterDetails, // Pass the chapterDetails
+          selectedFiles: result.assets,
+          selectedChapters,
         });
-
-        formData.append("StudentId", studentId);
-        formData.append("ChapterId", chapterDetails.id);
-        formData.append("BookId", chapterDetails.bookId);
-
-        const response = await uploadAssignments(token, formData);
-
-        if (response.data.success) {
-          Alert.alert("Success", "Assignments uploaded successfully.");
-        } else {
-          Alert.alert("Error", "Failed to upload assignments.");
-        }
       }
     } catch (error) {
-      console.error("Error uploading assignments:", error);
-      Alert.alert("Error", "An error occurred while uploading assignments.");
+      console.error("Error selecting files:", error);
+      Alert.alert("Error", "An error occurred while selecting files.");
     }
   };
 

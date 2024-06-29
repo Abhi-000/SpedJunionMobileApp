@@ -159,10 +159,10 @@ export const getSessionWiseAssessmentDetails = async (
   token
 ) => {
   const headers = {
-    // Accept: "*/*",
-    // "Accept-Encoding": "gzip, deflate, br",
-    // Connection: "keep-alive",
-    // "User-Agent": "PostmanRuntime/7.39.0",
+    Accept: "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
+    Connection: "keep-alive",
+    "User-Agent": "PostmanRuntime/7.39.0",
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
@@ -194,7 +194,7 @@ export const getSessionWiseAssessmentDetails = async (
 };
 
 export const uploadAssignments = (token, formData) => {
-  return api1.post("/Book/UploadAssignment", formData, {
+  return api.post("/Book/UploadAssignment", formData, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
