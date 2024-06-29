@@ -1,41 +1,92 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
-  Modal,
   Alert,
+  ScrollView,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getChapterDetailsByQR, uploadAssignments } from "../services/api";
-import CustomCheckBox from "../components/CustomCheckBox";
+import { BarCodeScanner } from "expo-barcode-scanner";
+// import { getSessionWiseAssessmentDetails, uploadAssignments } from "../services/api"; // Commented out for simplicity
 import * as ImagePicker from "expo-image-picker";
 
 const QRCodeInputScreen = ({ route }) => {
-  const { token, studentId } = route.params; // Accept studentId from route params
+  const { token, studentId } = route.params;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const [qrCodeValue, setQrCodeValue] = useState("");
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanned, setScanned] = useState(false);
   const [chapterDetails, setChapterDetails] = useState(null);
   const [selectedChapters, setSelectedChapters] = useState([]);
-  const [isModalVisible, setModalVisible] = useState(true);
-  const [selectedImages, setSelectedImages] = useState([]);
 
-  const fetchChapterDetails = async (qrValue) => {
-    try {
-      const response = await getChapterDetailsByQR(qrValue, token);
-      setChapterDetails(response.data);
-      setModalVisible(false);
-    } catch (error) {
-      console.error("Error fetching chapter details:", error);
-    }
+  useEffect(() => {
+    (async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+
+  const handleBarCodeScanned = async ({ type, data }) => {
+    setScanned(true);
+    fetchChapterDetails(data, studentId);
   };
 
-  const handleSubmit = () => {
-    fetchChapterDetails(qrCodeValue);
+  const fetchChapterDetails = (qrValue, studentId) => {
+    console.log(
+      `Fetching chapter details for QR: ${qrValue}, Student ID: ${studentId}`
+    );
+
+    const staticResponse = {
+      bookDetails: {
+        bookId: 1,
+        bookName:
+          "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS",
+        difficulty: "Intermediate",
+      },
+      chapterDetails: [
+        {
+          isCurrent: 1,
+          order: 1,
+          title: "Place words",
+          chapter: "Synonyms",
+          chapterId: 1,
+          bookId: 1,
+          isUploaded: 1,
+        },
+        {
+          isCurrent: 0,
+          order: 2,
+          title: "Place words",
+          chapter: "Missing Number",
+          chapterId: 2,
+          bookId: 1,
+          isUploaded: 0,
+        },
+        {
+          isCurrent: 0,
+          order: 3,
+          title: "Place words",
+          chapter: "Common Noun",
+          chapterId: 3,
+          bookId: 1,
+          isUploaded: 0,
+        },
+        {
+          isCurrent: 0,
+          order: 4,
+          title: "Place words",
+          chapterId: 4,
+          bookId: 1,
+          isUploaded: 0,
+        },
+      ],
+    };
+
+    setChapterDetails(staticResponse);
   };
 
   const handleCheckBoxPress = (chapterId) => {
@@ -63,7 +114,6 @@ const QRCodeInputScreen = ({ route }) => {
           });
         });
 
-        // Adding StudentId, ChapterId, and BookId to formData
         formData.append("StudentId", studentId);
         formData.append("ChapterId", chapterDetails.id);
         formData.append("BookId", chapterDetails.bookId);
@@ -81,6 +131,13 @@ const QRCodeInputScreen = ({ route }) => {
       Alert.alert("Error", "An error occurred while uploading assignments.");
     }
   };
+
+  if (hasPermission === null) {
+    return <Text>Requesting for camera permission</Text>;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
 
   return (
     <View
@@ -104,20 +161,68 @@ const QRCodeInputScreen = ({ route }) => {
         <Text style={styles.headerText}>Scan To Pay</Text>
       </View>
       <View style={styles.qrCodeContainer}>
-        <View style={styles.qrCodeBox}>
-          <Text style={styles.qrCodeText}>Enter QR Code Manually</Text>
-        </View>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+        {scanned && (
+          <TouchableOpacity
+            onPress={() => setScanned(false)}
+            style={styles.rescanButton}
+          >
+            <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
+          </TouchableOpacity>
+        )}
       </View>
       {chapterDetails && (
-        <View style={styles.chapterDetailsContainer}>
-          <View style={styles.chapterDetails}>
-            <Text style={styles.chapterOrder}>{chapterDetails.order}</Text>
-            <Text style={styles.chapterTitle}>{chapterDetails.chapter}</Text>
-            <CustomCheckBox
-              isChecked={selectedChapters.includes(chapterDetails.id)}
-              onPress={() => handleCheckBoxPress(chapterDetails.id)}
-            />
-          </View>
+        <View style={styles.detailsContainer}>
+          <ScrollView
+            style={styles.chapterDetailsContainer}
+            contentContainerStyle={styles.chapterDetailsContent}
+          >
+            <View style={styles.bookDetailsCard}>
+              <View style={styles.bookDetails}>
+                <Image
+                  source={require("../../assets/booksCategory.png")} // Replace with your image source
+                  style={styles.bookIcon}
+                />
+                <View style={styles.bookInfo}>
+                  <Text style={styles.bookDifficulty}>
+                    {chapterDetails.bookDetails.difficulty}
+                  </Text>
+                  <Text style={styles.bookTitle}>
+                    {chapterDetails.bookDetails.bookName}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            {chapterDetails.chapterDetails.map((chapter) => (
+              <View key={chapter.chapterId} style={styles.chapterCard}>
+                <View style={styles.chapterDetails}>
+                  <Text style={styles.chapterOrder}>{chapter.order}</Text>
+                  <View style={styles.chapterTextContainer}>
+                    <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => handleCheckBoxPress(chapter.chapterId)}
+                    style={[
+                      styles.checkBox,
+                      chapter.isUploaded
+                        ? styles.greenCheckBox
+                        : selectedChapters.includes(chapter.chapterId)
+                        ? styles.yellowCheckBox
+                        : styles.grayCheckBox,
+                    ]}
+                  >
+                    {chapter.isUploaded ||
+                    selectedChapters.includes(chapter.chapterId) ? (
+                      <Text style={styles.checkMark}>✓</Text>
+                    ) : null}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
           <TouchableOpacity
             style={styles.uploadButton}
             onPress={handleUploadAssignments}
@@ -126,33 +231,6 @@ const QRCodeInputScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
       )}
-      <Modal visible={isModalVisible} transparent={true} animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Enter QR Code</Text>
-            <TextInput
-              style={styles.qrInput}
-              placeholder="Enter QR Code"
-              value={qrCodeValue}
-              onChangeText={setQrCodeValue}
-            />
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                onPress={handleSubmit}
-                style={styles.submitButton}
-              >
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={styles.cancelButton}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -185,114 +263,127 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  qrCodeBox: {
-    width: 250,
-    height: 250,
-    borderWidth: 2,
-    borderColor: "#ddd",
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
+  rescanButton: {
+    position: "absolute",
+    bottom: 50,
+    padding: 10,
+    backgroundColor: "#63C3A8", // Updated green color
+    borderRadius: 5,
   },
-  qrCodeText: {
-    fontSize: 18,
-    color: "#888",
+  rescanButtonText: {
+    fontSize: 16,
+    color: "#fff",
   },
-  chapterDetailsContainer: {
-    backgroundColor: "#f0f0f0",
+  detailsContainer: {
+    flex: 1,
+    backgroundColor: "#f0f0f0", // Grey background for the outermost container
     padding: 20,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  chapterDetailsContainer: {
     marginTop: 20,
+    width: "100%",
+  },
+  chapterDetailsContent: {
+    alignItems: "center",
+  },
+  bookDetailsCard: {
+    backgroundColor: "#fff", // Card background color
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
+    width: "100%",
+  },
+  bookDetails: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  bookIcon: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+  },
+  bookInfo: {
+    flex: 1,
+  },
+  bookTitle: {
+    fontSize: 12,
+    color: "#666",
+  },
+  bookDifficulty: {
+    fontSize: 18,
+    color: "#d81b60",
+  },
+  chapterCard: {
+    width: "100%",
+    padding: 15,
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   chapterDetails: {
-    marginBottom: 20,
+    flexDirection: "row",
     alignItems: "center",
-  },
-  levelBox: {
-    backgroundColor: "#d81b60",
-    borderRadius: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  levelText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  chapterDescription: {
-    fontSize: 14,
-    marginBottom: 10,
-    textAlign: "center",
+    justifyContent: "space-between",
   },
   chapterOrder: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#d81b60",
-    marginBottom: 5,
+    marginRight: 10,
+  },
+  chapterTextContainer: {
+    flex: 1,
   },
   chapterTitle: {
     fontSize: 18,
-    fontWeight: "bold",
   },
-  uploadButton: {
-    backgroundColor: "#00FF8B",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  uploadButtonText: {
-    fontSize: 16,
-    color: "#fff",
-  },
-  modalContainer: {
-    flex: 1,
+  checkBox: {
+    width: 24,
+    height: 24,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: 300,
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  qrInput: {
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 10,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
+    borderColor: "#ccc", // Initial border color for checkboxes
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
+  greenCheckBox: {
+    backgroundColor: "#63C3A8", // Updated green color
   },
-  submitButton: {
-    backgroundColor: "#00FF8B",
-    padding: 10,
-    borderRadius: 5,
+  yellowCheckBox: {
+    backgroundColor: "#FFD700",
   },
-  submitButtonText: {
-    fontSize: 16,
+  grayCheckBox: {
+    backgroundColor: "#ccc", // Initial gray color for checkboxes
+  },
+  checkMark: {
     color: "#fff",
   },
-  cancelButton: {
-    backgroundColor: "#ff0000",
-    padding: 10,
-    borderRadius: 5,
+  uploadButton: {
+    backgroundColor: "#63C3A8", // Updated green color
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginTop: 20,
+    alignItems: "center",
   },
-  cancelButtonText: {
+  uploadButtonText: {
     fontSize: 16,
     color: "#fff",
   },

@@ -1,36 +1,38 @@
-// src/components/CustomCheckBox.js
 import React from "react";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const CustomCheckBox = ({ isChecked, onPress }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.checkBoxContainer}>
-      <View style={[styles.checkBox, isChecked && styles.checkedBox]}>
-        {isChecked && <Text style={styles.checkMark}>✔</Text>}
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <View style={[styles.checkBox, isChecked && styles.checked]}>
+        {isChecked && <Text style={styles.checkMark}>✓</Text>}
       </View>
+      <Text style={styles.label}>Check this box</Text> {/* Example label */}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  checkBoxContainer: {
-    justifyContent: "center",
+  container: {
+    flexDirection: "row",
     alignItems: "center",
   },
   checkBox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderColor: "#000",
     justifyContent: "center",
     alignItems: "center",
   },
-  checkedBox: {
-    backgroundColor: "#00bfa5",
+  checked: {
+    backgroundColor: "#00FF8B",
   },
   checkMark: {
     color: "#fff",
-    fontSize: 14,
+  },
+  label: {
+    marginLeft: 10,
   },
 });
 

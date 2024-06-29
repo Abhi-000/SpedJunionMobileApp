@@ -43,23 +43,33 @@ export const getJuniorProfile = (studentId, token) => {
   });
 };
 
-export const getAllBooks = (token) => {
-  return api.post(
-    "/Book/GetAllBooks",
-    {
-      sortBy: "BM.Id",
-      sortOrder: "DESC",
-      pageSize: 25,
-      pageCount: 1,
-      conditions: [],
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+export const getAllBooks = async (token) => {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+
+  api.interceptors.request.use((request) => {
+    console.log("Starting Request", JSON.stringify(request, null, 2));
+    return request;
+  });
+
+  try {
+    const response = await api.get("/Book/SpedJuniorTestAPI", { headers });
+    console.log("Books response:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    if (error.response) {
+      console.error("Error response status:", error.response.status);
+      console.error("Error response data:", error.response.data);
+      console.error("Error response headers:", error.response.headers);
+      console.error("Error response config:", error.response.config);
+    } else {
+      console.error("Error message:", error.message);
     }
-  );
+    throw error;
+  }
 };
 
 export const assignBook = (bookId, studentIds, token) => {
@@ -67,7 +77,7 @@ export const assignBook = (bookId, studentIds, token) => {
     "/Book/AssignBook",
     {
       bookId: bookId,
-      StudentIds: studentIds.join(","), // Ensure studentIds is a comma-separated string
+      StudentIds: studentIds.join(","),
     },
     {
       headers: {
@@ -103,7 +113,6 @@ export const getBookSummary = (bookId, token) => {
   );
 };
 
-// Updated function to get student details by individual IDs
 export const getStudentDetailsByIds = async (token, studentIds) => {
   const uniqueIds = [...new Set(studentIds)];
   const studentDetails = [];
@@ -144,13 +153,44 @@ export const getStudentDetailsByIds = async (token, studentIds) => {
   return studentDetails;
 };
 
-export const getChapterDetailsByQR = (qrValue, token) => {
-  return api1.get(`/Book/GetChapterDetailsByQR/${qrValue}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+export const getSessionWiseAssessmentDetails = async (
+  qrValue,
+  studentId,
+  token
+) => {
+  const headers = {
+    // Accept: "*/*",
+    // "Accept-Encoding": "gzip, deflate, br",
+    // Connection: "keep-alive",
+    // "User-Agent": "PostmanRuntime/7.39.0",
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+
+  api.interceptors.request.use((request) => {
+    console.log("Starting Request", JSON.stringify(request, null, 2));
+    return request;
   });
+
+  try {
+    const response = await api.get(
+      `/Book/GetSessionWiseAssessmentDetails/${qrValue}/${studentId}`,
+      { headers }
+    );
+    console.log("Session Wise Assessment Details response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching session wise assessment details:", error);
+    if (error.response) {
+      console.error("Error response status:", error.response.status);
+      console.error("Error response data:", error.response.data);
+      console.error("Error response headers:", error.response.headers);
+      console.error("Error response config:", error.response.config);
+    } else {
+      console.error("Error message:", error.message);
+    }
+    throw error;
+  }
 };
 
 export const uploadAssignments = (token, formData) => {
@@ -172,6 +212,6 @@ export default {
   assignBook,
   getBookSummary,
   getStudentDetailsByIds,
-  getChapterDetailsByQR,
+  getSessionWiseAssessmentDetails,
   uploadAssignments,
 };
