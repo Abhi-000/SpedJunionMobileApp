@@ -7,7 +7,9 @@ const CustomCheckBox = ({ isChecked, onPress }) => {
       <View style={[styles.checkBox, isChecked && styles.checked]}>
         {isChecked && <Text style={styles.checkMark}>✓</Text>}
       </View>
-      <Text style={styles.label}>Check this box</Text> {/* Example label */}
+      {/* Commented out the label as it is not required in your context
+      <Text style={styles.label}>Check this box</Text> 
+      */}
     </TouchableOpacity>
   );
 };

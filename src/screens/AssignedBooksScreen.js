@@ -18,11 +18,12 @@ const AssignedBooksScreen = ({ token: propToken }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
+
   const fetchBooks = async (currentToken) => {
     try {
       const response = await getAllBooks(currentToken);
       console.log("Fetched books data:", response.data);
-      setBooks(response.data.getAllBooksResponses);
+      setBooks(response.data);
     } catch (error) {
       console.error("Error fetching books:", error);
     }
@@ -57,13 +58,13 @@ const AssignedBooksScreen = ({ token: propToken }) => {
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
         <Text style={styles.bookDetails}>
-          Total Students: {item.totalStudents}
+          Total Students: {item.totalStudents || 0}
         </Text>
         <TouchableOpacity
           style={styles.studentsButton}
           onPress={() =>
             navigation.navigate("Students", {
-              bookId: item.bookId,
+              bookId: item.id,
               token: propToken || route.params?.token,
               bookDetails: item,
             })
@@ -138,7 +139,7 @@ const AssignedBooksScreen = ({ token: propToken }) => {
         <FlatList
           data={filterBooks()}
           renderItem={renderBook}
-          keyExtractor={(item) => item.bookId.toString()}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
           ListHeaderComponent={<View style={styles.listHeader} />}
         />

@@ -11,9 +11,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BarCodeScanner } from "expo-barcode-scanner";
-// import { getSessionWiseAssessmentDetails, uploadAssignments } from "../services/api"; // Commented out for simplicity
 import * as ImagePicker from "expo-image-picker";
-
+import { getSessionWiseAssessmentDetails } from "../services/api";
 const QRCodeInputScreen = ({ route }) => {
   const { token, studentId } = route.params;
   const insets = useSafeAreaInsets();
@@ -22,7 +21,7 @@ const QRCodeInputScreen = ({ route }) => {
   const [scanned, setScanned] = useState(false);
   const [chapterDetails, setChapterDetails] = useState(null);
   const [selectedChapters, setSelectedChapters] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploadedChapters, setUploadedChapters] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -33,7 +32,18 @@ const QRCodeInputScreen = ({ route }) => {
 
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    fetchChapterDetails(data, studentId);
+    try {
+      const response = await getSessionWiseAssessmentDetails(
+        data,
+        studentId,
+        token
+      );
+      setBooks(response.data);
+    } catch (error) {
+      console.error("Error fetching qr:", error);
+    }
+
+    //fetchChapterDetails(data, studentId);
   };
 
   const fetchChapterDetails = (qrValue, studentId) => {
@@ -50,7 +60,7 @@ const QRCodeInputScreen = ({ route }) => {
       },
       chapterDetails: [
         {
-          isCurrent: 1,
+          isCurrent: 0,
           order: 1,
           title: "Place words",
           chapter: "Synonyms",
@@ -59,7 +69,7 @@ const QRCodeInputScreen = ({ route }) => {
           isUploaded: 1,
         },
         {
-          isCurrent: 0,
+          isCurrent: 1,
           order: 2,
           title: "Place words",
           chapter: "Missing Number",
@@ -88,6 +98,16 @@ const QRCodeInputScreen = ({ route }) => {
     };
 
     setChapterDetails(staticResponse);
+
+    const currentChapters = staticResponse.chapterDetails
+      .filter((chapter) => chapter.isCurrent === 1)
+      .map((chapter) => chapter.chapterId);
+    setSelectedChapters(currentChapters);
+
+    const uploadedChapters = staticResponse.chapterDetails
+      .filter((chapter) => chapter.isUploaded === 1)
+      .map((chapter) => chapter.chapterId);
+    setUploadedChapters(uploadedChapters);
   };
 
   const handleCheckBoxPress = (chapterId) => {
@@ -104,16 +124,15 @@ const QRCodeInputScreen = ({ route }) => {
         allowsMultipleSelection: true,
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
       });
-
       if (!result.canceled) {
-        setSelectedFiles(result.assets);
         navigation.navigate("Upload", {
           token,
           studentId,
-          bookDetails: chapterDetails.bookDetails, // Pass the bookDetails
-          chapterDetails: chapterDetails.chapterDetails, // Pass the chapterDetails
+          bookDetails: chapterDetails.bookDetails,
+          chapterDetails: chapterDetails.chapterDetails,
           selectedFiles: result.assets,
           selectedChapters,
+          uploadedChapters,
         });
       }
     } catch (error) {
@@ -173,7 +192,7 @@ const QRCodeInputScreen = ({ route }) => {
             <View style={styles.bookDetailsCard}>
               <View style={styles.bookDetails}>
                 <Image
-                  source={require("../../assets/booksCategory.png")} // Replace with your image source
+                  source={require("../../assets/booksCategory.png")}
                   style={styles.bookIcon}
                 />
                 <View style={styles.bookInfo}>
@@ -257,7 +276,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 50,
     padding: 10,
-    backgroundColor: "#63C3A8", // Updated green color
+    backgroundColor: "#63C3A8",
     borderRadius: 5,
   },
   rescanButtonText: {
@@ -266,7 +285,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     flex: 1,
-    backgroundColor: "#f0f0f0", // Grey background for the outermost container
+    backgroundColor: "#f0f0f0",
     padding: 20,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -284,7 +303,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bookDetailsCard: {
-    backgroundColor: "#fff", // Card background color
+    backgroundColor: "#fff",
     borderRadius: 15,
     padding: 15,
     marginBottom: 20,
@@ -351,22 +370,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ccc", // Initial border color for checkboxes
+    borderColor: "#ccc",
   },
   greenCheckBox: {
-    backgroundColor: "#63C3A8", // Updated green color
+    backgroundColor: "#63C3A8",
   },
   yellowCheckBox: {
     backgroundColor: "#FFD700",
   },
   grayCheckBox: {
-    backgroundColor: "#ccc", // Initial gray color for checkboxes
+    backgroundColor: "#ccc",
   },
   checkMark: {
     color: "#fff",
   },
   uploadButton: {
-    backgroundColor: "#63C3A8", // Updated green color
+    backgroundColor: "#63C3A8",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,

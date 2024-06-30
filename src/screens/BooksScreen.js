@@ -1,4 +1,3 @@
-// src/screens/BooksScreen.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -21,10 +20,12 @@ const BooksScreen = ({ token: propToken }) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const navigation = useNavigation();
   const route = useRoute();
+  const insets = useSafeAreaInsets();
+
   const fetchBooks = async (currentToken) => {
     try {
       const response = await getAllBooks(currentToken);
-      setBooks(response.data.getAllBooksResponses);
+      setBooks(response.data);
     } catch (error) {
       console.error("Error fetching books:", error);
     }
@@ -64,7 +65,7 @@ const BooksScreen = ({ token: propToken }) => {
             style={styles.assignButton}
             onPress={() =>
               navigation.navigate("AssignBook", {
-                bookId: item.bookId,
+                bookId: item.id,
                 token: propToken || route.params?.token,
               })
             }
@@ -77,7 +78,7 @@ const BooksScreen = ({ token: propToken }) => {
   );
 
   const categories = ["All", "Beginner", "Intermediate", "Advanced"];
-  const insets = useSafeAreaInsets();
+
   return (
     <View
       style={[
@@ -144,7 +145,7 @@ const BooksScreen = ({ token: propToken }) => {
         <FlatList
           data={filterBooks()}
           renderItem={renderBook}
-          keyExtractor={(item) => item.bookId.toString()}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
           ListHeaderComponent={<View style={styles.listHeader} />}
         />

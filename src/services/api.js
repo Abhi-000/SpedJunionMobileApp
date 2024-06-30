@@ -1,15 +1,15 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://testing.spedathome.com:7233/api";
-const API_BASE_URL_1 = "https://testing.spedathome.com:7253/api";
+const API_BASE_URL = "https://testing.spedathome.com:7233/api"; //development
+///const API_BASE_URL_1 = "https://testing.spedathome.com:7253/api"; //testing
 
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-const api1 = axios.create({
-  baseURL: API_BASE_URL_1,
-});
+// const api1 = axios.create({
+//   baseURL: API_BASE_URL_1,
+// });
 
 export const login = (username, password) => {
   return api.post("/Users/login", { Username: username, Password: password });
@@ -89,7 +89,7 @@ export const assignBook = (bookId, studentIds, token) => {
 };
 
 export const getBookSummary = (bookId, token) => {
-  return api1.post(
+  return api.post(
     "/Book/GetBookSummary",
     {
       SortBy: "BookId",
@@ -158,11 +158,10 @@ export const getSessionWiseAssessmentDetails = async (
   studentId,
   token
 ) => {
+  console.log("token:", token);
+  console.log("studentId:", studentId);
+  console.log("qrValue:", qrValue);
   const headers = {
-    Accept: "*/*",
-    "Accept-Encoding": "gzip, deflate, br",
-    Connection: "keep-alive",
-    "User-Agent": "PostmanRuntime/7.39.0",
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
@@ -173,12 +172,24 @@ export const getSessionWiseAssessmentDetails = async (
   });
 
   try {
-    const response = await api.get(
-      `/Book/GetSessionWiseAssessmentDetails/${qrValue}/${studentId}`,
-      { headers }
+    const response = await fetch(
+      `https://testing.spedathome.com:7233/api/Book/GetSessionWiseAssessmentDetailsPost`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          qrValue: "101A",
+          studentId: "374",
+        }),
+      }
     );
-    console.log("Session Wise Assessment Details response:", response.data);
-    return response.data;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Session Wise Assessment Details response:", data);
+    return data;
   } catch (error) {
     console.error("Error fetching session wise assessment details:", error);
     if (error.response) {
@@ -194,6 +205,8 @@ export const getSessionWiseAssessmentDetails = async (
 };
 
 export const uploadAssignments = (token, formData) => {
+  console.log(token);
+  console.log(formData);
   return api.post("/Book/UploadAssignment", formData, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -204,7 +217,6 @@ export const uploadAssignments = (token, formData) => {
 
 export default {
   api,
-  api1,
   login,
   getJStudents,
   getJuniorProfile,

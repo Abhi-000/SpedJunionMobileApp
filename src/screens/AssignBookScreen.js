@@ -21,6 +21,7 @@ const AssignBookScreen = () => {
   const navigation = useNavigation();
   const { bookId, token } = route.params;
   const insets = useSafeAreaInsets();
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -44,6 +45,10 @@ const AssignBookScreen = () => {
 
   const handleAssign = async () => {
     try {
+      console.log("Assigning book with data:", {
+        bookId,
+        selectedStudents,
+      });
       await assignBook(bookId, selectedStudents, token);
       navigation.navigate("Success", {
         title: "Successfully Assigned",
@@ -81,7 +86,7 @@ const AssignBookScreen = () => {
             <Image
               style={styles.backButtonText}
               source={require("../../assets/backButton.png")}
-            ></Image>
+            />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Students</Text>
         </View>

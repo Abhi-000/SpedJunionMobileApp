@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,13 +21,24 @@ const UploadScreen = ({ route }) => {
     chapterDetails,
     selectedFiles,
     selectedChapters,
+    uploadedChapters,
   } = route.params;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [score, setScore] = useState("");
   const [observations, setObservations] = useState("");
+  const [currentChapter, setCurrentChapter] = useState(null);
+  const [updatedUploadedChapters, setUpdatedUploadedChapters] =
+    useState(uploadedChapters);
+
+  useEffect(() => {
+    if (selectedChapters.length > 0) {
+      setCurrentChapter(selectedChapters[0]); // Set the first selected chapter as the current chapter
+    }
+  }, [selectedChapters]);
 
   const handleUpload = async () => {
+    console.log("selected:", selectedChapters);
     try {
       const formData = new FormData();
       selectedFiles.forEach((file, index) => {
@@ -45,6 +56,8 @@ const UploadScreen = ({ route }) => {
 
       if (response.data.success) {
         Alert.alert("Success", "Assignments uploaded successfully.");
+        setUpdatedUploadedChapters((prev) => [...prev, currentChapter]);
+        setCurrentChapter(null); // Reset current chapter after upload
       } else {
         Alert.alert("Error", "Failed to upload assignments.");
       }
@@ -52,6 +65,10 @@ const UploadScreen = ({ route }) => {
       console.error("Error uploading assignments:", error);
       Alert.alert("Error", "An error occurred while uploading assignments.");
     }
+  };
+
+  const handleChapterPress = (chapterId) => {
+    setCurrentChapter(chapterId);
   };
 
   return (
@@ -100,20 +117,21 @@ const UploadScreen = ({ route }) => {
               <View style={styles.chapterTextContainer}>
                 <Text style={styles.chapterTitle}>{chapter.title}</Text>
               </View>
-              <View
+              <TouchableOpacity
                 style={[
                   styles.checkBox,
-                  chapter.isUploaded ||
-                  selectedChapters.includes(chapter.chapterId)
+                  currentChapter === chapter.chapterId
+                    ? styles.yellowCheckBox
+                    : updatedUploadedChapters.includes(chapter.chapterId)
                     ? styles.greenCheckBox
                     : styles.grayCheckBox,
                 ]}
+                onPress={() => handleChapterPress(chapter.chapterId)}
               >
-                {chapter.isUploaded ||
-                selectedChapters.includes(chapter.chapterId) ? (
+                {updatedUploadedChapters.includes(chapter.chapterId) ? (
                   <Text style={styles.checkMark}>✓</Text>
                 ) : null}
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -244,11 +262,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc", // Initial border color for checkboxes
   },
+  yellowCheckBox: {
+    backgroundColor: "#FFD700", // Yellow color for the current chapter
+  },
   greenCheckBox: {
-    backgroundColor: "#63C3A8", // Updated green color
+    backgroundColor: "#63C3A8", // Green color for uploaded chapters
   },
   grayCheckBox: {
-    backgroundColor: "#ccc", // Initial gray color for checkboxes
+    backgroundColor: "#fff", // Default color for non-selected chapters
   },
   checkMark: {
     color: "#fff",
