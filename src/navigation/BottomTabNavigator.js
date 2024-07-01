@@ -1,3 +1,4 @@
+// src/navigation/BottomTabNavigator.js
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -40,17 +41,17 @@ const BooksStack = ({ token }) => (
   </Stack.Navigator>
 );
 
-const ProfileStack = ({ token }) => (
+const ProfileStack = ({ token, studentId }) => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Profile" options={{ headerShown: false }}>
-      {() => <ProfileScreen token={token} />}
+      {() => <ProfileScreen token={token} studentId={studentId} />}
     </Stack.Screen>
   </Stack.Navigator>
 );
 
 const BottomTabNavigator = ({ route }) => {
-  const { token } = route.params;
-
+  const { token, studentId } = route.params;
+  console.log("student id:",studentId);
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -73,9 +74,9 @@ const BottomTabNavigator = ({ route }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: focused ? "#8A2BE2" : "transparent",
-                borderRadius: 10, // Adjust this value for rounded edges
-                paddingVertical: 5, // Adjust vertical padding
-                paddingHorizontal: 15, // Adjust horizontal padding for a rectangular shape
+                borderRadius: 10,
+                paddingVertical: 5,
+                paddingHorizontal: 15,
               }}
             >
               <Ionicons
@@ -98,7 +99,7 @@ const BottomTabNavigator = ({ route }) => {
       <Tab.Screen name="Home">{() => <HomeStack token={token} />}</Tab.Screen>
       <Tab.Screen name="Books">{() => <BooksStack token={token} />}</Tab.Screen>
       <Tab.Screen name="Profile">
-        {() => <ProfileStack token={token} />}
+        {() => <ProfileStack token={token} studentId={studentId} />}
       </Tab.Screen>
     </Tab.Navigator>
   );

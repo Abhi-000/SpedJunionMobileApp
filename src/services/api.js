@@ -35,7 +35,10 @@ export const getJStudents = (token, conditions = []) => {
 };
 
 export const getJuniorProfile = (studentId, token) => {
+  console.log(studentId);
+  console.log(token);
   return api.get(`/Book/GetJuniorProfile/${studentId}`, {
+    
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",

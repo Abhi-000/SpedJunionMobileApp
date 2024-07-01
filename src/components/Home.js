@@ -102,7 +102,16 @@ const Home = ({ token }) => {
   };
 
   const renderStudent = ({ item }) => (
+    <TouchableOpacity 
+      onPress={() =>
+        navigation.navigate("StudentProfile", {
+          studentId:item.id,
+          token:token
+        })
+      }
+      >
     <View style={styles.studentCard}>
+      
       <Image
         // source={{
         //   uri: `https://testing.spedathome.com:7253/api/${item.studentProfilePic}`,
@@ -115,10 +124,13 @@ const Home = ({ token }) => {
           {`${item.firstName} ${item.lastName}`}
         </Text>
         <Text style={styles.studentClass}>
-          Class {item.class} | Age {item.age} years
+          Class {item.id} | Age {item.age} years
         </Text>
       </View>
+     
     </View>
+    </TouchableOpacity>
+
   );
 
   return (

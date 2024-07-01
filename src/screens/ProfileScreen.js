@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -32,12 +33,16 @@ const ProfileScreen = () => {
   };
 
   if (!profile) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#7B5CFA" />
+      </View>
+    );
   }
 
   return (
-    <View
-      style={[
+    <ScrollView
+      contentContainerStyle={[
         styles.container,
         {
           paddingTop: insets.top,
@@ -47,6 +52,7 @@ const ProfileScreen = () => {
         },
       ]}
     >
+      <View style = {styles.parentHeader}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -75,14 +81,14 @@ const ProfileScreen = () => {
           <Text style={styles.buttonText}>Assign Books</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView style={styles.assignmentsContainer}>
+      <View style={styles.assignmentsContainer}>
         <Text style={styles.assignmentsTitle}>
           Assigned Books & Assignments
         </Text>
         {profile.assignments.map((assignment) => (
           <View key={assignment.id} style={styles.assignmentCard}>
             <View style={styles.assignmentHeader}>
-              <Text style={styles.assignmentDifficulty}>
+              <Text style={[styles.assignmentDifficulty, { backgroundColor: assignment.difficultyColor }]}>
                 {assignment.difficulty}
               </Text>
               <Text style={styles.assignmentScore}>
@@ -98,19 +104,19 @@ const ProfileScreen = () => {
             </TouchableOpacity>
           </View>
         ))}
-      </ScrollView>
-    </View>
+      </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#fff",
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
     backgroundColor: "#fff",
@@ -125,6 +131,8 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
+    flex: 1,
+    textAlign: "center",
   },
   profileContainer: {
     alignItems: "center",
@@ -172,7 +180,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   assignmentsContainer: {
-    flex: 1,
     padding: 20,
   },
   assignmentsTitle: {
@@ -197,9 +204,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   assignmentDifficulty: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#FFD700",
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    color: "#fff",
+    fontSize: 12,
+    marginRight: 10,
   },
   assignmentScore: {
     fontSize: 16,
@@ -216,7 +226,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   summaryButton: {
-    backgroundColor: "#FFD700",
+    backgroundColor: "#7B5CFA",
     borderRadius: 10,
     paddingVertical: 5,
     paddingHorizontal: 10,

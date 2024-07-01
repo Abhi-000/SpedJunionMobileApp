@@ -32,18 +32,18 @@ const QRCodeInputScreen = ({ route }) => {
 
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    try {
-      const response = await getSessionWiseAssessmentDetails(
-        data,
-        studentId,
-        token
-      );
-      setBooks(response.data);
-    } catch (error) {
-      console.error("Error fetching qr:", error);
-    }
+    // try {
+    //   const response = await getSessionWiseAssessmentDetails(
+    //     data,
+    //     studentId,
+    //     token
+    //   );
+    //   setBooks(response.data);
+    // } catch (error) {
+    //   console.error("Error fetching qr:", error);
+    // }
 
-    //fetchChapterDetails(data, studentId);
+    fetchChapterDetails(data, studentId);
   };
 
   const fetchChapterDetails = (qrValue, studentId) => {

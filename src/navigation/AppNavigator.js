@@ -1,3 +1,4 @@
+// src/navigation/AppNavigator.js
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "../screens/LoginScreen";
@@ -10,13 +11,14 @@ import StudentsScreen from "../screens/StudentsScreen";
 import BooksScreen from "../screens/BooksScreen";
 import AssignedBooksScreen from "../screens/AssignedBooksScreen";
 import ScanScreen from "../screens/ScanScreen";
-import QRCodeInputScreen from "../screens/QRCodeInputScreen"; // Import the QRCodeInputScreen
-import UploadScreen from "../screens/UploadScreen"; // Import the UploadScreen
-import { SafeAreaWrapper } from "../components/SafeAreaWrapper";
-
+import QRCodeInputScreen from "../screens/QRCodeInputScreen";
+import UploadScreen from "../screens/UploadScreen";
+import StudentProfileScreen  from "../screens/StudentProfileScreen";
 const Stack = createStackNavigator();
 
+
 const AppNavigator = () => {
+  
   return (
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen
@@ -33,6 +35,7 @@ const AppNavigator = () => {
         name="HomeTabs"
         component={BottomTabNavigator}
         options={{ headerShown: false }}
+        initialParams={{ token: '', studentId: '' }} // Add default params
       />
       <Stack.Screen
         name="Success"
@@ -42,6 +45,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="AssignBook"
         component={AssignBookScreen}
+        options={{ headerShown: false }}
+      />
+        <Stack.Screen
+        name="StudentProfile"
+        component={StudentProfileScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

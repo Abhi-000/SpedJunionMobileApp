@@ -12,14 +12,18 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.SpedJunionMobileApp"
+      "package": "com.anonymous.SpedJunionMobileApp",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -28,6 +32,9 @@
       "eas": {
         "projectId": "60c281a7-19ab-455a-842e-70269e3cf943"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/60c281a7-19ab-455a-842e-70269e3cf943"
     }
   }
 }

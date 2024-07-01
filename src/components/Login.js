@@ -29,7 +29,7 @@ const Login = () => {
 
       if (response.data.token) {
         console.log("Login successful:", response.data);
-        navigation.navigate("HomeTabs", { token: response.data.token });
+        navigation.navigate("HomeTabs", { token: response.data.token, studentId: response.data.studentId });
       } else {
         console.log("Login failed: Incorrect credentials or token missing");
       }
