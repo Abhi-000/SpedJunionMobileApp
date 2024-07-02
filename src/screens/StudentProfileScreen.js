@@ -69,7 +69,11 @@ const StudentProfileScreen = () => {
             total={detail.bookData.totalChapter}
             completed={detail.uploadedAssignmentCount}
           />
+          <TouchableOpacity 
+          onPress={() => navigation.navigate("Summary", { token: route.params?.token, studentId:route.params?.studentId, bookId:detail.bookId })}
+          >
           <Text style={styles.summaryText}>Summary</Text>
+          </TouchableOpacity>
         </View>
       </View>
     ));
@@ -90,7 +94,7 @@ const StudentProfileScreen = () => {
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Books", { token: token })}
+            onPress={() => navigation.navigate("Home", { token: route.params?.token })}
             style={styles.backButton}
           >
             <Image

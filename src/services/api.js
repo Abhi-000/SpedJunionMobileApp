@@ -92,21 +92,20 @@ export const assignBook = (bookId, studentIds, token) => {
 };
 
 export const getBookSummary = (bookId, token) => {
+  console.log(bookId);
+  console.log(token);
   return api.post(
-    "/Book/GetBookSummary",
+    "/Book/GetBookSummary",{
+    studentId: 2861,
+    bookId: 3,
+    filters:
     {
-      SortBy: "BookId",
-      SortOrder: "ASC",
-      PageSize: 100,
-      PageCount: 1,
-      Conditions: [
-        {
-          Field: "BookId",
-          Operation: "=",
-          Value: bookId.toString(),
-        },
-      ],
-    },
+        sortBy: "bookId",
+        sortOrder: "DESC",
+        pageSize: 25,
+        pageCount: 1,
+        conditions: []
+    }},
     {
       headers: {
         Authorization: `Bearer ${token}`,

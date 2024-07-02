@@ -14,6 +14,7 @@ import ScanScreen from "../screens/ScanScreen";
 import QRCodeInputScreen from "../screens/QRCodeInputScreen";
 import UploadScreen from "../screens/UploadScreen";
 import StudentProfileScreen  from "../screens/StudentProfileScreen";
+import SummaryScreen from "../screens/SummaryScreen";
 const Stack = createStackNavigator();
 
 
@@ -50,6 +51,11 @@ const AppNavigator = () => {
         <Stack.Screen
         name="StudentProfile"
         component={StudentProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Summary"
+        component={SummaryScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
