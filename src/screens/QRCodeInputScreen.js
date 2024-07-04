@@ -13,15 +13,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import * as ImagePicker from "expo-image-picker";
 import { getSessionWiseAssessmentDetails } from "../services/api";
+
 const QRCodeInputScreen = ({ route }) => {
   const { token, studentId } = route.params;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [bookDetails, setBookDetails] = useState([]);
   const [chapterDetails, setChapterDetails] = useState(null);
-  const [selectedChapters, setSelectedChapters] = useState([]);
-  const [uploadedChapters, setUploadedChapters] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -32,90 +32,17 @@ const QRCodeInputScreen = ({ route }) => {
 
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    // try {
-    //   const response = await getSessionWiseAssessmentDetails(
-    //     data,
-    //     studentId,
-    //     token
-    //   );
-    //   setBooks(response.data);
-    // } catch (error) {
-    //   console.error("Error fetching qr:", error);
-    // }
-
-    fetchChapterDetails(data, studentId);
-  };
-
-  const fetchChapterDetails = (qrValue, studentId) => {
-    console.log(
-      `Fetching chapter details for QR: ${qrValue}, Student ID: ${studentId}`
-    );
-
-    const staticResponse = {
-      bookDetails: {
-        bookId: 1,
-        bookName:
-          "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS",
-        difficulty: "Intermediate",
-      },
-      chapterDetails: [
-        {
-          isCurrent: 0,
-          order: 1,
-          title: "Place words",
-          chapter: "Synonyms",
-          chapterId: 1,
-          bookId: 1,
-          isUploaded: 1,
-        },
-        {
-          isCurrent: 1,
-          order: 2,
-          title: "Place words",
-          chapter: "Missing Number",
-          chapterId: 2,
-          bookId: 1,
-          isUploaded: 0,
-        },
-        {
-          isCurrent: 0,
-          order: 3,
-          title: "Place words",
-          chapter: "Common Noun",
-          chapterId: 3,
-          bookId: 1,
-          isUploaded: 0,
-        },
-        {
-          isCurrent: 0,
-          order: 4,
-          title: "Place words",
-          chapterId: 4,
-          bookId: 1,
-          isUploaded: 0,
-        },
-      ],
-    };
-
-    setChapterDetails(staticResponse);
-
-    const currentChapters = staticResponse.chapterDetails
-      .filter((chapter) => chapter.isCurrent === 1)
-      .map((chapter) => chapter.chapterId);
-    setSelectedChapters(currentChapters);
-
-    const uploadedChapters = staticResponse.chapterDetails
-      .filter((chapter) => chapter.isUploaded === 1)
-      .map((chapter) => chapter.chapterId);
-    setUploadedChapters(uploadedChapters);
-  };
-
-  const handleCheckBoxPress = (chapterId) => {
-    setSelectedChapters((prevSelected) =>
-      prevSelected.includes(chapterId)
-        ? prevSelected.filter((id) => id !== chapterId)
-        : [...prevSelected, chapterId]
-    );
+    try {
+      const response = await getSessionWiseAssessmentDetails(
+        data,
+        studentId,
+        token
+      );
+      setBookDetails(response.bookDetails);
+      setChapterDetails(response.chapterDetails);
+    } catch (error) {
+      console.error("Error fetching qr:", error);
+    }
   };
 
   const handleUploadAssignments = async () => {
@@ -128,11 +55,9 @@ const QRCodeInputScreen = ({ route }) => {
         navigation.navigate("Upload", {
           token,
           studentId,
-          bookDetails: chapterDetails.bookDetails,
-          chapterDetails: chapterDetails.chapterDetails,
+          bookDetails: bookDetails,
+          chapterDetails: chapterDetails,
           selectedFiles: result.assets,
-          selectedChapters,
-          uploadedChapters,
         });
       }
     } catch (error) {
@@ -197,37 +122,37 @@ const QRCodeInputScreen = ({ route }) => {
                 />
                 <View style={styles.bookInfo}>
                   <Text style={styles.bookDifficulty}>
-                    {chapterDetails.bookDetails.difficulty}
+                    {bookDetails.difficulty}
                   </Text>
                   <Text style={styles.bookTitle}>
-                    {chapterDetails.bookDetails.bookName}
+                    {bookDetails.bookName}
                   </Text>
                 </View>
               </View>
             </View>
-            {chapterDetails.chapterDetails.map((chapter) => (
+            {chapterDetails.map((chapter) => (
               <View key={chapter.chapterId} style={styles.chapterCard}>
                 <View style={styles.chapterDetails}>
                   <Text style={styles.chapterOrder}>{chapter.order}</Text>
                   <View style={styles.chapterTextContainer}>
                     <Text style={styles.chapterTitle}>{chapter.title}</Text>
                   </View>
-                  <TouchableOpacity
-                    onPress={() => handleCheckBoxPress(chapter.chapterId)}
+                  <View
                     style={[
-                      styles.checkBox,
+                      styles.statusIndicator,
                       chapter.isUploaded
-                        ? styles.greenCheckBox
-                        : selectedChapters.includes(chapter.chapterId)
-                        ? styles.yellowCheckBox
-                        : styles.grayCheckBox,
+                        ? styles.uploadedIndicator
+                        : chapter.isCurrent
+                        ? styles.currentIndicator
+                        : styles.defaultIndicator,
                     ]}
                   >
-                    {chapter.isUploaded ||
-                    selectedChapters.includes(chapter.chapterId) ? (
+                    {chapter.isUploaded ? (
                       <Text style={styles.checkMark}>✓</Text>
+                    ) : chapter.isCurrent ? (
+                      <View style={styles.yellowMark} />
                     ) : null}
-                  </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             ))}
@@ -243,6 +168,8 @@ const QRCodeInputScreen = ({ route }) => {
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -363,27 +290,6 @@ const styles = StyleSheet.create({
   chapterTitle: {
     fontSize: 18,
   },
-  checkBox: {
-    width: 24,
-    height: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#ccc",
-  },
-  greenCheckBox: {
-    backgroundColor: "#63C3A8",
-  },
-  yellowCheckBox: {
-    backgroundColor: "#FFD700",
-  },
-  grayCheckBox: {
-    backgroundColor: "#ccc",
-  },
-  checkMark: {
-    color: "#fff",
-  },
   uploadButton: {
     backgroundColor: "#63C3A8",
     paddingVertical: 10,
@@ -396,6 +302,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
   },
+  statusIndicator: {
+    width: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  uploadedIndicator: {
+    backgroundColor: "#63C3A8",
+  },
+  currentIndicator: {
+    backgroundColor: "#FFD700",
+  },
+  defaultIndicator: {
+    backgroundColor: "#ccc",
+  },
+  checkMark: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  yellowMark: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "#FFD700",
+  },
+
 });
 
 export default QRCodeInputScreen;

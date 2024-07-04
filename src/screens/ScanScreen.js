@@ -30,9 +30,9 @@ const ScanScreen = ({ token }) => {
     try {
       console.log("Fetching students with token:", currentToken);
       const response = await getJStudents(currentToken, []);
-      console.log("Students response:", response.data);
-      setStudents(response.data.juniorStudentResponse); // Adjust based on actual response structure
-      setFilteredStudents(response.data.juniorStudentResponse);
+      console.log("Students response:", response);
+      setStudents(response.juniorStudentResponse); // Adjust based on actual response structure
+      setFilteredStudents(response.juniorStudentResponse);
     } catch (error) {
       console.error("Error fetching students:", error);
     }

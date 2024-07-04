@@ -49,126 +49,126 @@ const Home = ({ token }) => {
   const fetchStudents = async () => {
     try {
       console.log("Fetching students with token:", token);
-      //const response = await getJStudents(token, generateConditions());
-      const response = {
-          "juniorStudentResponse": [
-              {
-                  "id": 2860,
-                  "firstName": "Prisha",
-                  "lastName": "Reddy",
-                  "class": "Grade 3",
-                  "division": "A",
-                  "age": 14,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2861,
-                  "firstName": "Riya",
-                  "lastName": "Banerjee",
-                  "class": "Grade 2",
-                  "division": "A",
-                  "age": 20,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2862,
-                  "firstName": "Riya",
-                  "lastName": "Reddy",
-                  "class": "Grade 1",
-                  "division": "A",
-                  "age": 16,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2863,
-                  "firstName": "Riya",
-                  "lastName": "Saxena",
-                  "class": "Grade 3",
-                  "division": "A",
-                  "age": 21,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2864,
-                  "firstName": "Riya",
-                  "lastName": "Sinha",
-                  "class": "Grade 1",
-                  "division": "A",
-                  "age": 16,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2865,
-                  "firstName": "Rudra",
-                  "lastName": "Sharma",
-                  "class": "Grade 4",
-                  "division": "A",
-                  "age": 15,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2866,
-                  "firstName": "Sai",
-                  "lastName": "Chaudhary",
-                  "class": "Grade 2",
-                  "division": "A",
-                  "age": 21,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2867,
-                  "firstName": "Shaurya",
-                  "lastName": "Mehta",
-                  "class": "Grade 2",
-                  "division": "A",
-                  "age": 14,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2868,
-                  "firstName": "Shruti",
-                  "lastName": "Joshi",
-                  "class": "Grade 2",
-                  "division": "A",
-                  "age": 14,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2869,
-                  "firstName": "Tara",
-                  "lastName": "Nair",
-                  "class": "Grade 5",
-                  "division": "A",
-                  "age": 14,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              },
-              {
-                  "id": 2870,
-                  "firstName": "Tara",
-                  "lastName": "Patel",
-                  "class": "Grade 4",
-                  "division": "A",
-                  "age": 18,
-                  "schoolId": 153,
-                  "studentProfilePic": ""
-              }
-          ],
-          "paginationDetails": {
-              "pageSize": "100",
-              "pageCount": "1",
-              "totalRecords": "81"
-          }
-      }
+      const response = await getJStudents(token, generateConditions());
+      // const response = {
+      //     "juniorStudentResponse": [
+      //         {
+      //             "id": 2860,
+      //             "firstName": "Prisha",
+      //             "lastName": "Reddy",
+      //             "class": "Grade 3",
+      //             "division": "A",
+      //             "age": 14,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2861,
+      //             "firstName": "Riya",
+      //             "lastName": "Banerjee",
+      //             "class": "Grade 2",
+      //             "division": "A",
+      //             "age": 20,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2862,
+      //             "firstName": "Riya",
+      //             "lastName": "Reddy",
+      //             "class": "Grade 1",
+      //             "division": "A",
+      //             "age": 16,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2863,
+      //             "firstName": "Riya",
+      //             "lastName": "Saxena",
+      //             "class": "Grade 3",
+      //             "division": "A",
+      //             "age": 21,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2864,
+      //             "firstName": "Riya",
+      //             "lastName": "Sinha",
+      //             "class": "Grade 1",
+      //             "division": "A",
+      //             "age": 16,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2865,
+      //             "firstName": "Rudra",
+      //             "lastName": "Sharma",
+      //             "class": "Grade 4",
+      //             "division": "A",
+      //             "age": 15,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2866,
+      //             "firstName": "Sai",
+      //             "lastName": "Chaudhary",
+      //             "class": "Grade 2",
+      //             "division": "A",
+      //             "age": 21,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2867,
+      //             "firstName": "Shaurya",
+      //             "lastName": "Mehta",
+      //             "class": "Grade 2",
+      //             "division": "A",
+      //             "age": 14,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2868,
+      //             "firstName": "Shruti",
+      //             "lastName": "Joshi",
+      //             "class": "Grade 2",
+      //             "division": "A",
+      //             "age": 14,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2869,
+      //             "firstName": "Tara",
+      //             "lastName": "Nair",
+      //             "class": "Grade 5",
+      //             "division": "A",
+      //             "age": 14,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         },
+      //         {
+      //             "id": 2870,
+      //             "firstName": "Tara",
+      //             "lastName": "Patel",
+      //             "class": "Grade 4",
+      //             "division": "A",
+      //             "age": 18,
+      //             "schoolId": 153,
+      //             "studentProfilePic": ""
+      //         }
+      //     ],
+      //     "paginationDetails": {
+      //         "pageSize": "100",
+      //         "pageCount": "1",
+      //         "totalRecords": "81"
+      //     }
+      // }
       console.log("Students response:", response);
       setStudents(response.juniorStudentResponse); // Adjust based on actual response structure
     } catch (error) {

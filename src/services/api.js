@@ -11,8 +11,8 @@ const api = axios.create({
 //   baseURL: API_BASE_URL_1,
 // });
 
-export const login = (username, password) => {
-  return api.post("/Users/login", { Username: username, Password: password });
+export const login = async(username, password) => {
+  return await api.post("/Users/login", { Username: username, Password: password });
 };
 
 export const getJStudents = async(token, conditions = []) => {

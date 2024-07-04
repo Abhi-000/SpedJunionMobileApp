@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-
+import {login} from "../services/api.js"
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,13 +17,14 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(
-        "https://testing.spedathome.com:7253/api/Users/login",
-        {
-          Username: email,
-          Password: password,
-        }
-      );
+      // const response = await axios.post(
+      //   "https://testing.spedathome.com:7253/api/Users/login",
+      //   {
+      //     Username: email,
+      //     Password: password,
+      //   }
+      // );
+      const response = await login(email,password);
 
       console.log("API response:", response.data);
 
