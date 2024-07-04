@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { FontAwesome } from '@expo/vector-icons'; // Make sure you have installed @expo/vector-icons
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {getBookSummary} from '../services/api'
 
 const SummaryScreen = () => {
   const [studentData, setStudentData] = useState(null);
@@ -18,78 +19,80 @@ const SummaryScreen = () => {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
+        const response = await getBookSummary(bookId, token);
+        console.log(response.data);
         // Mock API response for testing
-        const response = {
-          "jStudent": {
-            "name": "Prashant Phadatare",
-            "class": "Class II",
-            "age": 6
-          },
-          "jBooks": {
-            "bookId": 3,
-            "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS",
-            "difficulty": "INTERMEDIATE"
-          },
-          "filteredJChapters": {
-            "jChapters": [
-              {
-                "chapterId": 1,
-                "order": 1,
-                "title": "Beginning sounds",
-                "chapter": "Phonics",
-                "isUploaded": true,
-                "uploadedDate": "2024-01-03T00:00:00"
-              },
-              {
-                "chapterId": 2,
-                "order": 2,
-                "title": "Mixed words",
-                "chapter": "Vocabulary",
-                "isUploaded": true,
-                "uploadedDate": "2024-01-03T00:00:00"
-              },
-              {
-                "chapterId": 3,
-                "order": 3,
-                "title": "Word making",
-                "chapter": "Spelling",
-                "isUploaded": false,
-                "uploadedDate": "0001-01-01T00:00:00"
-              },
-              {
-                "chapterId": 3,
-                "order": 3,
-                "title": "Word making",
-                "chapter": "Spelling",
-                "isUploaded": false,
-                "uploadedDate": "0001-01-01T00:00:00"
-              },
-              {
-                "chapterId": 3,
-                "order": 3,
-                "title": "Word making",
-                "chapter": "Spelling",
-                "isUploaded": false,
-                "uploadedDate": "0001-01-01T00:00:00"
-              },{
-                "chapterId": 3,
-                "order": 3,
-                "title": "Word making",
-                "chapter": "Spelling",
-                "isUploaded": false,
-                "uploadedDate": "0001-01-01T00:00:00"
-              }
+        // const response = {
+        //   "jStudent": {
+        //     "name": "Prashant Phadatare",
+        //     "class": "Class II",
+        //     "age": 6
+        //   },
+        //   "jBooks": {
+        //     "bookId": 3,
+        //     "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS",
+        //     "difficulty": "INTERMEDIATE"
+        //   },
+        //   "filteredJChapters": {
+        //     "jChapters": [
+        //       {
+        //         "chapterId": 1,
+        //         "order": 1,
+        //         "title": "Beginning sounds",
+        //         "chapter": "Phonics",
+        //         "isUploaded": true,
+        //         "uploadedDate": "2024-01-03T00:00:00"
+        //       },
+        //       {
+        //         "chapterId": 2,
+        //         "order": 2,
+        //         "title": "Mixed words",
+        //         "chapter": "Vocabulary",
+        //         "isUploaded": true,
+        //         "uploadedDate": "2024-01-03T00:00:00"
+        //       },
+        //       {
+        //         "chapterId": 3,
+        //         "order": 3,
+        //         "title": "Word making",
+        //         "chapter": "Spelling",
+        //         "isUploaded": false,
+        //         "uploadedDate": "0001-01-01T00:00:00"
+        //       },
+        //       {
+        //         "chapterId": 3,
+        //         "order": 3,
+        //         "title": "Word making",
+        //         "chapter": "Spelling",
+        //         "isUploaded": false,
+        //         "uploadedDate": "0001-01-01T00:00:00"
+        //       },
+        //       {
+        //         "chapterId": 3,
+        //         "order": 3,
+        //         "title": "Word making",
+        //         "chapter": "Spelling",
+        //         "isUploaded": false,
+        //         "uploadedDate": "0001-01-01T00:00:00"
+        //       },{
+        //         "chapterId": 3,
+        //         "order": 3,
+        //         "title": "Word making",
+        //         "chapter": "Spelling",
+        //         "isUploaded": false,
+        //         "uploadedDate": "0001-01-01T00:00:00"
+        //       }
 
-            ],
-            "pagingInfo": {
-              "pageSize": "25",
-              "pageCount": "1",
-              "totalRecords": "3"
-            }
-          }
-        };
+        //     ],
+        //     "pagingInfo": {
+        //       "pageSize": "25",
+        //       "pageCount": "1",
+        //       "totalRecords": "3"
+        //     }
+        //   }
+        // };
 
-        const { jStudent, jBooks, filteredJChapters } = response;
+        const { jStudent, jBooks, filteredJChapters } = response.data;
         setStudentData(jStudent);
         setBookData(jBooks);
         setChapters(filteredJChapters.jChapters);
@@ -135,7 +138,7 @@ const SummaryScreen = () => {
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("StudentProfile", { token: token })}
+            onPress={() => navigation.navigate("StudentProfile", { studentId, token: token })}
             style={styles.backButton}
           >
             <Image
@@ -184,7 +187,7 @@ const SummaryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f8f8f8',
-    flexGrow: 1,
+    flexGrow: .2,
   },
   topContainer: {
     flexDirection: "row",
@@ -199,7 +202,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     backgroundColor: "#6A53A2",
-    flexGrow: 20,
+    
   },
   backButton: {
     position: "absolute",
@@ -248,7 +251,7 @@ const styles = StyleSheet.create({
     gap: 10,
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
     margin: 20,
     marginTop: 5,
   },
@@ -272,14 +275,14 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   chaptersScrollView: {
-    flex: 1,
+    flexGrow: 1,
   },
   chaptersContainer: {
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    flex: 1,
+    flexGrow: 1,
   },
   chapterContainer: {
     flexDirection: 'row',

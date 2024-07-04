@@ -107,8 +107,8 @@ export const assignBook = (bookId, studentIds, token) => {
 };
 
 export const getBookSummary = (bookId, token) => {
-  console.log(bookId);
-  console.log(token);
+  console.log("here:",bookId);
+  console.log("here",token);
   return api.post(
     "/Book/GetBookSummary",{
     studentId: 2861,
@@ -195,8 +195,8 @@ export const getSessionWiseAssessmentDetails = async (
         method: "POST",
         headers: headers,
         body: JSON.stringify({
-          qrValue: "101A",
-          studentId: "374",
+          qrValue: qrValue,
+          studentId: studentId
         }),
       }
     );
@@ -222,8 +222,8 @@ export const getSessionWiseAssessmentDetails = async (
 };
 
 export const uploadAssignments = (token, formData) => {
-  console.log(token);
-  console.log(formData);
+  console.log("upload:",token);
+  console.log("upload:",formData);
   return api.post("/Book/UploadAssignment", formData, {
     headers: {
       Authorization: `Bearer ${token}`,

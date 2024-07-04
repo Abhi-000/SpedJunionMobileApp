@@ -22,6 +22,8 @@ const QRCodeInputScreen = ({ route }) => {
   const [scanned, setScanned] = useState(false);
   const [bookDetails, setBookDetails] = useState([]);
   const [chapterDetails, setChapterDetails] = useState(null);
+  const [uploadedChapters, setUploadedChapters] = useState([]);
+  const [selectedChapters, setSelectedChapters] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -30,16 +32,27 @@ const QRCodeInputScreen = ({ route }) => {
     })();
   }, []);
 
-  const handleBarCodeScanned = async ({ type, data }) => {
+  const handleBarCodeScanned = async ({qrValue }) => {
+    console.log("scann", qrValue);
     setScanned(true);
     try {
       const response = await getSessionWiseAssessmentDetails(
-        data,
+        qrValue = "101A",
         studentId,
         token
       );
       setBookDetails(response.bookDetails);
       setChapterDetails(response.chapterDetails);
+      const selectedChapters = response.chapterDetails
+        .filter(chapter => chapter.isCurrent)
+        .map(chapter => chapter.chapterId);
+        setSelectedChapters(selectedChapters);
+
+      const uploadedChapters = response.chapterDetails
+        .filter(chapter => chapter.isUploaded)
+        .map(chapter => chapter.chapterId);
+      setUploadedChapters(uploadedChapters);
+
     } catch (error) {
       console.error("Error fetching qr:", error);
     }
@@ -58,6 +71,9 @@ const QRCodeInputScreen = ({ route }) => {
           bookDetails: bookDetails,
           chapterDetails: chapterDetails,
           selectedFiles: result.assets,
+          selectedChapters:selectedChapters,
+          uploadedChapters:uploadedChapters
+          
         });
       }
     } catch (error) {
@@ -85,15 +101,20 @@ const QRCodeInputScreen = ({ route }) => {
         },
       ]}
     >
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>{"<"}</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Scan To Pay</Text>
-      </View>
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Scan", { token: route.params?.token })}
+            style={styles.backButton}
+          >
+            <Image
+              style={styles.backButtonText}
+              source={require("../../assets/backButton.png")}
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Scan to Upload</Text>
+        </View>
+      
       <View style={styles.qrCodeContainer}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -101,12 +122,18 @@ const QRCodeInputScreen = ({ route }) => {
         />
         {scanned && (
           <TouchableOpacity
-            onPress={() => setScanned(false)}
+            onPress={() => setScanned(true)}
             style={styles.rescanButton}
           >
             <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
           </TouchableOpacity>
         )}
+        <TouchableOpacity
+            onPress={() => handleBarCodeScanned('101A')}
+            
+          >
+            <Text style={styles.rescanButtonText}>Fake Scan</Text>
+          </TouchableOpacity>
       </View>
       {chapterDetails && (
         <View style={styles.detailsContainer}>
@@ -166,6 +193,7 @@ const QRCodeInputScreen = ({ route }) => {
         </View>
       )}
     </View>
+    </View>
   );
 };
 
@@ -176,6 +204,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  topContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    backgroundColor: "#f7f7f7",
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -184,15 +221,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   backButton: {
-    padding: 10,
+    position: "absolute",
+    left: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   backButtonText: {
-    fontSize: 18,
-    color: "#000",
+    width: 50,
+    height: 50,
   },
-  headerText: {
-    fontSize: 24,
+  headerTitle: {
+    fontSize: 20,
     fontWeight: "bold",
+    color: "black",
+    padding: 20,
   },
   qrCodeContainer: {
     flex: 1,

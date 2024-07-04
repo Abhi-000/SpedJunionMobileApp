@@ -55,9 +55,10 @@ const ScanScreen = ({ token }) => {
   const renderStudent = ({ item }) => (
     <View style={styles.studentCard}>
       <Image
-        source={{
-          uri: `https://testing.spedathome.com:7253/api/${item.studentProfilePic}`,
-        }}
+        source={
+          require("../../assets/sampleProfile.png")
+          //uri: `https://testing.spedathome.com:7253/api/${item.studentProfilePic}`,
+        }
         style={styles.profilePic}
       />
       <View style={styles.studentInfo}>

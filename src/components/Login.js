@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Image,
 } from "react-native";
 import axios from "axios";
@@ -15,6 +16,13 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+  
+  
   const handleLogin = async () => {
     try {
       // const response = await axios.post(
@@ -47,23 +55,31 @@ const Login = () => {
           style={styles.iconBoyImage}
         />
         <Text style={styles.title}>
-          Login to your account to access all the features in Barber Shop
+          Login to your account to access all the features in Sped Junior
         </Text>
       </View>
       <View style={styles.loginContainer}>
+      <View style={styles.passwordContainer}>
         <TextInput
           style={styles.input}
           placeholder="Email / Phone Number"
           value={email}
           onChangeText={setEmail}
         />
+        </View>
+        <View style={styles.passwordContainer}>
+
         <TextInput
           style={styles.input}
           placeholder="Enter your password"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
+          secureTextEntry={!passwordVisible}
         />
+        <TouchableWithoutFeedback onPress={togglePasswordVisibility}>
+        <Text style={styles.eyeIcon}>{passwordVisible ? '👁️' : '👁️‍🗨️'}</Text>    
+  </TouchableWithoutFeedback>
+  </View>
         <View style={styles.actions}>
           <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
             <Text style={styles.loginButtonText}>Log In</Text>
@@ -117,10 +133,10 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     padding: 15,
-    borderWidth: 1,
+    //borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 25,
-    marginBottom: 15,
+   
     backgroundColor: "#fff",
   },
   actions: {
@@ -138,6 +154,21 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',   
+    paddingRight:30,
+    borderWidth:.5,
+    borderRadius: 25,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+  },
+ 
+  eyeIcon: {
+    width: 24,
+    height: 24,
   },
   forgotPassword: {
     color: "#007aff",

@@ -5,8 +5,12 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 const SuccessScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { token, title, message, buttonText } = route.params;
-  console.log(token);
+  const { title, message, buttonText, nextScreen, nextScreenParams } = route.params;
+
+  const handleNavigation = () => {
+    navigation.navigate(nextScreen, nextScreenParams);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
@@ -18,9 +22,7 @@ const SuccessScreen = () => {
       <Text style={styles.message}>{message}</Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
-          navigation.navigate("AssignedBooks", { token: route.params.token })
-        }
+        onPress={handleNavigation}
       >
         <Text style={styles.buttonText}>{buttonText}</Text>
       </TouchableOpacity>
