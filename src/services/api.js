@@ -15,8 +15,8 @@ export const login = (username, password) => {
   return api.post("/Users/login", { Username: username, Password: password });
 };
 
-export const getJStudents = (token, conditions = []) => {
-  return api.post(
+export const getJStudents = async(token, conditions = []) => {
+  const response =  await api.post(
     "/Book/getJStudents",
     {
       SortBy: "Id",
@@ -32,18 +32,33 @@ export const getJStudents = (token, conditions = []) => {
       },
     }
   );
+  console.log("here",response.data);
+  return response.data;
 };
 
-export const getJuniorProfile = (studentId, token) => {
-  console.log(studentId);
-  console.log(token);
-  return api.get(`/Book/GetJuniorProfile/${studentId}`, {
-    
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
+export const getJuniorProfile = async(studentId, token) => {
+  console.log("isnside",studentId);
+  console.log("isnside",token);
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+  try {
+    const response = await api.get(`/Book/GetJuniorProfile/${studentId}`, { headers });
+    console.log("Books response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    if (error.response) {
+      console.error("Error response status:", error.response.status);
+      console.error("Error response data:", error.response.data);
+      console.error("Error response headers:", error.response.headers);
+      console.error("Error response config:", error.response.config);
+    } else {
+      console.error("Error message:", error.message);
+    }
+    throw error;
+  }
 };
 
 export const getAllBooks = async (token) => {

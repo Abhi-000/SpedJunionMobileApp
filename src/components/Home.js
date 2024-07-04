@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { getJStudents, getJuniorProfile } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation ,useFocusEffect} from "@react-navigation/native";
 
 const Home = ({ token }) => {
   const insets = useSafeAreaInsets();
@@ -27,6 +27,20 @@ const Home = ({ token }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const navigation = useNavigation();
+  // const fetchBooks = async (currentToken) => {
+  //   try {
+  //     const response = await getJStudents(currentToken, generateConditions());
+  //     setStudents(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching books:", error);
+  //   }
+  // };
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     fetchBooks(token);
+  //   }, [token])
+  // );
 
   useEffect(() => {
     fetchStudents();
@@ -162,16 +176,6 @@ const Home = ({ token }) => {
     }
   };
 
-  const fetchProfile = async (studentId) => {
-    try {
-      console.log("Fetching profile with token:", token);
-      const response = await getJuniorProfile(studentId, token); // Replace 'studentId' with actual ID if needed
-      console.log("Profile response:", response.data);
-      setProfile(response.data); // Adjust based on actual response structure
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    }
-  };
 
   const generateConditions = () => {
     const conditions = [];
