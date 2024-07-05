@@ -32,12 +32,12 @@ const QRCodeInputScreen = ({ route }) => {
     })();
   }, []);
 
-  const handleBarCodeScanned = async ({qrValue }) => {
-    console.log("scann", qrValue);
+  const handleBarCodeScanned = async ({data }) => {
+    console.log("scann", data);
     setScanned(true);
     try {
       const response = await getSessionWiseAssessmentDetails(
-        qrValue = "101A",
+        data,
         studentId,
         token
       );
@@ -128,12 +128,7 @@ const QRCodeInputScreen = ({ route }) => {
             <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity
-            onPress={() => handleBarCodeScanned('101A')}
-            
-          >
-            <Text style={styles.rescanButtonText}>Fake Scan</Text>
-          </TouchableOpacity>
+        
       </View>
       {chapterDetails && (
         <View style={styles.detailsContainer}>
