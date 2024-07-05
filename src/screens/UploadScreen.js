@@ -270,7 +270,7 @@ const UploadScreen = ({ route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    
+    flexGrow:1,
     backgroundColor: "#fff",
   },
   bottomContainer: {
@@ -289,6 +289,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     backgroundColor: "#6A53A2",
+    flex: 1,
   },
   header: {
     flexDirection: "row",
