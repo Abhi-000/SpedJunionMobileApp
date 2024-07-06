@@ -10,172 +10,53 @@ import {
   Button,
   Image,
 } from "react-native";
-import { getJStudents, getJuniorProfile } from "../services/api";
+import { getJStudents, getStudentFilters } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation ,useFocusEffect} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 
 const Home = ({ token }) => {
   const insets = useSafeAreaInsets();
   const [students, setStudents] = useState([]);
-  const [profile, setProfile] = useState({});
   const [filters, setFilters] = useState({
-    firstName: "",
     studentClass: "",
-    division: "",
     ageRange: "",
+  });
+  const [availableFilters, setAvailableFilters] = useState({
+    ageGroups: [],
+    classGroups: [],
   });
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [viewAll, setViewAll] = useState(false);
   const navigation = useNavigation();
-  // const fetchBooks = async (currentToken) => {
-  //   try {
-  //     const response = await getJStudents(currentToken, generateConditions());
-  //     setStudents(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching books:", error);
-  //   }
-  // };
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     fetchBooks(token);
-  //   }, [token])
-  // );
 
   useEffect(() => {
     fetchStudents();
+    fetchFilters();
   }, [token]);
 
-  const fetchStudents = async () => {
+  const fetchStudents = async (conditions = []) => {
     try {
-      console.log("Fetching students with token:", token);
-      const response = await getJStudents(token, generateConditions());
-      // const response = {
-      //     "juniorStudentResponse": [
-      //         {
-      //             "id": 2860,
-      //             "firstName": "Prisha",
-      //             "lastName": "Reddy",
-      //             "class": "Grade 3",
-      //             "division": "A",
-      //             "age": 14,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2861,
-      //             "firstName": "Riya",
-      //             "lastName": "Banerjee",
-      //             "class": "Grade 2",
-      //             "division": "A",
-      //             "age": 20,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2862,
-      //             "firstName": "Riya",
-      //             "lastName": "Reddy",
-      //             "class": "Grade 1",
-      //             "division": "A",
-      //             "age": 16,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2863,
-      //             "firstName": "Riya",
-      //             "lastName": "Saxena",
-      //             "class": "Grade 3",
-      //             "division": "A",
-      //             "age": 21,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2864,
-      //             "firstName": "Riya",
-      //             "lastName": "Sinha",
-      //             "class": "Grade 1",
-      //             "division": "A",
-      //             "age": 16,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2865,
-      //             "firstName": "Rudra",
-      //             "lastName": "Sharma",
-      //             "class": "Grade 4",
-      //             "division": "A",
-      //             "age": 15,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2866,
-      //             "firstName": "Sai",
-      //             "lastName": "Chaudhary",
-      //             "class": "Grade 2",
-      //             "division": "A",
-      //             "age": 21,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2867,
-      //             "firstName": "Shaurya",
-      //             "lastName": "Mehta",
-      //             "class": "Grade 2",
-      //             "division": "A",
-      //             "age": 14,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2868,
-      //             "firstName": "Shruti",
-      //             "lastName": "Joshi",
-      //             "class": "Grade 2",
-      //             "division": "A",
-      //             "age": 14,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2869,
-      //             "firstName": "Tara",
-      //             "lastName": "Nair",
-      //             "class": "Grade 5",
-      //             "division": "A",
-      //             "age": 14,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         },
-      //         {
-      //             "id": 2870,
-      //             "firstName": "Tara",
-      //             "lastName": "Patel",
-      //             "class": "Grade 4",
-      //             "division": "A",
-      //             "age": 18,
-      //             "schoolId": 153,
-      //             "studentProfilePic": ""
-      //         }
-      //     ],
-      //     "paginationDetails": {
-      //         "pageSize": "100",
-      //         "pageCount": "1",
-      //         "totalRecords": "81"
-      //     }
-      // }
-      console.log("Students response:", response);
-      setStudents(response.juniorStudentResponse); // Adjust based on actual response structure
+      const response = await getJStudents(token, conditions);
+      setStudents(response.juniorStudentResponse);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
   };
 
+  const fetchFilters = async () => {
+    try {
+      const response = await getStudentFilters(token);
+      setAvailableFilters({
+        ageGroups: response.ageGroup.map((group) => group.ageGroup),
+        classGroups: response.classGroup.map((group) => group.classGroup),
+      });
+    } catch (error) {
+      console.error("Error fetching filters:", error);
+    }
+  };
 
   const generateConditions = () => {
     const conditions = [];
@@ -196,14 +77,6 @@ const Home = ({ token }) => {
       });
     }
 
-    if (filters.division) {
-      conditions.push({
-        Field: "Division",
-        Operation: "=",
-        Value: filters.division,
-      });
-    }
-
     if (filters.ageRange) {
       const [minAge, maxAge] = filters.ageRange.split(" - ");
       conditions.push({
@@ -212,7 +85,6 @@ const Home = ({ token }) => {
         Value: `${minAge} AND ${maxAge}`,
       });
     }
-    console.log(conditions);
     return conditions;
   };
 
@@ -220,41 +92,59 @@ const Home = ({ token }) => {
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
-  const handleSearch = () => {
-    fetchStudents();
+  const handleSearch = (text) => {
+    setSearchText(text);
+    if (text.length > 0) {
+      const filteredResults = students.filter((student) =>
+        student.firstName.toLowerCase().startsWith(text.toLowerCase())
+      );
+      setSearchResults(filteredResults.slice(0, 3));
+    } else {
+      setSearchResults([]);
+      setViewAll(false);
+    }
   };
 
   const renderStudent = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       onPress={() =>
         navigation.navigate("StudentProfile", {
-          studentId:item.id,
-          token:token
+          studentId: item.id,
+          token: token,
         })
       }
-      >
-    <View style={styles.studentCard}>
-      
-      <Image
-        // source={{
-        //   uri: `https://testing.spedathome.com:7253/api/${item.studentProfilePic}`,
-        // }}
-        source={require("../../assets/sampleProfile.png")}
-        style={styles.profilePic}
-      />
-      <View style={styles.studentInfo}>
-        <Text style={styles.studentName}>
-          {`${item.firstName} ${item.lastName}`}
-        </Text>
-        <Text style={styles.studentClass}>
-          Class {item.id} | Age {item.age} years
-        </Text>
+    >
+      <View style={styles.studentCard}>
+        <Image
+          source={require("../../assets/sampleProfile.png")}
+          style={styles.profilePic}
+        />
+        <View style={styles.studentInfo}>
+          <Text style={styles.studentName}>
+            {`${item.firstName} ${item.lastName}`}
+          </Text>
+          <Text style={styles.studentClass}>
+            Class {item.class} | Age {item.age} years
+          </Text>
+        </View>
       </View>
-     
-    </View>
     </TouchableOpacity>
-
   );
+
+  const removeFilter = (filterName) => {
+    setFilters((prevFilters) => ({ ...prevFilters, [filterName]: "" }));
+    setTimeout(fetchStudents, 0, generateConditions());
+  };
+
+  const applyFilters = () => {
+    setModalVisible(false);
+    fetchStudents(generateConditions());
+  };
+
+  const clearAllFilters = () => {
+    setFilters({ studentClass: "", ageRange: "" });
+    setTimeout(() => fetchStudents([]), 0);
+  };
 
   return (
     <View
@@ -272,7 +162,7 @@ const Home = ({ token }) => {
         <View style={styles.headersParent}>
           <Image
             source={require("../../assets/sampleProfile.png")}
-            style={{ width: 60, height: 60 }} // Add your image here
+            style={{ width: 60, height: 60 }}
           />
           <View style={styles.header}>
             <Text style={styles.headerText}>Ibne Riead</Text>
@@ -283,23 +173,82 @@ const Home = ({ token }) => {
           <View style={styles.searchBar}>
             <TextInput
               style={styles.searchInput}
-              placeholder="Search"
+              placeholder="Search Students..."
               value={searchText}
-              onChangeText={(text) => setSearchText(text)}
+              onChangeText={handleSearch}
             />
             <TouchableOpacity
               style={styles.filterIcon}
               onPress={() => setModalVisible(true)}
             >
-              <Text style={styles.filterIconText}>⚙️</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.searchButton}
-              onPress={handleSearch}
-            >
-              <Text style={styles.searchButtonText}>Search</Text>
+              <FontAwesome name="filter" size={20} color="black" />
             </TouchableOpacity>
           </View>
+          <View style={styles.activeFiltersContainer}>
+            {filters.ageRange && (
+              <View style={styles.activeFilter}>
+                <Text>Age: {filters.ageRange}</Text>
+                <TouchableOpacity onPress={() => removeFilter("ageRange")}>
+                  <MaterialIcons name="close" size={16} color="black" />
+                </TouchableOpacity>
+              </View>
+            )}
+            {filters.studentClass && (
+              <View style={styles.activeFilter}>
+                <Text>Class: {filters.studentClass}</Text>
+                <TouchableOpacity onPress={() => removeFilter("studentClass")}>
+                  <MaterialIcons name="close" size={16} color="black" />
+                </TouchableOpacity>
+              </View>
+            )}
+            {(filters.ageRange || filters.studentClass) && (
+              <TouchableOpacity
+                onPress={clearAllFilters}
+                style={styles.clearAllFilters}
+              >
+                <Text>Clear All</Text>
+                <MaterialIcons name="close" size={16} color="black" />
+              </TouchableOpacity>
+            )}
+          </View>
+          {searchText.length > 0 && !viewAll && searchResults.length > 0 && (
+            <View style={styles.searchResults}>
+              {searchResults.map((student) => (
+                <TouchableOpacity
+                  key={student.id}
+                  style={styles.searchResultItem}
+                  onPress={() =>
+                    navigation.navigate("StudentProfile", {
+                      studentId: student.id,
+                      token: token,
+                    })
+                  }
+                >
+                  <Text style={styles.searchResultText}>
+                    {student.firstName} {student.lastName}
+                  </Text>
+                  <Text style={styles.searchResultDetails}>
+                    Class {student.class} Age {student.age} years
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity
+                style={styles.viewAllButton}
+                onPress={() => {
+                  setViewAll(true);
+                  setSearchResults(
+                    students.filter((student) =>
+                      student.firstName
+                        .toLowerCase()
+                        .startsWith(searchText.toLowerCase())
+                    )
+                  );
+                }}
+              >
+                <Text style={styles.viewAllText}>View All</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <Modal
             visible={isModalVisible}
             transparent={true}
@@ -307,43 +256,45 @@ const Home = ({ token }) => {
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Filter Options</Text>
-                <TextInput
-                  style={styles.filterInput}
-                  placeholderTextColor="#aaa"
-                  placeholder="Class"
-                  value={filters.studentClass}
-                  onChangeText={(text) =>
-                    handleFilterChange("studentClass", text)
-                  }
-                />
-                <TextInput
-                  style={styles.filterInput}
-                  placeholderTextColor="#aaa"
-                  placeholder="Division"
-                  value={filters.division}
-                  onChangeText={(text) => handleFilterChange("division", text)}
-                />
-                <TextInput
-                  style={styles.filterInput}
-                  placeholderTextColor="#aaa"
-                  placeholder="Age Range (e.g., 3 - 10)"
-                  value={filters.ageRange}
-                  onChangeText={(text) => handleFilterChange("ageRange", text)}
-                />
-                <View style={styles.buttonContainer}>
-                  <Button
-                    title="Apply Filters"
-                    onPress={() => {
-                      setModalVisible(false);
-                      fetchStudents();
-                    }}
-                  />
-                  <Button
-                    title="Cancel"
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>Filter By</Text>
+                  <TouchableOpacity
                     onPress={() => setModalVisible(false)}
-                  />
+                    style={styles.closeButton}
+                  >
+                    <MaterialIcons name="close" size={24} color="black" />
+                  </TouchableOpacity>
                 </View>
+                <Text style={styles.filterLabel}>Age:</Text>
+                {availableFilters.ageGroups.map((ageGroup) => (
+                  <TouchableOpacity
+                    key={ageGroup}
+                    style={[
+                      styles.filterOption,
+                      filters.ageRange === ageGroup && styles.selectedFilter,
+                    ]}
+                    onPress={() => handleFilterChange("ageRange", ageGroup)}
+                  >
+                    <Text>{ageGroup}</Text>
+                  </TouchableOpacity>
+                ))}
+                <Text style={styles.filterLabel}>Class:</Text>
+                {availableFilters.classGroups.map((classGroup) => (
+                  <TouchableOpacity
+                    key={classGroup}
+                    style={[
+                      styles.filterOption,
+                      filters.studentClass === classGroup &&
+                        styles.selectedFilter,
+                    ]}
+                    onPress={() =>
+                      handleFilterChange("studentClass", classGroup)
+                    }
+                  >
+                    <Text>{classGroup}</Text>
+                  </TouchableOpacity>
+                ))}
+                <Button title="Apply" onPress={applyFilters} />
               </View>
             </View>
           </Modal>
@@ -351,14 +302,14 @@ const Home = ({ token }) => {
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
             <View style={styles.categories}>
               <Image
-                source={require("../../assets/studentsCategory.png")} // Add your image here
+                source={require("../../assets/studentsCategory.png")}
                 style={styles.category}
               />
               <TouchableOpacity
                 onPress={() => navigation.navigate("Books", { token })}
               >
                 <Image
-                  source={require("../../assets/booksCategory.png")} // Add your image here
+                  source={require("../../assets/booksCategory.png")}
                   style={styles.category}
                 />
               </TouchableOpacity>
@@ -366,23 +317,23 @@ const Home = ({ token }) => {
                 onPress={() => navigation.navigate("Scan", { token })}
               >
                 <Image
-                  source={require("../../assets/scanCategory.png")} // Add your image here
+                  source={require("../../assets/scanCategory.png")}
                   style={styles.category}
                 />
               </TouchableOpacity>
               <Image
-                source={require("../../assets/calendarCategory.png")} // Add your image here
+                source={require("../../assets/calendarCategory.png")}
                 style={styles.category}
               />
             </View>
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
             <FlatList
-              data={students}
+              data={viewAll ? searchResults : students}
               renderItem={renderStudent}
               keyExtractor={(item) => item.id.toString()}
               style={styles.flatList}
               contentContainerStyle={{ paddingBottom: 20 }}
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />} // Optional: Adds space between items
+              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
             />
           </View>
         </View>
@@ -408,7 +359,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "column",
     justifyContent: "space-between",
-
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
@@ -425,33 +375,67 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 20,
-    width: "100%",
+    padding: 10,
+    width: "90%",
+    alignSelf: "center",
+    backgroundColor: "white",
+    borderRadius: 25,
+    borderColor: "#E4DFDF",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
   searchInput: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 25,
     padding: 10,
     fontSize: 16,
-    marginRight: 10,
   },
   filterIcon: {
     padding: 10,
-    marginRight: 10,
   },
-  filterIconText: {
-    fontSize: 24,
+  searchResults: {
+    backgroundColor: "white",
+    position: "absolute",
+    top: 80,
+    left: 20,
+    right: 20,
+    zIndex: 1,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  searchButton: {
-    backgroundColor: "#007bff",
+  searchResultItem: {
     padding: 10,
-    borderRadius: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  searchResultText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  searchResultDetails: {
+    fontSize: 14,
+    color: "#666",
+  },
+  viewAllButton: {
+    padding: 10,
     alignItems: "center",
   },
-  searchButtonText: {
-    color: "#fff",
-    fontSize: 16,
+  viewAllText: {
+    color: "#007bff",
+    fontWeight: "bold",
   },
   categories: {
     flexDirection: "row",
@@ -485,23 +469,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 20,
     marginBottom: 10,
-    borderRadius: 10, // Adjusted for cleaner look
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1, // Subtle shadow
+    shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 2,
     borderWidth: 1,
     borderColor: "#E0E0E0",
   },
   profilePic: {
-    width: 50, // Adjusted size for profile picture
+    width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 15, // Adjusted spacing
+    marginRight: 15,
   },
   studentInfo: {
     flex: 1,
@@ -528,23 +512,54 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
   },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
   },
-  filterInput: {
-    padding: 10,
+  closeButton: {
+    padding: 5,
+  },
+  filterLabel: {
     fontSize: 16,
-    marginBottom: 10,
+    fontWeight: "bold",
+    marginVertical: 10,
+  },
+  filterOption: {
+    padding: 10,
+    marginVertical: 5,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
   },
-  buttonContainer: {
+  selectedFilter: {
+    backgroundColor: "#e0e0e0",
+  },
+  activeFiltersContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
+    flexWrap: "wrap",
+    margin: 10,
+  },
+  activeFilter: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 5,
+    margin: 5,
+    backgroundColor: "#e0e0e0",
+    borderRadius: 15,
+  },
+  clearAllFilters: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 5,
+    margin: 5,
+    backgroundColor: "#ffcccb",
+    borderRadius: 15,
   },
 });
 

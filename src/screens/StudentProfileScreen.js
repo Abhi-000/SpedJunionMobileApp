@@ -1,11 +1,18 @@
-// src/screens/ProfileScreen.js
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import HalfCircleProgress  from '../components/HalfCircleProgress';
-import { getJuniorProfile } from '../services/api';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import HalfCircleProgress from "../components/HalfCircleProgress";
+import { getJuniorProfile } from "../services/api";
 
 const StudentProfileScreen = () => {
   const [studentData, setStudentData] = useState(null);
@@ -18,12 +25,15 @@ const StudentProfileScreen = () => {
 
   useEffect(() => {
     fetchStudents();
-  }, [route.params?.studentId,route.params?.token]);
+  }, [route.params?.studentId, route.params?.token]);
 
   const fetchStudents = async () => {
     try {
-      const response = await getJuniorProfile(route.params?.studentId, route.params?.token);
-      console.log("profile screen:",response);
+      const response = await getJuniorProfile(
+        route.params?.studentId,
+        route.params?.token
+      );
+      console.log("profile screen:", response);
       setStudentData(response.spedStudent);
       setBookDetails(response.spedStudentBookDetails);
       setLoading(false);
@@ -37,17 +47,27 @@ const StudentProfileScreen = () => {
     return bookDetails.map((detail, index) => (
       <View key={index} style={styles.bookCard}>
         <View style={styles.bookInfo}>
-          <Text style={styles.bookDifficulty}>{detail.bookData.difficulty}</Text>
+          <Text style={styles.bookDifficulty}>
+            {detail.bookData.difficulty}
+          </Text>
           <Text style={styles.bookName}>{detail.bookData.bookName}</Text>
-          <Text style={styles.bookAssignDate}>Assign Date: {new Date(detail.assignDate).toLocaleDateString()}</Text>
+          <Text style={styles.bookAssignDate}>
+            Assign Date: {new Date(detail.assignDate).toLocaleDateString()}
+          </Text>
         </View>
         <View style={styles.progress}>
           <HalfCircleProgress
             total={detail.bookData.totalChapter}
             completed={detail.uploadedAssignmentCount}
           />
-          <TouchableOpacity 
-            onPress={() => navigation.navigate("Summary", { token: route.params?.token, studentId: route.params?.studentId, bookId: detail.bookId })}
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Summary", {
+                token: route.params?.token,
+                studentId: route.params?.studentId,
+                bookId: detail.bookId,
+              })
+            }
           >
             <Text style={styles.summaryText}>Summary</Text>
           </TouchableOpacity>
@@ -90,7 +110,9 @@ const StudentProfileScreen = () => {
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Home", { token: route.params?.token })}
+            onPress={() =>
+              navigation.navigate("Home", { token: route.params?.token })
+            }
             style={styles.backButton}
           >
             <Image
@@ -107,12 +129,16 @@ const StudentProfileScreen = () => {
             <View style={styles.profileHeader}>
               <Image
                 style={styles.profileImage}
-                source={require('../../assets/sampleProfile.png')} // Add your placeholder image in assets
+                source={require("../../assets/sampleProfile.png")}
               />
               <View style={styles.profileDetails}>
                 <Text style={styles.studentName}>{studentData.name}</Text>
-                <Text style={styles.studentInfo}>DOB: {new Date(studentData.birthDate).toLocaleDateString()}</Text>
-                <Text style={styles.studentInfo}>{studentData.class} | Age: {studentData.age} years</Text>
+                <Text style={styles.studentInfo}>
+                  DOB: {new Date(studentData.birthDate).toLocaleDateString()}
+                </Text>
+                <Text style={styles.studentInfo}>
+                  {studentData.class} | Age: {studentData.age} years
+                </Text>
               </View>
             </View>
           </View>
@@ -125,7 +151,9 @@ const StudentProfileScreen = () => {
                 <Text style={styles.buttonText}>Assign Books</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.sectionTitle}>Assigned Books & Assignments</Text>
+            <Text style={styles.sectionTitle}>
+              Assigned Books & Assignments
+            </Text>
             <ScrollView style={styles.bookListContainer}>
               {renderBookDetails()}
             </ScrollView>
@@ -146,8 +174,8 @@ const StudentProfileScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    
-    backgroundColor: '#f8f8f8',
+    flex: 1,
+    backgroundColor: "#f8f8f8",
   },
   topContainer: {
     flexDirection: "row",
@@ -164,11 +192,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#6A53A2",
   },
   headerContainer: {
-    backgroundColor: '#6A53A2',
+    backgroundColor: "#6A53A2",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   backButton: {
     position: "absolute",
@@ -187,20 +215,20 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   profileContainer: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 10,
     margin: 20,
     padding: 5,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 5,
     elevation: 2,
   },
   profileHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   profileImage: {
@@ -214,56 +242,56 @@ const styles = StyleSheet.create({
   },
   studentName: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   studentInfo: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginVertical: 2,
   },
   buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   button: {
-    backgroundColor: 'white',
-    borderColor: 'green',
+    backgroundColor: "white",
+    borderColor: "green",
     borderWidth: 1,
     paddingVertical: 15,
     marginBottom: 20,
     paddingHorizontal: 20,
     borderRadius: 30,
     marginHorizontal: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: 'green',
+    color: "green",
     justifyContent: "center",
     fontSize: 16,
   },
   assignedBooksContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
-    color: '#333',
+    color: "#333",
   },
   bookCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderColor: '#e0e0e0',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderColor: "#e0e0e0",
     borderWidth: 1,
   },
   bookInfo: {
@@ -271,64 +299,64 @@ const styles = StyleSheet.create({
   },
   bookDifficulty: {
     fontSize: 14,
-    color: '#FF5733',
-    fontWeight: 'bold',
+    color: "#FF5733",
+    fontWeight: "bold",
   },
   bookName: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     marginVertical: 5,
   },
   bookAssignDate: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   progress: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   progressText: {
     fontSize: 14,
-    color: '#6A53A2',
+    color: "#6A53A2",
   },
   summaryText: {
     fontSize: 14,
-    color: '#6A53A2',
-    fontWeight: 'bold',
+    color: "#6A53A2",
+    fontWeight: "bold",
     marginTop: 5,
   },
   additionalSections: {
     margin: 10,
   },
   additionalSection: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
     marginBottom: 5,
-    borderColor: '#e0e0e0',
+    borderColor: "#e0e0e0",
     borderWidth: 1,
   },
   loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 10,
   },
   retryButton: {
     padding: 10,
-    backgroundColor: '#6A53A2',
+    backgroundColor: "#6A53A2",
     borderRadius: 5,
   },
   retryButtonText: {
-    color: 'white',
+    color: "white",
   },
 });
 

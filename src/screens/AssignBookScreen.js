@@ -26,7 +26,7 @@ const AssignBookScreen = () => {
     const fetchStudents = async () => {
       try {
         const response = await getJStudents(token);
-        setStudents(response.data.juniorStudentResponse);
+        setStudents(response.juniorStudentResponse);
       } catch (error) {
         console.error("Error fetching students:", error);
       }

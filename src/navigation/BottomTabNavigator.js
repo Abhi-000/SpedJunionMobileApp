@@ -51,7 +51,7 @@ const ProfileStack = ({ token, studentId }) => (
 
 const BottomTabNavigator = ({ route }) => {
   const { token, studentId } = route.params;
-  console.log("student id:",studentId);
+  console.log("student id:", studentId);
   return (
     <Tab.Navigator
       initialRouteName="Home"

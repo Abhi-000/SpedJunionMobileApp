@@ -11,12 +11,15 @@ const api = axios.create({
 //   baseURL: API_BASE_URL_1,
 // });
 
-export const login = async(username, password) => {
-  return await api.post("/Users/login", { Username: username, Password: password });
+export const login = async (username, password) => {
+  return await api.post("/Users/login", {
+    Username: username,
+    Password: password,
+  });
 };
 
-export const getJStudents = async(token, conditions = []) => {
-  const response =  await api.post(
+export const getJStudents = async (token, conditions = []) => {
+  const response = await api.post(
     "/Book/getJStudents",
     {
       SortBy: "Id",
@@ -32,19 +35,21 @@ export const getJStudents = async(token, conditions = []) => {
       },
     }
   );
-  console.log("here",response.data);
+  console.log("here", response.data);
   return response.data;
 };
 
-export const getJuniorProfile = async(studentId, token) => {
-  console.log("isnside",studentId);
-  console.log("isnside",token);
+export const getJuniorProfile = async (studentId, token) => {
+  console.log("isnside", studentId);
+  console.log("isnside", token);
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
   try {
-    const response = await api.get(`/Book/GetJuniorProfile/${studentId}`, { headers });
+    const response = await api.get(`/Book/GetJuniorProfile/${studentId}`, {
+      headers,
+    });
     console.log("Books response:", response.data);
     return response.data;
   } catch (error) {
@@ -107,20 +112,21 @@ export const assignBook = (bookId, studentIds, token) => {
 };
 
 export const getBookSummary = (bookId, token) => {
-  console.log("here:",bookId);
-  console.log("here",token);
+  console.log("here:", bookId);
+  console.log("here", token);
   return api.post(
-    "/Book/GetBookSummary",{
-    studentId: 2861,
-    bookId: 3,
-    filters:
+    "/Book/GetBookSummary",
     {
+      studentId: 2861,
+      bookId: 3,
+      filters: {
         sortBy: "bookId",
         sortOrder: "DESC",
         pageSize: 25,
         pageCount: 1,
-        conditions: []
-    }},
+        conditions: [],
+      },
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -196,7 +202,7 @@ export const getSessionWiseAssessmentDetails = async (
         headers: headers,
         body: JSON.stringify({
           qrValue: qrValue,
-          studentId: studentId
+          studentId: studentId,
         }),
       }
     );
@@ -222,14 +228,28 @@ export const getSessionWiseAssessmentDetails = async (
 };
 
 export const uploadAssignments = (token, formData) => {
-  console.log("upload:",token);
-  console.log("upload:",formData);
+  console.log("upload:", token);
+  console.log("upload:", formData);
   return api.post("/Book/UploadAssignment", formData, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
     },
   });
+};
+export const getStudentFilters = async (token) => {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+
+  try {
+    const response = await api.get("/Book/GetStudentFilters", { headers });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching student filters:", error);
+    throw error;
+  }
 };
 
 export default {
@@ -243,4 +263,5 @@ export default {
   getStudentDetailsByIds,
   getSessionWiseAssessmentDetails,
   uploadAssignments,
+  getStudentFilters,
 };
