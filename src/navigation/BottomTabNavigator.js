@@ -1,4 +1,3 @@
-// src/navigation/BottomTabNavigator.js
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -14,6 +13,7 @@ import ScanScreen from "../screens/ScanScreen";
 import QRCodeInputScreen from "../screens/QRCodeInputScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { View } from "react-native";
+import StudentsSearchScreen from "../screens/StudentSearchScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -30,6 +30,7 @@ const HomeStack = ({ token }) => (
     <Stack.Screen name="AssignedBooks" component={AssignedBooksScreen} />
     <Stack.Screen name="Scan" component={ScanScreen} />
     <Stack.Screen name="QRCodeInput" component={QRCodeInputScreen} />
+    <Stack.Screen name="StudentsSearch" component={StudentsSearchScreen} />
   </Stack.Navigator>
 );
 

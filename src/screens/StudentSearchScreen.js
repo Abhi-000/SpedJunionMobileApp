@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
   Modal,
-  Button,
   Image,
   ScrollView,
 } from "react-native";
@@ -17,7 +16,8 @@ import { useNavigation } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
 
-const Home = ({ token }) => {
+const StudentsSearchScreen = ({ route }) => {
+  const { token } = route.params;
   const insets = useSafeAreaInsets();
   const [students, setStudents] = useState([]);
   const [filters, setFilters] = useState({
@@ -176,19 +176,19 @@ const Home = ({ token }) => {
         },
       ]}
     >
-      <View style={styles.parentContainer}>
-        <View style={styles.headersParent}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Image
-            source={require("../../assets/sampleProfile.png")}
-            style={{ width: 60, height: 60 }}
+            source={require("../../assets/backButton.png")}
+            style={styles.backButtonImage}
           />
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Ibne Riead</Text>
-            <Text style={styles.headerText}>Tec no: 04</Text>
-          </View>
-        </View>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Students</Text>
+      </View>
+      <View style={styles.parentContainer}>
         <View style={styles.container}>
           <View style={styles.searchBar}>
+            <FontAwesome name="search" size={20} color="black" style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
               placeholder="Search Students..."
@@ -342,42 +342,8 @@ const Home = ({ token }) => {
             </View>
           </Modal>
           <View style={styles.studentsContainer}>
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
-            <View style={styles.categories}>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("StudentsSearch", { token })
-                }
-              >
-                <Image
-                  source={require("../../assets/studentsCategory.png")}
-                  style={styles.category}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Books", { token })}
-              >
-                <Image
-                  source={require("../../assets/booksCategory.png")}
-                  style={styles.category}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Scan", { token })}
-              >
-                <Image
-                  source={require("../../assets/scanCategory.png")}
-                  style={styles.category}
-                />
-              </TouchableOpacity>
-              <Image
-                source={require("../../assets/calendarCategory.png")}
-                style={styles.category}
-              />
-            </View>
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
             <FlatList
-              data={viewAll ? searchResults : students.slice(0, 5)}
+              data={viewAll ? searchResults : students}
               renderItem={renderStudent}
               keyExtractor={(item) => item.id.toString()}
               style={styles.flatList}
@@ -406,20 +372,25 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   header: {
-    flexDirection: "column",
-    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "white",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
-  headersParent: {
-    margin: 20,
-    gap: 20,
-    flexDirection: "row",
-    justifyContent: "flex-start",
+  backButton: {
+    padding: 10,
+    marginRight: 10,
   },
-  headerText: {
+  backButtonImage: {
+    width: 20,
+    height: 20,
+  },
+  headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "black",
   },
   searchBar: {
     flexDirection: "row",
@@ -439,6 +410,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
+  },
+  searchIcon: {
+    marginRight: 10,
   },
   searchInput: {
     flex: 1,
@@ -612,18 +586,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#6A53A2",
     borderRadius: 20,
   },
-  categories: {
-    flexDirection: "row",
-    justifyContent: "center",
-    padding: 20,
-  },
-  category: {
-    borderRadius: 100,
-    width: 70,
-    height: 70,
-    fontWeight: "bold",
-    marginRight: 15,
-  },
 });
 
-export default Home;
+export default StudentsSearchScreen;

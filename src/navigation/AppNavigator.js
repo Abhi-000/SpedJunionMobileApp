@@ -1,4 +1,3 @@
-// src/navigation/AppNavigator.js
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "../screens/LoginScreen";
@@ -13,13 +12,13 @@ import AssignedBooksScreen from "../screens/AssignedBooksScreen";
 import ScanScreen from "../screens/ScanScreen";
 import QRCodeInputScreen from "../screens/QRCodeInputScreen";
 import UploadScreen from "../screens/UploadScreen";
-import StudentProfileScreen  from "../screens/StudentProfileScreen";
+import StudentProfileScreen from "../screens/StudentProfileScreen";
 import SummaryScreen from "../screens/SummaryScreen";
+import StudentsSearchScreen from "../screens/StudentSearchScreen"; // Import the new screen
+
 const Stack = createStackNavigator();
 
-
 const AppNavigator = () => {
-  
   return (
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen
@@ -48,7 +47,7 @@ const AppNavigator = () => {
         component={AssignBookScreen}
         options={{ headerShown: false }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="StudentProfile"
         component={StudentProfileScreen}
         options={{ headerShown: false }}
@@ -91,6 +90,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Upload"
         component={UploadScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="StudentsSearch"
+        component={StudentsSearchScreen} // Add the new screen
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
