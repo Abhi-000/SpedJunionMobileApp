@@ -109,13 +109,14 @@ const AssignBookScreen = () => {
                     source={require("../../assets/sampleProfile.png")} // Placeholder for the student's avatar
                     style={styles.avatar}
                   />
-
-                  <Text
-                    style={styles.studentName}
-                  >{`${item.firstName} ${item.lastName}`}</Text>
-                  <Text
-                    style={styles.studentDetails}
-                  >{`Class ${item.class} Age ${item.age} years`}</Text>
+                  <View>
+                    <Text style={styles.studentName}>
+                      {`${item.firstName} ${item.lastName}`}
+                    </Text>
+                    <Text style={styles.studentDetails}>
+                      {`Class ${item.class} Age ${item.age} years`}
+                    </Text>
+                  </View>
                 </View>
 
                 <CustomCheckBox
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
   studentInfo: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
   },
   avatar: {
     width: 40,

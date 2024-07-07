@@ -173,7 +173,7 @@ const UploadScreen = ({ route }) => {
             </View>
           </View>
         </View>
-        {selectedFiles.length > 0 ? (
+        {/* {selectedFiles.length > 0 ? (
   selectedFiles.map((file, index) => (
     <TouchableOpacity
         onPress={handleFileSelection}
@@ -208,33 +208,49 @@ const UploadScreen = ({ route }) => {
      
     </View>
     </TouchableOpacity>
-)}
+)} */}
      
-        {chapterDetails.map((chapter) => (
-          <View key={chapter.chapterId} style={styles.chapterCard}>
-            <View style={styles.chapterDetails}>
-              <Text style={styles.chapterOrder}>{chapter.order}</Text>
-              <View style={styles.chapterTextContainer}>
-                <Text style={styles.chapterTitle}>{chapter.title}</Text>
-              </View>
-              <TouchableOpacity
-                style={[
-                  styles.checkBox,
-                  currentChapter === chapter.chapterId
-                    ? styles.yellowCheckBox
-                    : updatedUploadedChapters.includes(chapter.chapterId)
-                    ? styles.greenCheckBox
-                    : styles.grayCheckBox,
-                ]}
-                onPress={() => handleChapterPress(chapter.chapterId)}
-              >
-                {updatedUploadedChapters.includes(chapter.chapterId) ? (
-                  <Text style={styles.checkMark}>✓</Text>
-                ) : null}
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
+     {chapterDetails.map((chapter) => (
+  <View key={chapter.chapterId} style={styles.chapterCard}>
+    <View style={styles.chapterDetails}>
+      <Text style={styles.chapterOrder}>{chapter.order}</Text>
+      
+      <View style={styles.chapterTextContainer}>
+      
+        {chapter.isCurrent === 1 && selectedFiles.length > 0 ? (
+          selectedFiles.map((file, index) => (
+            <TouchableOpacity
+      onPress={handleFileSelection}
+      >
+            <Text key={index} style={styles.chapterTitle}>
+              {file.fileName}
+            </Text>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.chapterTitle}>{chapter.title}</Text>
+        )}
+
+      </View>
+      
+      <View
+        style={[
+          styles.checkBox,
+          currentChapter === chapter.chapterId
+            ? styles.yellowCheckBox
+            : updatedUploadedChapters.includes(chapter.chapterId)
+            ? styles.greenCheckBox
+            : styles.grayCheckBox,
+        ]}
+        onPress={() => handleChapterPress(chapter.chapterId)}
+      >
+        {updatedUploadedChapters.includes(chapter.chapterId) ? (
+          <Text style={styles.checkMark}>✓</Text>
+        ) : null}
+      </View>
+    </View>
+  </View>
+))}
         </View>
         <View style  = {styles.bottomContainer}>
         <TextInput
@@ -274,6 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   bottomContainer: {
+    flex:1,
     backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 30,

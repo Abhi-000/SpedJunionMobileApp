@@ -9,12 +9,12 @@ import {
   Modal,
   Button,
   Image,
-  ScrollView 
+  ScrollView,
 } from "react-native";
 import { getJStudents, getStudentFilters } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
 
 const Home = ({ token }) => {
@@ -26,8 +26,6 @@ const Home = ({ token }) => {
   });
   const [selectedAge, setSelectedAge] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
-
-
   const [availableFilters, setAvailableFilters] = useState({
     ageGroups: [],
     classGroups: [],
@@ -39,20 +37,18 @@ const Home = ({ token }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetchStudents();
     fetchFilters();
+    fetchStudents(); // Fetch initial list of students without any filters
   }, [token]);
-
-  useEffect(() => {
-    const conditions = generateConditions();
-    console.log(conditions);
-    fetchStudents(conditions);
-  }, [selectedClass, selectedAge, searchText]);
-
+useEffect(()=>{
+fetchStudents(generateConditions());
+},[selectedAge,selectedClass,filters])
   const fetchStudents = async (conditions = []) => {
     try {
       const response = await getJStudents(token, conditions);
       console.log(response);
+      
+      handleSearch(searchText);
       setStudents(response.juniorStudentResponse);
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -146,6 +142,7 @@ const Home = ({ token }) => {
   );
 
   const removeFilter = (filterName) => {
+    handleSearch(searchText);
     if (filterName === "ageRange") {
       setSelectedAge("");
     } else {
@@ -155,16 +152,19 @@ const Home = ({ token }) => {
   };
 
   const applyFilters = () => {
+    const conditions = generateConditions();
+    fetchStudents(conditions);
     setModalVisible(false);
     setFilters({ studentClass: selectedClass, ageRange: selectedAge });
   };
 
   const clearAllFilters = () => {
+    handleSearch(searchText);
     setSelectedAge("");
     setSelectedClass("");
     setFilters({ studentClass: "", ageRange: "" });
+    fetchStudents(); // Fetch all students without any filters
   };
-  
 
   return (
     <View

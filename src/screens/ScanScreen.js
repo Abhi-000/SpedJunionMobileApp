@@ -106,7 +106,7 @@ const ScanScreen = ({ token }) => {
           <Text style={styles.backButtonText}>{"<"}</Text>
         </TouchableOpacity> */}
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate("Home",token)}
           style={styles.backButton}
         >
           <Image

@@ -22,11 +22,10 @@ const StudentProfileScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
-
+  const {studentId,token} = route.params;
   useEffect(() => {
     fetchStudents();
   }, [route.params?.studentId, route.params?.token]);
-
   const fetchStudents = async () => {
     try {
       const response = await getJuniorProfile(
@@ -144,10 +143,18 @@ const StudentProfileScreen = () => {
           </View>
           <View style={styles.assignedBooksContainer}>
             <View style={styles.buttonsContainer}>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity 
+              onPress={() =>
+                navigation.navigate("QRCodeInput", {
+                  token: token,
+                  studentId: studentId, // Pass studentId to the next screen
+                })}
+              style={styles.button}>
                 <Text style={styles.buttonText}>Upload Assignment</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity 
+              onPress={() => navigation.navigate("Books", { token })}
+              style={styles.button}>
                 <Text style={styles.buttonText}>Assign Books</Text>
               </TouchableOpacity>
             </View>

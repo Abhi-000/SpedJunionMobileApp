@@ -24,7 +24,7 @@ const QRCodeInputScreen = ({ route }) => {
   const [chapterDetails, setChapterDetails] = useState(null);
   const [uploadedChapters, setUploadedChapters] = useState([]);
   const [selectedChapters, setSelectedChapters] = useState([]);
-
+  
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -114,7 +114,11 @@ const QRCodeInputScreen = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Scan to Upload</Text>
         </View>
-      
+      {/* <TouchableOpacity
+      onPress={handleBarCodeScanned}
+      >
+        <Text>Fake Scan</Text>
+      </TouchableOpacity> */}
       <View style={styles.qrCodeContainer}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
