@@ -9,11 +9,13 @@ import {
   Modal,
   Button,
   Image,
+  ScrollView 
 } from "react-native";
 import { getJStudents, getStudentFilters } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { RadioButton } from "react-native-paper";
 
 const Home = ({ token }) => {
   const insets = useSafeAreaInsets();
@@ -22,6 +24,10 @@ const Home = ({ token }) => {
     studentClass: "",
     ageRange: "",
   });
+  const [selectedAge, setSelectedAge] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+
+
   const [availableFilters, setAvailableFilters] = useState({
     ageGroups: [],
     classGroups: [],
@@ -37,9 +43,16 @@ const Home = ({ token }) => {
     fetchFilters();
   }, [token]);
 
+  useEffect(() => {
+    const conditions = generateConditions();
+    console.log(conditions);
+    fetchStudents(conditions);
+  }, [selectedClass, selectedAge, searchText]);
+
   const fetchStudents = async (conditions = []) => {
     try {
       const response = await getJStudents(token, conditions);
+      console.log(response);
       setStudents(response.juniorStudentResponse);
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -60,7 +73,8 @@ const Home = ({ token }) => {
 
   const generateConditions = () => {
     const conditions = [];
-
+    console.log(selectedClass);
+    console.log(selectedAge);
     if (searchText) {
       conditions.push({
         Field: "FirstName",
@@ -69,22 +83,22 @@ const Home = ({ token }) => {
       });
     }
 
-    if (filters.studentClass) {
+    if (selectedClass !== "") {
       conditions.push({
         Field: "Class",
         Operation: "=",
-        Value: filters.studentClass,
+        Value: selectedClass,
       });
     }
 
-    if (filters.ageRange) {
-      const [minAge, maxAge] = filters.ageRange.split(" - ");
+    if (selectedAge !== "") {
       conditions.push({
         Field: "Age",
         Operation: "BETWEEN",
-        Value: `${minAge} AND ${maxAge}`,
+        Value: selectedAge,
       });
     }
+
     return conditions;
   };
 
@@ -132,19 +146,25 @@ const Home = ({ token }) => {
   );
 
   const removeFilter = (filterName) => {
+    if (filterName === "ageRange") {
+      setSelectedAge("");
+    } else {
+      setSelectedClass("");
+    }
     setFilters((prevFilters) => ({ ...prevFilters, [filterName]: "" }));
-    setTimeout(fetchStudents, 0, generateConditions());
   };
 
   const applyFilters = () => {
     setModalVisible(false);
-    fetchStudents(generateConditions());
+    setFilters({ studentClass: selectedClass, ageRange: selectedAge });
   };
 
   const clearAllFilters = () => {
+    setSelectedAge("");
+    setSelectedClass("");
     setFilters({ studentClass: "", ageRange: "" });
-    setTimeout(() => fetchStudents([]), 0);
   };
+  
 
   return (
     <View
@@ -254,7 +274,13 @@ const Home = ({ token }) => {
             transparent={true}
             animationType="slide"
           >
-            <View style={styles.modalContainer}>
+            <Modal
+            visible={isModalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
                 <View style={styles.modalHeader}>
                   <Text style={styles.modalTitle}>Filter By</Text>
@@ -265,38 +291,56 @@ const Home = ({ token }) => {
                     <MaterialIcons name="close" size={24} color="black" />
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.filterLabel}>Age:</Text>
-                {availableFilters.ageGroups.map((ageGroup) => (
+                <View style={styles.filterContainer}>
+  <Text style={styles.filterLabel}>Age:</Text>
+  <ScrollView>
+    <RadioButton.Group
+      onValueChange={(value) => setSelectedAge(value)}
+      value={selectedAge}
+    >
+      <View style={styles.radioButtonWrapper}>
+        {availableFilters.ageGroups.map((ageGroup) => (
+          <View key={ageGroup} style={styles.radioButtonContainer}>
+            <RadioButton value={ageGroup} color="#3AFF00" />
+            <Text style={styles.radioButtonLabel}>{ageGroup}</Text>
+          </View>
+        ))}
+      </View>
+    </RadioButton.Group>
+  </ScrollView>
+</View>
+                <View style={styles.filterContainer}>
+  <Text style={styles.filterLabel}>Class:</Text>
+  <ScrollView>
+    <RadioButton.Group
+      onValueChange={(value) => setSelectedClass(value)}
+      value={selectedClass}
+    >
+      <View style={styles.radioButtonWrapper}>
+        {availableFilters.classGroups.map((classGroup) => (
+          <View key={classGroup} style={styles.radioButtonContainer}>
+            <RadioButton value={classGroup} color="#3AFF00" />
+            <Text style={styles.radioButtonLabel}>{classGroup}</Text>
+          </View>
+        ))}
+      </View>
+    </RadioButton.Group>
+  </ScrollView>
+</View>
+
+                <View style={styles.modalButtons}>
                   <TouchableOpacity
-                    key={ageGroup}
-                    style={[
-                      styles.filterOption,
-                      filters.ageRange === ageGroup && styles.selectedFilter,
-                    ]}
-                    onPress={() => handleFilterChange("ageRange", ageGroup)}
+                    style  = {{alignItems:"center", padding:10, backgroundColor:"#6A53A2", borderRadius:20}}
+                    title="Apply Filters"
+                    onPress={applyFilters}
+                    color="#007BFF"
                   >
-                    <Text>{ageGroup}</Text>
-                  </TouchableOpacity>
-                ))}
-                <Text style={styles.filterLabel}>Class:</Text>
-                {availableFilters.classGroups.map((classGroup) => (
-                  <TouchableOpacity
-                    key={classGroup}
-                    style={[
-                      styles.filterOption,
-                      filters.studentClass === classGroup &&
-                        styles.selectedFilter,
-                    ]}
-                    onPress={() =>
-                      handleFilterChange("studentClass", classGroup)
-                    }
-                  >
-                    <Text>{classGroup}</Text>
-                  </TouchableOpacity>
-                ))}
-                <Button title="Apply" onPress={applyFilters} />
+                    <Text>Apply</Text>
+                    </TouchableOpacity>
+                </View>
               </View>
             </View>
+          </Modal>
           </Modal>
           <View style={styles.studentsContainer}>
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
@@ -500,23 +544,22 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 2,
   },
-  modalContainer: {
+  modalOverlay: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
   },
   modalContent: {
-    width: 300,
-    padding: 20,
     backgroundColor: "white",
-    borderRadius: 10,
+    padding: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 16,
   },
   modalTitle: {
     fontSize: 18,
@@ -525,18 +568,37 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 5,
   },
-  filterLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 10,
-  },
+ 
   filterOption: {
+    flexDirection: "row",
     padding: 10,
     marginVertical: 5,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
   },
+  filterContainer: {
+    marginBottom: 16,
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  radioButtonWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  radioButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 16,
+    marginBottom: 8,
+  },
+  radioButtonLabel: {
+    alignSelf: "center",
+  },
+
   selectedFilter: {
     backgroundColor: "#e0e0e0",
   },
