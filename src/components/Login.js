@@ -37,8 +37,8 @@ const Login = () => {
       console.log("API response:", response.data);
 
       if (response.data.token) {
-        console.log("Login successful:", response.data);
-        navigation.navigate("HomeTabs", { token: response.data.token, studentId: response.data.studentId });
+        console.log("Login successful:", response.data.referenceId);
+        navigation.navigate("HomeTabs", { token: response.data.token,referenceId : response.data.referenceId, roleId:response.data.roleId });
       } else {
         console.log("Login failed: Incorrect credentials or token missing");
       }

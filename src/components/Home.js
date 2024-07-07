@@ -13,11 +13,12 @@ import {
 } from "react-native";
 import { getJStudents, getStudentFilters } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation,useRoute  } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
 
-const Home = ({ token }) => {
+const Home = ({ token,referenceId, roleId }) => {
+  console.log("reference: ",referenceId,roleId);
   const insets = useSafeAreaInsets();
   const [students, setStudents] = useState([]);
   const [filters, setFilters] = useState({

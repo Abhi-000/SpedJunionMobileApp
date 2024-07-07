@@ -37,7 +37,6 @@ const UploadScreen = ({ route }) => {
       setCurrentChapter(selectedChapters[0]); // Set the first selected chapter as the current chapter
     }
   }, [selectedChapters]);
-
   const handleUpload = async () => {
     try {
       const formData = new FormData();
@@ -217,7 +216,7 @@ const UploadScreen = ({ route }) => {
       
       <View style={styles.chapterTextContainer}>
       
-        {chapter.isCurrent === 1 && selectedFiles.length > 0 ? (
+        {chapter.isCurrent === 1  && selectedFiles.length > 0 ? (
           selectedFiles.map((file, index) => (
             <TouchableOpacity
       onPress={handleFileSelection}
@@ -236,7 +235,7 @@ const UploadScreen = ({ route }) => {
       <View
         style={[
           styles.checkBox,
-          currentChapter === chapter.chapterId
+          (currentChapter === chapter.chapterId && chapter.isUploaded!=1)
             ? styles.yellowCheckBox
             : updatedUploadedChapters.includes(chapter.chapterId)
             ? styles.greenCheckBox

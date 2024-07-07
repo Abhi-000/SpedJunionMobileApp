@@ -18,10 +18,10 @@ import StudentsSearchScreen from "../screens/StudentSearchScreen";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const HomeStack = ({ token }) => (
+const HomeStack = ({ token, referenceId, roleId}) => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Home" options={{ headerShown: false }}>
-      {() => <HomeScreen token={token} />}
+      {() => <HomeScreen token={token} referenceId = {referenceId} roleId = {roleId} />}
     </Stack.Screen>
     <Stack.Screen name="AssignBook" component={AssignBookScreen} />
     <Stack.Screen name="AssignSuccess" component={AssignSuccessScreen} />
@@ -42,16 +42,16 @@ const BooksStack = ({ token }) => (
   </Stack.Navigator>
 );
 
-const ProfileStack = ({ token, studentId }) => (
+const ProfileStack = ({ token, referenceId, roleId }) => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Profile" options={{ headerShown: false }}>
-      {() => <ProfileScreen token={token} studentId={studentId} />}
+      {() => <ProfileScreen token = {token} referenceId={referenceId} roleId={roleId} />}
     </Stack.Screen>
   </Stack.Navigator>
 );
 
 const BottomTabNavigator = ({ route }) => {
-  const { token, studentId } = route.params;
+  const { token, studentId, referenceId, roleId } = route.params;
   console.log("student id:", studentId);
   return (
     <Tab.Navigator
@@ -97,10 +97,10 @@ const BottomTabNavigator = ({ route }) => {
         },
       })}
     >
-      <Tab.Screen name="Home">{() => <HomeStack token={token} />}</Tab.Screen>
+      <Tab.Screen name="Home">{() => <HomeStack token={token} referenceId={referenceId} roleId={roleId} />}</Tab.Screen>
       <Tab.Screen name="Books">{() => <BooksStack token={token} />}</Tab.Screen>
       <Tab.Screen name="Profile">
-        {() => <ProfileStack token={token} studentId={studentId} />}
+        {() => <ProfileStack token = {token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
     </Tab.Navigator>
   );

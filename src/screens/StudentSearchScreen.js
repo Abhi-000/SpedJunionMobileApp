@@ -183,7 +183,7 @@ const StudentsSearchScreen = ({ route }) => {
             style={styles.backButtonImage}
           />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Students</Text>
+        <Text style={styles.headerText}>Students</Text>
       </View>
       <View style={styles.parentContainer}>
         <View style={styles.container}>
@@ -374,18 +374,27 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 15,
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+   
+    backgroundColor: "#f7f7f7",
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "black",
+    padding: 20,
   },
   backButton: {
-    padding: 10,
-    marginRight: 10,
+    position: "absolute",
+    left: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   backButtonImage: {
-    width: 20,
-    height: 20,
+    width: 50,
+    height: 50,
   },
   headerTitle: {
     fontSize: 18,

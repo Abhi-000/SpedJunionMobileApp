@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import * as ImagePicker from "expo-image-picker";
 import { getSessionWiseAssessmentDetails } from "../services/api";
+import * as FileSystem from "expo-file-system";
 
 const QRCodeInputScreen = ({ route }) => {
   const { token, studentId } = route.params;
@@ -32,7 +33,7 @@ const QRCodeInputScreen = ({ route }) => {
     })();
   }, []);
 
-  const handleBarCodeScanned = async ({data }) => {
+  const handleBarCodeScanned = async ({ data }) => {
     console.log("scann", data);
     setScanned(true);
     try {
@@ -58,11 +59,33 @@ const QRCodeInputScreen = ({ route }) => {
     }
   };
 
-  const handleUploadAssignments = async () => {
+  const handleUploadAssignments = () => {
+    Alert.alert(
+      "Upload Assignments",
+      "Choose an option",
+      [
+        {
+          text: "Open Camera",
+          onPress: handleOpenCamera,
+        },
+        {
+          text: "Select from Files",
+          onPress: handlePickImage,
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const handleOpenCamera = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        allowsMultipleSelection: true,
+      let result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: true,
       });
       if (!result.canceled) {
         navigation.navigate("Upload", {
@@ -71,14 +94,73 @@ const QRCodeInputScreen = ({ route }) => {
           bookDetails: bookDetails,
           chapterDetails: chapterDetails,
           selectedFiles: result.assets,
-          selectedChapters:selectedChapters,
-          uploadedChapters:uploadedChapters
-          
+          selectedChapters: selectedChapters,
+          uploadedChapters: uploadedChapters,
         });
       }
     } catch (error) {
       console.error("Error selecting files:", error);
       Alert.alert("Error", "An error occurred while selecting files.");
+    }
+  };
+
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: false,
+      });
+
+      if (!result.canceled) {
+        const image = result.assets[0];
+
+        // Optionally resize image to reduce memory usage
+        // const resizedImage = await ImageManipulator.manipulateAsync(
+        //   image.uri,
+        //   [{ resize: { width: 800 } }],
+        //   { compress: 1, format: ImageManipulator.SaveFormat.PNG }
+        // );
+
+        const imageUri = image.uri;
+        const barcodeScanned = await scanImageForQRCode(imageUri);
+
+        if (barcodeScanned) {
+          handleBarCodeScanned({ data: barcodeScanned });
+        } else {
+          Alert.alert("Error", "No QR code detected in the selected image.");
+        }
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "An error occurred while picking the image.");
+    }
+  };
+
+
+  const scanImageForQRCode = async (imageUri) => {
+    try {
+      const imageData = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Convert the base64 string to a Uint8Array
+      const binaryString = atob(imageData);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      // Use BarcodeScanner to scan the Uint8Array
+      const results = await BarCodeScanner.scanFromURLAsync(imageUri);
+      if (results.length > 0) {
+        return results[0].data;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error scanning image for QR code:", error);
+      return null;
     }
   };
 
@@ -114,11 +196,6 @@ const QRCodeInputScreen = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Scan to Upload</Text>
         </View>
-      {/* <TouchableOpacity
-      onPress={handleBarCodeScanned}
-      >
-        <Text>Fake Scan</Text>
-      </TouchableOpacity> */}
       <View style={styles.qrCodeContainer}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -126,14 +203,27 @@ const QRCodeInputScreen = ({ route }) => {
         />
         {scanned && (
           <TouchableOpacity
-            onPress={() => setScanned(true)}
+            onPress={() => setScanned(false)}
             style={styles.rescanButton}
           >
             <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
           </TouchableOpacity>
         )}
+       
+       
         
       </View>
+      <View style= {styles.bottomContainer}>
+    <TouchableOpacity
+          onPress={handlePickImage}
+          style={styles.pickImageButton}
+        >
+          <Image
+          source={require("../../assets/gallerySelect.png")}
+          ></Image>
+          
+        </TouchableOpacity>
+        </View>
       {chapterDetails && (
         <View style={styles.detailsContainer}>
           <ScrollView
@@ -192,16 +282,19 @@ const QRCodeInputScreen = ({ route }) => {
         </View>
       )}
     </View>
+     
     </View>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  bottomContainer:
+  {
+   alignSelf:"center"
   },
   topContainer: {
     flexDirection: "row",
@@ -373,5 +466,6 @@ const styles = StyleSheet.create({
   },
 
 });
+
 
 export default QRCodeInputScreen;

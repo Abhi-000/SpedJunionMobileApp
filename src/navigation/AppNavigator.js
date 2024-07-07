@@ -15,7 +15,8 @@ import UploadScreen from "../screens/UploadScreen";
 import StudentProfileScreen from "../screens/StudentProfileScreen";
 import SummaryScreen from "../screens/SummaryScreen";
 import StudentsSearchScreen from "../screens/StudentSearchScreen"; // Import the new screen
-
+import MyProfileScreen from "../screens/MyProfileScreen";
+import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -35,7 +36,7 @@ const AppNavigator = () => {
         name="HomeTabs"
         component={BottomTabNavigator}
         options={{ headerShown: false }}
-        initialParams={{ token: '', studentId: '' }} // Add default params
+        initialParams={{ token: '', studentId: '', referenceId  : '', roleId : '' }} // Add default params
       />
       <Stack.Screen
         name="Success"
@@ -50,6 +51,16 @@ const AppNavigator = () => {
       <Stack.Screen
         name="StudentProfile"
         component={StudentProfileScreen}
+        options={{ headerShown: false }}
+      />
+       <Stack.Screen
+        name="MyProfile"
+        component={MyProfileScreen}
+        options={{ headerShown: false }}
+      />
+       <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

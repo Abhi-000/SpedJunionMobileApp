@@ -251,6 +251,37 @@ export const getStudentFilters = async (token) => {
     throw error;
   }
 };
+export const getUserDetails = async (token, referenceId, roleId) => {
+  console.log("data recvd:",token,referenceId,roleId);
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+  try {
+    const response = await api.get(`/Staff/getUserDetails/${referenceId}/${roleId}`,{headers});
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    throw error;
+  }
+};
+
+export const forgotPassword = async (token, username) => {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+  try {
+    const response = await api.get(`/Users/ForgotPassword?username=${username}`,{headers});
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    throw error;
+  }
+};
+
 
 export default {
   api,
@@ -264,4 +295,6 @@ export default {
   getSessionWiseAssessmentDetails,
   uploadAssignments,
   getStudentFilters,
+  getUserDetails,
+  forgotPassword
 };

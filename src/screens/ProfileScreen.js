@@ -1,48 +1,39 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getJuniorProfile } from "../services/api";
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { getUserDetails } from '../services/api';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ token, referenceId, roleId }) => {
+  const [user, setUser] = useState(null);
   const navigation = useNavigation();
-  const route = useRoute();
   const insets = useSafeAreaInsets();
-  const { studentId, token } = route.params;
-  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    fetchStudentProfile();
-  }, [studentId]);
+    const fetchUserDetails = async () => {
+      try {
+        const userDetails = await getUserDetails(token, referenceId, roleId);
+        setUser(userDetails);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
 
-  const fetchStudentProfile = async () => {
-    try {
-      const response = await getJuniorProfile(studentId, token);
-      setProfile(response.data);
-    } catch (error) {
-      console.error("Error fetching student profile:", error);
-    }
-  };
+    fetchUserDetails();
+  }, [referenceId, roleId]);
 
-  if (!profile) {
+  if (!user) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
-        <ActivityIndicator size="large" color="#7B5CFA" />
+      <View style={styles.container}>
+        <Text>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={[
+    <View
+      style={[
         styles.container,
         {
           paddingTop: insets.top,
@@ -52,190 +43,140 @@ const ProfileScreen = () => {
         },
       ]}
     >
-      <View style = {styles.parentHeader}>
-      <View style={styles.header}>
+      <View style={styles.topContainer}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('Home', { token })}
           style={styles.backButton}
         >
-          <Text style={styles.backButtonText}>{"<"}</Text>
+          <Image
+            style={styles.backButtonText}
+            source={require('../../assets/backButton.png')}
+          />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Student Profile</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
       </View>
-      <View style={styles.profileContainer}>
-        <Image
-          source={require("../../assets/sampleProfile.png")} // Replace with actual profile image source
-          style={styles.profileImage}
-        />
-        <Text style={styles.profileName}>{profile.name}</Text>
-        <Text style={styles.profileDetails}>
-          DOB: {profile.dob} {"\n"}
-          Class: {profile.class} Age: {profile.age} years
-        </Text>
+      <View style={styles.parentContainer}>
+        <View style={styles.profileContainer}>
+          <Image
+            style={styles.profileImage}
+            source={require('../../assets/sampleProfile.png')}
+          />
+          <Text style={styles.userName}>{user.name}</Text>
+          <Text style={styles.userEmail}>{user.email}</Text>
+        </View>
+        <View style={styles.menu}>
+          <TouchableOpacity 
+          onPress={() =>
+            navigation.navigate("MyProfile", {
+              token: token,
+              referenceId:referenceId,
+              roleId:roleId
+            })
+          }
+          style={styles.menuItem}>
+            <Ionicons name="person-outline" size={20} color="#6A53A2" />
+            <Text style={styles.menuText}>My Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+          onPress={() =>
+            navigation.navigate("ForgotPassword", {
+              token: token,
+            })
+          }
+          style={styles.menuItem}>
+            <Ionicons name="lock-closed-outline" size={20} color="#6A53A2" />
+            <Text style={styles.menuText}>Change Password</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem}>
+            <Ionicons name="document-text-outline" size={20} color="#6A53A2" />
+            <Text style={styles.menuText}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Login")
+          }
+          style={styles.menuItem}>
+            <Ionicons name="log-out-outline" size={20} color="#6A53A2" />
+            <Text style={styles.menuText}>Log Out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.uploadButton}>
-          <Text style={styles.buttonText}>Upload Assignment</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.assignButton}>
-          <Text style={styles.buttonText}>Assign Books</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.assignmentsContainer}>
-        <Text style={styles.assignmentsTitle}>
-          Assigned Books & Assignments
-        </Text>
-        {profile.assignments.map((assignment) => (
-          <View key={assignment.id} style={styles.assignmentCard}>
-            <View style={styles.assignmentHeader}>
-              <Text style={[styles.assignmentDifficulty, { backgroundColor: assignment.difficultyColor }]}>
-                {assignment.difficulty}
-              </Text>
-              <Text style={styles.assignmentScore}>
-                {assignment.score} / 20
-              </Text>
-            </View>
-            <Text style={styles.assignmentTitle}>{assignment.title}</Text>
-            <Text style={styles.assignmentDate}>
-              Assign Date: {assignment.date}
-            </Text>
-            <TouchableOpacity style={styles.summaryButton}>
-              <Text style={styles.summaryButtonText}>Summary</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
-      </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor: "#fff",
+    flex: 1,
+    backgroundColor: '#f8f8f8',
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#fff",
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    backgroundColor: '#f7f7f7',
   },
   backButton: {
-    padding: 10,
+    position: 'absolute',
+    left: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   backButtonText: {
-    fontSize: 18,
-    color: "#000",
+    width: 50,
+    height: 50,
   },
-  headerText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    flex: 1,
-    textAlign: "center",
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  parentContainer: {
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    backgroundColor: '#6A53A2',
+    paddingTop: 20,
+    alignItems: 'center',
   },
   profileContainer: {
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#6A53A2",
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
+    alignItems: 'center',
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
+    marginBottom: 10,
   },
-  profileName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-    marginVertical: 10,
-  },
-  profileDetails: {
-    fontSize: 16,
-    color: "#fff",
-    textAlign: "center",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    padding: 20,
-  },
-  uploadButton: {
-    backgroundColor: "#00FF8B",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  assignButton: {
-    backgroundColor: "#7B5CFA",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  assignmentsContainer: {
-    padding: 20,
-  },
-  assignmentsTitle: {
+  userName: {
+    color: '#fff',
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontWeight: 'bold',
   },
-  assignmentCard: {
-    backgroundColor: "#fff",
+  userEmail: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  menu: {
+    marginTop: 20,
+    width: '100%',
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
-  assignmentHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  assignmentDifficulty: {
-    paddingVertical: 2,
-    paddingHorizontal: 8,
-    borderRadius: 10,
-    color: "#fff",
-    fontSize: 12,
-    marginRight: 10,
-  },
-  assignmentScore: {
+  menuText: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#d81b60",
-  },
-  assignmentTitle: {
-    fontSize: 16,
-    marginVertical: 5,
-  },
-  assignmentDate: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 5,
-  },
-  summaryButton: {
-    backgroundColor: "#7B5CFA",
-    borderRadius: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    alignSelf: "flex-start",
-  },
-  summaryButtonText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#fff",
+    marginLeft: 10,
   },
 });
 
