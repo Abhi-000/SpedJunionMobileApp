@@ -174,18 +174,19 @@ const styles = StyleSheet.create({
   searchContainer: {
     backgroundColor: "#6A53A2",
     padding: 15,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   searchInput: {
     backgroundColor: "#fff",
     borderRadius: 25,
-    padding: 10,
+    padding: 20,
     fontSize: 16,
     marginBottom: 10,
   },
   flatList: {
     flex: 1,
+    
     paddingHorizontal: 20,
     paddingTop: 10,
   },

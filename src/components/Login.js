@@ -11,11 +11,12 @@ import {
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import {login} from "../services/api.js"
+import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
-
+  const [modalVisible, setModalVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -43,12 +44,17 @@ const Login = () => {
         console.log("Login failed: Incorrect credentials or token missing");
       }
     } catch (error) {
-      console.error("Error logging in:", error.message);
+      setModalVisible(true);
+      //console.error("Error logging in:", error.message);
     }
   };
 
   return (
     <View style={styles.container}>
+       <IncorrectPasswordModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
       <View style={styles.topSection}>
         <Image
           source={require("../../assets/loginBg.png")} // Add your image here
@@ -99,12 +105,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#6A53A2", // Background color from the provided image
   },
   topSection: {
+    paddingTop:50,
     alignItems: "center",
     marginBottom: 20,
   },
   iconBoyImage: {
-    width: 150, // Adjust as necessary
-    height: 150, // Adjust as necessary
+    resizeMode:'contain',
+    width:450,
+    height:200,
     marginBottom: 20,
   },
   title: {

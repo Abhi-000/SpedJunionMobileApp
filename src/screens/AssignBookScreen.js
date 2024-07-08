@@ -54,7 +54,8 @@ const AssignBookScreen = () => {
         title: "Successfully Assigned",
         message: "Successfully Assigned To Students",
         buttonText: "Continue",
-        token: token,
+        nextScreen:"Books",
+        nextScreenParams:{token},
       });
     } catch (error) {
       console.error("Error assigning book:", error);

@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getUserDetails } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import LogoutModal from '../components/LogoutModal';
+import { useLoading } from '../navigation/AppWrapper';
 const ProfileScreen = ({ token, referenceId, roleId }) => {
   const [user, setUser] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const { setLoading } = useLoading();
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
+        //setLoading(true);
         const userDetails = await getUserDetails(token, referenceId, roleId);
+        console.log(userDetails);
         setUser(userDetails);
+        //setLoading(false);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
@@ -23,13 +29,6 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
     fetchUserDetails();
   }, [referenceId, roleId]);
 
-  if (!user) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
 
   return (
     <View
@@ -43,6 +42,10 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
         },
       ]}
     >
+       <LogoutModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
       <View style={styles.topContainer}>
         <TouchableOpacity
           onPress={() => navigation.navigate('Home', { token })}
@@ -55,15 +58,21 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
+      
       <View style={styles.parentContainer}>
-        <View style={styles.profileContainer}>
+      <ImageBackground
+        style = {styles.backgroundImage}
+        source={require("../../assets/wavyPattern.png")}
+        >
+        {(user && <View style={styles.profileContainer}>
           <Image
             style={styles.profileImage}
             source={require('../../assets/sampleProfile.png')}
           />
           <Text style={styles.userName}>{user.name}</Text>
           <Text style={styles.userEmail}>{user.email}</Text>
-        </View>
+        </View>)}
+        </ImageBackground>
         <View style={styles.menu}>
           <TouchableOpacity 
           onPress={() =>
@@ -92,9 +101,7 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
             <Text style={styles.menuText}>Privacy Policy</Text>
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("Login")
-          }
+          onPress={() => setModalVisible(true)}
           style={styles.menuItem}>
             <Ionicons name="log-out-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Log Out</Text>
@@ -109,6 +116,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',
+  },
+  backgroundImage:
+  {
+    flexGrow:1,
+    width:"100%",
+    resizeMode:'cover'
   },
   topContainer: {
     flexDirection: 'row',
@@ -138,10 +151,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     backgroundColor: '#6A53A2',
-    paddingTop: 20,
     alignItems: 'center',
   },
   profileContainer: {
+    paddingTop:20,
     alignItems: 'center',
   },
   profileImage: {
@@ -160,7 +173,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   menu: {
-    marginTop: 20,
+    marginTop:20,
     width: '100%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,

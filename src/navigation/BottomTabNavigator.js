@@ -1,6 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
 import HomeScreen from "../screens/HomeScreen";
 import BooksScreen from "../screens/BooksScreen";
 import ProfileScreen from "../screens/ProfileScreen";
@@ -18,34 +18,34 @@ import StudentsSearchScreen from "../screens/StudentSearchScreen";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const HomeStack = ({ token, referenceId, roleId}) => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Home" options={{ headerShown: false }}>
-      {() => <HomeScreen token={token} referenceId = {referenceId} roleId = {roleId} />}
+const defaultStackScreenOptions = {
+  headerShown: false,
+  gestureEnabled: true,
+  cardOverlayEnabled: true,
+  ...TransitionPresets.DefaultTransition,
+};
+
+const HomeStack = ({ token, referenceId, roleId }) => (
+  <Stack.Navigator screenOptions={defaultStackScreenOptions}>
+    <Stack.Screen name="Home">
+      {() => <HomeScreen token={token} referenceId={referenceId} roleId={roleId} />}
     </Stack.Screen>
-    <Stack.Screen name="AssignBook" component={AssignBookScreen} />
-    <Stack.Screen name="AssignSuccess" component={AssignSuccessScreen} />
-    <Stack.Screen name="BookSummary" component={BookSummaryScreen} />
-    <Stack.Screen name="Students" component={StudentsScreen} />
-    <Stack.Screen name="AssignedBooks" component={AssignedBooksScreen} />
-    <Stack.Screen name="Scan" component={ScanScreen} />
-    <Stack.Screen name="QRCodeInput" component={QRCodeInputScreen} />
-    <Stack.Screen name="StudentsSearch" component={StudentsSearchScreen} />
+
   </Stack.Navigator>
 );
 
 const BooksStack = ({ token }) => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Books" options={{ headerShown: false }}>
+  <Stack.Navigator screenOptions={defaultStackScreenOptions}>
+    <Stack.Screen name="Books">
       {() => <BooksScreen token={token} />}
     </Stack.Screen>
   </Stack.Navigator>
 );
 
 const ProfileStack = ({ token, referenceId, roleId }) => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Profile" options={{ headerShown: false }}>
-      {() => <ProfileScreen token = {token} referenceId={referenceId} roleId={roleId} />}
+  <Stack.Navigator screenOptions={defaultStackScreenOptions}>
+    <Stack.Screen name="Profile">
+      {() => <ProfileScreen token={token} referenceId={referenceId} roleId={roleId} />}
     </Stack.Screen>
   </Stack.Navigator>
 );
@@ -53,6 +53,7 @@ const ProfileStack = ({ token, referenceId, roleId }) => (
 const BottomTabNavigator = ({ route }) => {
   const { token, studentId, referenceId, roleId } = route.params;
   console.log("student id:", studentId);
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -97,10 +98,14 @@ const BottomTabNavigator = ({ route }) => {
         },
       })}
     >
-      <Tab.Screen name="Home">{() => <HomeStack token={token} referenceId={referenceId} roleId={roleId} />}</Tab.Screen>
-      <Tab.Screen name="Books">{() => <BooksStack token={token} />}</Tab.Screen>
+      <Tab.Screen name="Home">
+        {() => <HomeStack token={token} referenceId={referenceId} roleId={roleId} />}
+      </Tab.Screen>
+      <Tab.Screen name="Books">
+        {() => <BooksStack token={token} />}
+      </Tab.Screen>
       <Tab.Screen name="Profile">
-        {() => <ProfileStack token = {token} referenceId={referenceId} roleId={roleId} />}
+        {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
     </Tab.Navigator>
   );

@@ -15,9 +15,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
-
+import { useLoading } from "../navigation/AppWrapper";
 const StudentsSearchScreen = ({ route }) => {
   const { token } = route.params;
+  const { setLoading } = useLoading();
+
   const insets = useSafeAreaInsets();
   const [students, setStudents] = useState([]);
   const [filters, setFilters] = useState({
@@ -47,9 +49,11 @@ const StudentsSearchScreen = ({ route }) => {
 
   const fetchStudents = async (conditions = []) => {
     try {
+      setLoading(true);
       const response = await getJStudents(token, conditions);
       handleSearch(searchText);
       setStudents(response.juniorStudentResponse);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -57,11 +61,13 @@ const StudentsSearchScreen = ({ route }) => {
 
   const fetchFilters = async () => {
     try {
+      setLoading(true);
       const response = await getStudentFilters(token);
       setAvailableFilters({
         ageGroups: response.ageGroup.map((group) => group.ageGroup),
         classGroups: response.classGroup.map((group) => group.classGroup),
       });
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching filters:", error);
     }
@@ -169,6 +175,8 @@ const StudentsSearchScreen = ({ route }) => {
       style={[
         styles.container,
         {
+          borderTopLeftRadius:0,
+          borderTopRightRadius:0,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
@@ -361,6 +369,8 @@ const styles = StyleSheet.create({
   mainContainer: { flex: 1 },
   container: {
     flex: 1,
+    borderTopLeftRadius:30,
+    borderTopRightRadius:30,
     justifyContent: "flex-start",
     backgroundColor: "#6A53A2",
     paddingTop: 10,
@@ -404,7 +414,8 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    marginTop:10,
+    padding: 5,
     width: "90%",
     alignSelf: "center",
     backgroundColor: "white",

@@ -13,11 +13,11 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HalfCircleProgress from "../components/HalfCircleProgress";
 import { getJuniorProfile } from "../services/api";
-
+import { useLoading } from "../navigation/AppWrapper";
 const StudentProfileScreen = () => {
   const [studentData, setStudentData] = useState(null);
   const [bookDetails, setBookDetails] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { setLoading } = useLoading();
   const [error, setError] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
@@ -28,6 +28,7 @@ const StudentProfileScreen = () => {
   }, [route.params?.studentId, route.params?.token]);
   const fetchStudents = async () => {
     try {
+      setLoading(true);
       const response = await getJuniorProfile(
         route.params?.studentId,
         route.params?.token
@@ -75,13 +76,7 @@ const StudentProfileScreen = () => {
     ));
   };
 
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color="#6A53A2" />
-      </View>
-    );
-  }
+  
 
   if (error) {
     return (
@@ -190,12 +185,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    paddingBottom: 30,
     backgroundColor: "#f7f7f7",
   },
   parentContainer: {
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
     backgroundColor: "#6A53A2",
   },
   headerContainer: {
@@ -223,7 +217,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     backgroundColor: "#ffffff",
-    borderRadius: 10,
+    borderRadius: 20,
     margin: 20,
     padding: 5,
     alignItems: "center",
@@ -280,8 +274,8 @@ const styles = StyleSheet.create({
   },
   assignedBooksContainer: {
     backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     padding: 20,
   },
   sectionTitle: {

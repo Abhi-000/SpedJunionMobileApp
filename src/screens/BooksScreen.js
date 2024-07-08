@@ -14,6 +14,7 @@ import {
   useFocusEffect,
 } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLoading } from '../navigation/AppWrapper';
 
 const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
@@ -21,11 +22,13 @@ const BooksScreen = ({ token: propToken }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
-
+  const { setLoading } = useLoading();
   const fetchBooks = async (currentToken) => {
     try {
+      setLoading(true);
       const response = await getAllBooks(currentToken);
       setBooks(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching books:", error);
     }

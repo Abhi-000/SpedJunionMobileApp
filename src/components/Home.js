@@ -11,15 +11,19 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { getJStudents, getStudentFilters } from "../services/api";
+import { getJStudents, getStudentFilters,getUserDetails } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation,useRoute  } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
+import { useLoading } from '../navigation/AppWrapper';
 
 const Home = ({ token,referenceId, roleId }) => {
   console.log("reference: ",referenceId,roleId);
+  const { setLoading } = useLoading();
+
   const insets = useSafeAreaInsets();
+  const [username, setUsername] = useState("");
   const [students, setStudents] = useState([]);
   const [filters, setFilters] = useState({
     studentClass: "",
@@ -36,16 +40,39 @@ const Home = ({ token,referenceId, roleId }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [viewAll, setViewAll] = useState(false);
   const navigation = useNavigation();
+  
 
   useEffect(() => {
     fetchFilters();
     fetchStudents(); // Fetch initial list of students without any filters
   }, [token]);
+  useEffect(() => {
+    
+    const fetchUserDetails = async () => {
+      try {
+        setLoading(true);
+        const userDetails = await getUserDetails(token, referenceId, roleId);
+        setUsername(userDetails.name);
+        setLoading(false);
+
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [referenceId, roleId]);
 
   useEffect(() => {
-    fetchStudents(generateConditions());
+    const fetchAndSetStudents = async () => {
+      setLoading(true);
+      await fetchStudents(generateConditions());
+      setLoading(false);
+    };
+  
+    fetchAndSetStudents();
   }, [selectedAge, selectedClass, filters]);
-
+  
   const fetchStudents = async (conditions = []) => {
     try {
       const response = await getJStudents(token, conditions);
@@ -54,15 +81,18 @@ const Home = ({ token,referenceId, roleId }) => {
     } catch (error) {
       console.error("Error fetching students:", error);
     }
+    
   };
 
   const fetchFilters = async () => {
     try {
+      setLoading(true);
       const response = await getStudentFilters(token);
       setAvailableFilters({
         ageGroups: response.ageGroup.map((group) => group.ageGroup),
         classGroups: response.classGroup.map((group) => group.classGroup),
       });
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching filters:", error);
     }
@@ -170,6 +200,8 @@ const Home = ({ token,referenceId, roleId }) => {
       style={[
         styles.container,
         {
+          borderTopLeftRadius:0,
+          borderTopRightRadius:0,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
@@ -177,15 +209,18 @@ const Home = ({ token,referenceId, roleId }) => {
         },
       ]}
     >
+      
       <View style={styles.parentContainer}>
+     
         <View style={styles.headersParent}>
+        
           <Image
             source={require("../../assets/sampleProfile.png")}
             style={{ width: 60, height: 60 }}
           />
           <View style={styles.header}>
-            <Text style={styles.headerText}>Ibne Riead</Text>
-            <Text style={styles.headerText}>Tec no: 04</Text>
+            <Text style={styles.headerText}>{username}</Text>
+            <Text style={styles.headerText}>Tec no: {roleId}</Text>
           </View>
         </View>
         <View style={styles.container}>
@@ -388,6 +423,7 @@ const Home = ({ token,referenceId, roleId }) => {
           </View>
         </View>
       </View>
+      
     </View>
   );
 };
@@ -398,10 +434,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "#6A53A2",
+    borderTopLeftRadius:30,
+    borderTopRightRadius:30,
     paddingTop: 10,
   },
   parentContainer: {
     flex: 1,
+    
     justifyContent: "flex-start",
     backgroundColor: "white",
     paddingTop: 10,
@@ -425,7 +464,8 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    marginTop:10,
+    padding: 5,
     width: "90%",
     alignSelf: "center",
     backgroundColor: "white",

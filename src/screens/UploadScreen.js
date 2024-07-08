@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { uploadAssignments } from "../services/api";
 import * as ImagePicker from "expo-image-picker";
-
+import DuplicateAssignment from "../components/DuplicateAssignment";
 
 const UploadScreen = ({ route }) => {
   const {
@@ -30,6 +30,8 @@ const UploadScreen = ({ route }) => {
   const [score, setScore] = useState("");
   const [observations, setObservations] = useState("");
   const [currentChapter, setCurrentChapter] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [updatedUploadedChapters, setUpdatedUploadedChapters] =
     useState(uploadedChapters);
   useEffect(() => {
@@ -52,7 +54,7 @@ const UploadScreen = ({ route }) => {
       formData.append("BookId", bookDetails.bookId);
 
       const response = await uploadAssignments(token, formData);
-      console.log(response);
+      console.log(response.data);
       if (response.data.success) {
           navigation.navigate('Success', {
           title: 'Success!',
@@ -74,7 +76,9 @@ const UploadScreen = ({ route }) => {
         setUpdatedUploadedChapters((prev) => [...prev, currentChapter]);
         setCurrentChapter(null); // Reset current chapter after upload
       } else {
-        Alert.alert("Error", "Failed to upload assignments.");
+        setModalVisible(true);
+        
+        //Alert.alert("Error", "Failed to upload assignments.");
       }
     } catch (error) {
       console.error("Error uploading assignments:", error);
@@ -279,6 +283,9 @@ const UploadScreen = ({ route }) => {
     </View>
    
     </View>
+    <DuplicateAssignment 
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}/>
     </View>
   );
 };
@@ -302,8 +309,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   parentContainer: {
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
     backgroundColor: "#6A53A2",
     flex: 1,
   },
@@ -340,6 +347,7 @@ const styles = StyleSheet.create({
   
   detailsContainer: {
     padding: 20,
+    
   },
   detailsContent: {
     alignItems: "center",
