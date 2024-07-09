@@ -1,15 +1,24 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const CustomCheckBox = ({ isChecked, onPress }) => {
+const CustomCheckBox = ({
+  isChecked,
+  onPress,
+  checkBoxStyle,
+  checkedStyle,
+  checkMarkStyle,
+}) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      <View style={[styles.checkBox, isChecked && styles.checked]}>
-        {isChecked && <Text style={styles.checkMark}>✓</Text>}
+      <View
+        style={[
+          styles.checkBox,
+          checkBoxStyle,
+          isChecked && [styles.checked, checkedStyle],
+        ]}
+      >
+        {isChecked && <Text style={[styles.checkMark, checkMarkStyle]}>✓</Text>}
       </View>
-      {/* Commented out the label as it is not required in your context
-      <Text style={styles.label}>Check this box</Text> 
-      */}
     </TouchableOpacity>
   );
 };
@@ -26,15 +35,13 @@ const styles = StyleSheet.create({
     borderColor: "#000",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   checked: {
     backgroundColor: "#00FF8B",
   },
   checkMark: {
     color: "#fff",
-  },
-  label: {
-    marginLeft: 10,
   },
 });
 

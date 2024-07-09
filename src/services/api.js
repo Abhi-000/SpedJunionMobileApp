@@ -72,13 +72,23 @@ export const getAllBooks = async (token) => {
     "Content-Type": "application/json",
   };
 
+  const body = {
+    sortBy: "BM.Id",
+    sortOrder: "DESC",
+    pageSize: 25,
+    pageCount: 1,
+    conditions: [],
+  };
+
   api.interceptors.request.use((request) => {
     console.log("Starting Request", JSON.stringify(request, null, 2));
     return request;
   });
 
   try {
-    const response = await api.get("/Book/SpedJuniorTestAPI", { headers });
+    const response = await api.post("/Book/GetAllSpedJuniorBooks", body, {
+      headers,
+    });
     console.log("Books response:", response.data);
     return response;
   } catch (error) {
@@ -252,17 +262,20 @@ export const getStudentFilters = async (token) => {
   }
 };
 export const getUserDetails = async (token, referenceId, roleId) => {
-  console.log("data recvd:",token,referenceId,roleId);
+  console.log("data recvd:", token, referenceId, roleId);
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
   try {
-    const response = await api.get(`/Staff/getUserDetails/${referenceId}/${roleId}`,{headers});
-    
+    const response = await api.get(
+      `/Staff/getUserDetails/${referenceId}/${roleId}`,
+      { headers }
+    );
+
     return response.data;
   } catch (error) {
-    console.error('Error fetching user details:', error);
+    console.error("Error fetching user details:", error);
     throw error;
   }
 };
@@ -273,15 +286,17 @@ export const forgotPassword = async (token, username) => {
     "Content-Type": "application/json",
   };
   try {
-    const response = await api.get(`/Users/ForgotPassword?username=${username}`,{headers});
+    const response = await api.get(
+      `/Users/ForgotPassword?username=${username}`,
+      { headers }
+    );
     console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error('Error resetting password:', error);
+    console.error("Error resetting password:", error);
     throw error;
   }
 };
-
 
 export default {
   api,
@@ -296,5 +311,5 @@ export default {
   uploadAssignments,
   getStudentFilters,
   getUserDetails,
-  forgotPassword
+  forgotPassword,
 };

@@ -1,4 +1,3 @@
-// src/screens/AssignedBooksScreen.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -23,7 +22,7 @@ const AssignedBooksScreen = ({ token: propToken }) => {
     try {
       const response = await getAllBooks(currentToken);
       console.log("Fetched books data:", response.data);
-      setBooks(response.data);
+      setBooks(response.data.getAllBooksResponses); // Update this line
     } catch (error) {
       console.error("Error fetching books:", error);
     }
@@ -58,13 +57,13 @@ const AssignedBooksScreen = ({ token: propToken }) => {
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
         <Text style={styles.bookDetails}>
-          Total Students: {item.totalStudents || 0}
+          Total Students: {item.studentCounts.totalStudents || 0}
         </Text>
         <TouchableOpacity
           style={styles.studentsButton}
           onPress={() =>
             navigation.navigate("Students", {
-              bookId: item.id,
+              bookId: item.bookId,
               token: propToken || route.params?.token,
               bookDetails: item,
             })
@@ -139,7 +138,7 @@ const AssignedBooksScreen = ({ token: propToken }) => {
         <FlatList
           data={filterBooks()}
           renderItem={renderBook}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.bookId.toString()} // Update this line
           contentContainerStyle={styles.listContainer}
           ListHeaderComponent={<View style={styles.listHeader} />}
         />

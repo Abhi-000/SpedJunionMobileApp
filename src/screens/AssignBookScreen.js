@@ -19,7 +19,7 @@ const AssignBookScreen = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const route = useRoute();
   const navigation = useNavigation();
-  const { bookId, token } = route.params;
+  const { bookId, token, alreadyAssignedStudents } = route.params;
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -35,6 +35,12 @@ const AssignBookScreen = () => {
     fetchStudents();
   }, [token]);
 
+  useEffect(() => {
+    if (alreadyAssignedStudents) {
+      setSelectedStudents(alreadyAssignedStudents.map((id) => parseInt(id)));
+    }
+  }, [alreadyAssignedStudents]);
+
   const handleSelectStudent = (studentId) => {
     setSelectedStudents((prevSelected) =>
       prevSelected.includes(studentId)
@@ -45,17 +51,13 @@ const AssignBookScreen = () => {
 
   const handleAssign = async () => {
     try {
-      console.log("Assigning book with data:", {
-        bookId,
-        selectedStudents,
-      });
       await assignBook(bookId, selectedStudents, token);
       navigation.navigate("Success", {
         title: "Successfully Assigned",
         message: "Successfully Assigned To Students",
         buttonText: "Continue",
-        nextScreen:"Books",
-        nextScreenParams:{token},
+        nextScreen: "Books",
+        nextScreenParams: { token },
       });
     } catch (error) {
       console.error("Error assigning book:", error);
@@ -107,7 +109,7 @@ const AssignBookScreen = () => {
               <View style={styles.studentItem}>
                 <View style={styles.studentInfo}>
                   <Image
-                    source={require("../../assets/sampleProfile.png")} // Placeholder for the student's avatar
+                    source={require("../../assets/sampleProfile.png")}
                     style={styles.avatar}
                   />
                   <View>
@@ -123,6 +125,9 @@ const AssignBookScreen = () => {
                 <CustomCheckBox
                   isChecked={selectedStudents.includes(item.id)}
                   onPress={() => handleSelectStudent(item.id)}
+                  checkBoxStyle={{ borderColor: "#000" }} // Black border when not checked
+                  checkedStyle={{ backgroundColor: "#6A53A2" }} // Box color when checked
+                  checkMarkStyle={{ color: "#fff" }} // White tick
                 />
               </View>
             </View>

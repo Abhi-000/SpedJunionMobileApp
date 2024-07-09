@@ -14,7 +14,7 @@ import {
   useFocusEffect,
 } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLoading } from '../navigation/AppWrapper';
+import { useLoading } from "../navigation/AppWrapper";
 
 const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
@@ -23,22 +23,22 @@ const BooksScreen = ({ token: propToken }) => {
   const route = useRoute();
   const insets = useSafeAreaInsets();
   const { setLoading } = useLoading();
+
   const fetchBooks = async (currentToken) => {
     try {
       setLoading(true);
       const response = await getAllBooks(currentToken);
-      setBooks(response.data);
+      setBooks(response.data.getAllBooksResponses); // Update this line
       setLoading(false);
     } catch (error) {
       console.error("Error fetching books:", error);
+      setLoading(false);
     }
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log(route.params?.token);
       const currentToken = propToken || route.params?.token;
-      console.log(currentToken);
       fetchBooks(currentToken);
     }, [propToken])
   );
@@ -55,7 +55,7 @@ const BooksScreen = ({ token: propToken }) => {
   const renderBook = ({ item }) => (
     <View style={styles.card}>
       <Image
-        source={require("../../assets/bookSample.png")} // Assuming the image URL is provided in the item
+        source={require("../../assets/bookSample.png")}
         style={styles.bookImage}
       />
       <View style={styles.cardContent}>
@@ -68,8 +68,11 @@ const BooksScreen = ({ token: propToken }) => {
             style={styles.assignButton}
             onPress={() =>
               navigation.navigate("AssignBook", {
-                bookId: item.id,
+                bookId: item.bookId,
                 token: propToken || route.params?.token,
+                alreadyAssignedStudents: item.studentCounts.studentIds
+                  .split(",")
+                  .map((id) => parseInt(id)), // Pass already assigned students
               })
             }
           >
@@ -148,7 +151,7 @@ const BooksScreen = ({ token: propToken }) => {
         <FlatList
           data={filterBooks()}
           renderItem={renderBook}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.bookId.toString()} // Update this line
           contentContainerStyle={styles.listContainer}
           ListHeaderComponent={<View style={styles.listHeader} />}
         />
