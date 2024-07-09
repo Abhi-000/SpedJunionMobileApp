@@ -296,23 +296,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   bottomContainer: {
-    flex:1,
     backgroundColor: '#ffffff',
-    borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
     padding: 30,
-    marginVertical:10,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 5,
-    elevation: 2,
   },
   parentContainer: {
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
     backgroundColor: "#6A53A2",
-    flex: 1,
+    
   },
   header: {
     flexDirection: "row",

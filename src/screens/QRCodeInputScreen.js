@@ -141,7 +141,29 @@ const QRCodeInputScreen = ({ route }) => {
       Alert.alert("Error", "An error occurred while picking the image.");
     }
   };
-
+  const handlePickAssignmentFile = async () => {
+    setModalVisible(false);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsMultipleSelection: true,
+      });
+      if (!result.canceled) {
+        navigation.navigate("Upload", {
+          token,
+          studentId,
+          bookDetails: bookDetails,
+          chapterDetails: chapterDetails,
+          selectedFiles: result.assets,
+          selectedChapters: selectedChapters,
+          uploadedChapters: uploadedChapters,
+        });
+      }
+    } catch (error) {
+      console.error("Error selecting assignment files:", error);
+      Alert.alert("Error", "An error occurred while selecting files.");
+    }
+  };
 
   const scanImageForQRCode = async (imageUri) => {
     try {
@@ -173,7 +195,7 @@ const QRCodeInputScreen = ({ route }) => {
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
   }
-  if (hasPermission === false) {
+  if (hasPermission === false) {  
     return <Text>No access to camera</Text>;
   }
 
@@ -306,7 +328,7 @@ const QRCodeInputScreen = ({ route }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={handlePickImage}
+              onPress={handlePickAssignmentFile}
             >
               <Text style={styles.modalButtonText}>Select from Files</Text>
             </TouchableOpacity>

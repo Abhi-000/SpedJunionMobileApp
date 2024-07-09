@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HalfCircleProgress from "../components/HalfCircleProgress";
 import { getJuniorProfile } from "../services/api";
 import { useLoading } from "../navigation/AppWrapper";
+
 const StudentProfileScreen = () => {
   const [studentData, setStudentData] = useState(null);
   const [bookDetails, setBookDetails] = useState([]);
@@ -22,10 +23,12 @@ const StudentProfileScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
-  const {studentId,token} = route.params;
+  const { studentId, token } = route.params;
+
   useEffect(() => {
     fetchStudents();
   }, [route.params?.studentId, route.params?.token]);
+
   const fetchStudents = async () => {
     try {
       setLoading(true);
@@ -75,8 +78,6 @@ const StudentProfileScreen = () => {
       </View>
     ));
   };
-
-  
 
   if (error) {
     return (
@@ -156,7 +157,7 @@ const StudentProfileScreen = () => {
             <Text style={styles.sectionTitle}>
               Assigned Books & Assignments
             </Text>
-            <ScrollView style={styles.bookListContainer}>
+           <ScrollView style={styles.bookListContainer}>
               {renderBookDetails()}
             </ScrollView>
             <View style={styles.additionalSections}>
@@ -176,7 +177,7 @@ const StudentProfileScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    
+    flex: 1,
     backgroundColor: "#f8f8f8",
   },
   topContainer: {
@@ -188,6 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f7f7f7",
   },
   parentContainer: {
+    flex: 7,
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
     backgroundColor: "#6A53A2",
@@ -273,6 +275,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   assignedBooksContainer: {
+    flex: 1,
     backgroundColor: "white",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -283,6 +286,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     color: "#333",
+  },
+  bookListContainer: {
+    flex: 1,
   },
   bookCard: {
     backgroundColor: "#fff",
@@ -328,6 +334,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   additionalSections: {
+    
     margin: 10,
   },
   additionalSection: {
