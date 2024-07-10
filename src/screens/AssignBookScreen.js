@@ -142,8 +142,8 @@ const AssignBookScreen = () => {
             </View>
           )}
         />
-        <TouchableOpacity style={styles.assignButton} onPress={handleAssign}>
-          <Text style={styles.buttonText}>Assign</Text>
+        <TouchableOpacity style={styles.submitButton} onPress={handleAssign}>
+          <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     paddingBottom: 20,
     backgroundColor: "#f7f7f7",
@@ -185,13 +185,15 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#6A53A2",
-    paddingVertical: 15,
+    paddingVertical: 20,
     paddingHorizontal: 10,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+    alignItems: "center",
   },
   searchInput: {
     height: 45,
+    width: "90%",
     backgroundColor: "#fff",
     borderRadius: 20,
     paddingHorizontal: 15,
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 20,
     backgroundColor: "#fff",
     marginVertical: 5,
     shadowColor: "#000",
@@ -235,12 +237,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
   },
-  assignButton: {
-    backgroundColor: "#6A53A2",
+  submitButton: {
+    backgroundColor: "#63C3A8",
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",
     marginVertical: 10,
+    marginHorizontal: 50,
   },
   buttonText: {
     color: "#fff",

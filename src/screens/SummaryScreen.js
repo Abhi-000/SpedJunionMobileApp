@@ -1,11 +1,18 @@
 // src/screens/SummaryScreen.js
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import axios from 'axios';
-import { FontAwesome } from '@expo/vector-icons'; // Make sure you have installed @expo/vector-icons
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {getBookSummary} from '../services/api'
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import axios from "axios";
+import { FontAwesome } from "@expo/vector-icons"; // Make sure you have installed @expo/vector-icons
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getBookSummary } from "../services/api";
 
 const SummaryScreen = () => {
   const [studentData, setStudentData] = useState(null);
@@ -97,7 +104,7 @@ const SummaryScreen = () => {
         setBookData(jBooks);
         setChapters(filteredJChapters.jChapters);
       } catch (error) {
-        console.error('Error fetching summary:', error);
+        console.error("Error fetching summary:", error);
       }
     };
 
@@ -107,10 +114,14 @@ const SummaryScreen = () => {
   const renderChapters = () => {
     return chapters.map((chapter, index) => (
       <View key={index} style={styles.chapterContainer}>
-        <Text style={styles.chapterOrder}>{chapter.order.toString().padStart(2, '0')}</Text>
+        <Text style={styles.chapterOrder}>
+          {chapter.order.toString().padStart(2, "0")}
+        </Text>
         <View style={styles.chapterDetails}>
           <Text style={styles.chapterTitle}>{chapter.title}</Text>
-          <Text style={styles.chapterDate}>{new Date(chapter.uploadedDate).toLocaleDateString()}</Text>
+          <Text style={styles.chapterDate}>
+            {new Date(chapter.uploadedDate).toLocaleDateString()}
+          </Text>
         </View>
         <View style={styles.chapterStatus}>
           {chapter.isUploaded ? (
@@ -138,7 +149,9 @@ const SummaryScreen = () => {
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("StudentProfile", { studentId, token: token })}
+            onPress={() =>
+              navigation.navigate("StudentProfile", { studentId, token: token })
+            }
             style={styles.backButton}
           >
             <Image
@@ -166,18 +179,18 @@ const SummaryScreen = () => {
           <View style={styles.studentInfoContainer}>
             <Image
               style={styles.profileImage}
-              source={require('../../assets/sampleProfile.png')} // Add your placeholder image in assets
+              source={require("../../assets/sampleProfile.png")} // Add your placeholder image in assets
             />
             <View style={styles.profileDetails}>
               <Text style={styles.studentName}>{studentData.name}</Text>
-              <Text style={styles.studentInfo}>{studentData.class} | Age: {studentData.age} years</Text>
+              <Text style={styles.studentInfo}>
+                {studentData.class} | Age: {studentData.age} years
+              </Text>
             </View>
           </View>
         )}
         <ScrollView style={styles.chaptersScrollView}>
-          <View style={styles.chaptersContainer}>
-            {renderChapters()}
-          </View>
+          <View style={styles.chaptersContainer}>{renderChapters()}</View>
         </ScrollView>
       </View>
     </View>
@@ -186,8 +199,8 @@ const SummaryScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f8f8f8',
-    flexGrow: .2,
+    backgroundColor: "#f8f8f8",
+    flexGrow: 0.2,
   },
   topContainer: {
     flexDirection: "row",
@@ -202,7 +215,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     backgroundColor: "#6A53A2",
-    
   },
   backButton: {
     position: "absolute",
@@ -216,40 +228,40 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
+    fontWeight: "bold",
+    color: "black",
     padding: 20,
   },
   contentContainer: {
-    flexDirection: 'column',
+    flexDirection: "column",
     paddingBottom: 20,
   },
   bookInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
     margin: 20,
   },
   bookDetails: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   bookDifficulty: {
     fontSize: 14,
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
   },
   bookName: {
     fontSize: 10,
-    color: 'black',
+    color: "black",
   },
   studentInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
     margin: 20,
@@ -262,40 +274,40 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileDetails: {
-    alignItems: '',
+    alignItems: "",
   },
   studentName: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   studentInfo: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginVertical: 2,
   },
   chaptersScrollView: {
     flexGrow: 1,
   },
   chaptersContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
     flexGrow: 1,
   },
   chapterContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 15,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
   },
   chapterOrder: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FF5733',
+    fontWeight: "bold",
+    color: "#FF5733",
     marginRight: 10,
   },
   chapterDetails: {
@@ -303,14 +315,14 @@ const styles = StyleSheet.create({
   },
   chapterTitle: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   chapterDate: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
   },
   chapterStatus: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   tickIcon: {
     width: 24,

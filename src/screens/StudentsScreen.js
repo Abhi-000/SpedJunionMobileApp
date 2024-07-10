@@ -1,4 +1,3 @@
-// src/screens/StudentsScreen.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -12,45 +11,42 @@ import {
 import { getAllBooks, getStudentDetailsByIds } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { useLoading } from "../navigation/AppWrapper";
+import Loader from "../components/Loader"; // Adjust the path based on your file structure
 
 const StudentsScreen = () => {
   const [bookData, setBookData] = useState(null);
   const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [uploadedDate, setUploadedDate] = useState(null);
-  const [activeTab, setActiveTab] = useState("Students");
+  const { loading, setLoading } = useLoading(); // Adjusted to include loading state
 
   const route = useRoute();
   const navigation = useNavigation();
-  const { bookId, token, bookDetails } = route.params;
+  const { bookId, token } = route.params;
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const fetchStudents = async () => {
+      setLoading(true);
       try {
         const booksResponse = await getAllBooks(token);
         console.log(booksResponse.data.getAllBooksResponses);
-        
+
         const studentBookSummaryResponses =
           booksResponse.data.getAllBooksResponses;
-        // Extract uploadedDate for the specific bookId
         const bookUploadInfo = studentBookSummaryResponses.find(
           (item) => item.bookId === bookId
         );
         setBookData(bookUploadInfo);
-        setUploadedDate(bookUploadInfo?.uploadedDate);
+
         const studentIdsString = bookUploadInfo.studentCounts.studentIds;
-        if(studentIdsString){
+        if (studentIdsString) {
           const studentDetails = await getStudentDetailsByIds(
             token,
             studentIdsString
-            
           );
           console.log(studentDetails);
           setStudents(studentDetails);
         }
-        //}
       } catch (error) {
         console.log("Error fetching students:", error);
       } finally {
@@ -61,46 +57,34 @@ const StudentsScreen = () => {
     fetchStudents();
   }, [bookId, token]);
 
-  
   const renderStudentCard = (student) => {
     return (
       <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("StudentProfile", {
-          studentId: student.id,
-          token: token,
-        })
-      }
-    >
-      <View key={student.id} style={styles.studentCard}>
-        <Image style={styles.profileImage} source={require("../../assets/sampleProfile.png")} />
-        <View style={styles.profileDetails}>
-          <Text style={styles.studentName}>{student.firstName} {student.lastName}</Text>
-          <Text style={styles.studentInfoText}>Class {student.class} | Age {student.age} years</Text>
+        key={student.id}
+        onPress={() =>
+          navigation.navigate("StudentProfile", {
+            studentId: student.id,
+            token: token,
+          })
+        }
+      >
+        <View style={styles.studentCard}>
+          <Image
+            style={styles.profileImage}
+            source={require("../../assets/sampleProfile.png")}
+          />
+          <View style={styles.profileDetails}>
+            <Text style={styles.studentName}>
+              {student.firstName} {student.lastName}
+            </Text>
+            <Text style={styles.studentInfoText}>
+              Class {student.class} | Age {student.age} years
+            </Text>
+          </View>
         </View>
-      </View>
       </TouchableOpacity>
     );
   };
-
-  // if (loading) {
-  //   return (
-  //     <View style={styles.loadingContainer}>
-  //       <ActivityIndicator size="large" color="#0000ff" />
-  //     </View>
-  //   );
-  // }
-
-  // if (error) {
-  //   return (
-  //     <View style={styles.errorContainer}>
-  //       <Text style={styles.errorText}>{error}</Text>
-  //       <TouchableOpacity onPress={fetchBookAndStudents} style={styles.retryButton}>
-  //         <Text style={styles.retryButtonText}>Retry</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // }
 
   return (
     <View
@@ -114,41 +98,43 @@ const StudentsScreen = () => {
         },
       ]}
     >
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Image
+      <Loader loading={loading} />
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Image
               style={styles.backButtonText}
               source={require("../../assets/backButton.png")}
             />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Summary</Text>
-      </View>
-      {bookData && (
-        <View style={styles.bookInfoContainer}>
-          <View style = {styles.bookContainer}>
-          <Image
-              style={{ width: 50, height: 50 }}
-              source={require("../../assets/booksCategory.png")}
-            />
-            <View style = {styles.bookDetails}>
-          <Text style={styles.bookDifficulty}>{bookData.difficulty}</Text>
-          <Text style={styles.bookName}>{bookData.name}</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Summary</Text>
+        </View>
+        {bookData && (
+          <View style={styles.bookInfoContainer}>
+            <View style={styles.bookContainer}>
+              <Image
+                style={{ width: 50, height: 50 }}
+                source={require("../../assets/booksCategory.png")}
+              />
+              <View style={styles.bookDetails}>
+                <Text style={styles.bookDifficulty}>{bookData.difficulty}</Text>
+                <Text style={styles.bookName}>{bookData.name}</Text>
+              </View>
+            </View>
+            <View style={styles.tabContainer}>
+              <Text style={styles.tabTextInactive}>Chapters</Text>
+              <Text style={styles.tabTextActive}>Students</Text>
+            </View>
+            <ScrollView style={styles.scrollView}>
+              {students.map((student) => renderStudentCard(student))}
+            </ScrollView>
           </View>
-          </View>
-        
-      
-      <View style={styles.tabContainer}>
-        <Text style={styles.tabTextInactive}>Chapters</Text>
-        <Text style={styles.tabTextActive}>Students</Text>
+        )}
       </View>
-      <ScrollView style={styles.scrollView}>
-        {students.map((student) => renderStudentCard(student))}
-      </ScrollView>
-      </View>)}
     </View>
-    </View>
-    
   );
 };
 
@@ -156,7 +142,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8f8f8",
-    paddingBottom:15,
+    paddingBottom: 15,
   },
   headerContainer: {
     flexDirection: "row",
@@ -188,31 +174,26 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     backgroundColor: "#6A53A2",
   },
-  bookContainer:
-  {
-    flexDirection: 'row',
-    alignItems: 'center',
+  bookContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
     margin: 20,
   },
   bookDetails: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   bookDifficulty: {
     fontSize: 14,
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
   },
   bookName: {
     fontSize: 10,
-    color: 'black',
-  },
-  bookStage: {
-    fontSize: 8,
-    color: "white",
+    color: "black",
   },
   tabContainer: {
     flexDirection: "row",
@@ -239,20 +220,36 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     padding: 20,
-    
   },
   studentCard: {
+    // flexDirection: "row",
+    // alignItems: "center",
+    // backgroundColor: "white",
+    // padding: 15,
+    // borderRadius: 10,
+    // marginBottom: 10,
+    // shadowColor: "#000",
+    // shadowOpacity: 0.1,
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowRadius: 5,
+    // elevation: 2,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
     marginBottom: 10,
+    borderRadius: 20,
     shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 5,
+    shadowRadius: 3.84,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
   },
   profileImage: {
     width: 40,
@@ -298,5 +295,3 @@ const styles = StyleSheet.create({
 });
 
 export default StudentsScreen;
-
-

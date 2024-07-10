@@ -1,12 +1,10 @@
-// src/components/HalfCircleProgress.js
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path, G } from 'react-native-svg';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import Svg, { Path, G } from "react-native-svg";
 
-const HalfCircleProgress = ({ total, completed }) => {
+const HalfCircleProgress = ({ total, completed, color, thickness }) => {
   const size = 100; // size of the component
-  const strokeWidth = 10;
-  const radius = (size - strokeWidth) / 2;
+  const radius = (size - thickness) / 2;
   const circumference = radius * Math.PI;
   const progress = (completed / total) * 100;
   const progressOffset = circumference - (progress / 100) * circumference;
@@ -20,7 +18,9 @@ const HalfCircleProgress = ({ total, completed }) => {
   };
 
   const arcPath = `M ${halfCircle.x - halfCircle.radius},${halfCircle.y}
-                   a ${halfCircle.radius},${halfCircle.radius} 0 1,1 ${halfCircle.radius * 2},0`;
+                   a ${halfCircle.radius},${halfCircle.radius} 0 1,1 ${
+    halfCircle.radius * 2
+  },0`;
 
   return (
     <View style={styles.container}>
@@ -29,13 +29,13 @@ const HalfCircleProgress = ({ total, completed }) => {
           <Path
             d={arcPath}
             stroke="#e0e0e0"
-            strokeWidth={strokeWidth}
+            strokeWidth={thickness}
             fill="none"
           />
           <Path
             d={arcPath}
-            stroke="#6A53A2"
-            strokeWidth={strokeWidth}
+            stroke={color}
+            strokeWidth={thickness}
             strokeDasharray={circumference}
             strokeDashoffset={progressOffset}
             fill="none"
@@ -43,8 +43,12 @@ const HalfCircleProgress = ({ total, completed }) => {
         </G>
       </Svg>
       <View style={styles.textContainer}>
-        <Text style={styles.percentageText}>{Math.round(progress)}%</Text>
-        <Text style={styles.chapterText}>{completed} / {total}</Text>
+        <Text style={[styles.percentageText, { color }]}>
+          {Math.round(progress)}%
+        </Text>
+        <Text style={[styles.chapterText, { color }]}>
+          {completed} / {total}
+        </Text>
       </View>
     </View>
   );
@@ -52,23 +56,22 @@ const HalfCircleProgress = ({ total, completed }) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   textContainer: {
-    position: 'absolute',
-    top: '35%',
-    alignItems: 'center',
+    position: "absolute",
+    top: "35%",
+    alignItems: "center",
   },
   percentageText: {
+    top: "15%",
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#6A53A2',
+    fontWeight: "bold",
   },
   chapterText: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#6A53A2',
+    fontWeight: "bold",
     marginTop: 5,
   },
 });

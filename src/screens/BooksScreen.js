@@ -15,6 +15,7 @@ import {
 } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLoading } from "../navigation/AppWrapper";
+import Loader from "../components/Loader"; // Adjust the path based on your file structure
 
 const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
@@ -22,7 +23,7 @@ const BooksScreen = ({ token: propToken }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
-  const { setLoading } = useLoading();
+  const { loading, setLoading } = useLoading(); // Adjusted to include loading state
 
   const fetchBooks = async (currentToken) => {
     try {
@@ -97,6 +98,7 @@ const BooksScreen = ({ token: propToken }) => {
         },
       ]}
     >
+      <Loader loading={loading} />
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
@@ -164,6 +166,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+    backgroundColor: "#f7f7f7",
+  },
+  backButton: {
+    position: "absolute",
+    left: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  backButtonText: {
+    width: 50,
+    height: 50,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "black",
+    padding: 20,
   },
   topContainer: {
     flexDirection: "row",

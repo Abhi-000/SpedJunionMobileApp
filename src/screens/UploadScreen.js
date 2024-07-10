@@ -39,6 +39,7 @@ const UploadScreen = ({ route }) => {
       setCurrentChapter(selectedChapters[0]); // Set the first selected chapter as the current chapter
     }
   }, [selectedChapters]);
+
   const handleUpload = async () => {
     try {
       const formData = new FormData();
@@ -56,36 +57,23 @@ const UploadScreen = ({ route }) => {
       const response = await uploadAssignments(token, formData);
       console.log(response.data);
       if (response.data.success) {
-          navigation.navigate('Success', {
-          title: 'Success!',
-          message: 'Assignment uploaded successfully.',
-          buttonText: 'Continue',
-          nextScreen: 'Upload',
-          nextScreenParams: { 
-            token,
-          studentId,
-          bookDetails: bookDetails,
-          chapterDetails: chapterDetails,
-          selectedFiles: [],
-          selectedChapters:selectedChapters,
-          uploadedChapters:uploadedChapters
-           }
-        });
-        
-        //Alert.alert("Success", "Assignments uploaded successfully.");
         setUpdatedUploadedChapters((prev) => [...prev, currentChapter]);
         setCurrentChapter(null); // Reset current chapter after upload
+
+        // Navigate to ScanScreen on successful upload
+        navigation.navigate("Scan", {
+          token,
+          studentId,
+        });
       } else {
         setModalVisible(true);
-        
-        //Alert.alert("Error", "Failed to upload assignments.");
+        Alert.alert("Error", "Failed to upload assignments.");
       }
     } catch (error) {
       console.error("Error uploading assignments:", error);
       Alert.alert("Error", "An error occurred while uploading assignments.");
     }
   };
-  
 
   const handleChapterPress = (chapterId) => {
     setCurrentChapter(chapterId);
@@ -103,24 +91,18 @@ const UploadScreen = ({ route }) => {
           bookDetails: bookDetails,
           chapterDetails: chapterDetails,
           selectedFiles: result.assets,
-          selectedChapters:selectedChapters,
-          uploadedChapters:uploadedChapters
-          
+          selectedChapters: selectedChapters,
+          uploadedChapters: uploadedChapters,
         });
       }
     } catch (error) {
       console.error("Error selecting files:", error);
       Alert.alert("Error", "An error occurred while selecting files.");
     }
-    
   };
-  
-  
 
   const handleDeleteFile = () => {
-    // setSelectedFiles([]);
     const updatedFiles = [];
-    // Update state with the new array of files
     navigation.navigate("Upload", {
       token,
       studentId,
@@ -150,163 +132,129 @@ const UploadScreen = ({ route }) => {
           style={styles.backButton}
         >
           <Image
-              style={styles.backButtonText}
-              source={require("../../assets/backButton.png")}
-            />
+            style={styles.backButtonText}
+            source={require("../../assets/backButton.png")}
+          />
         </TouchableOpacity>
         <Text style={styles.headerText}>Assignments</Text>
       </View>
-      <View style = {styles.parentContainer}>
-      <View
-        style={styles.detailsContainer}
-        contentContainerStyle={styles.detailsContent}
-      >
-        <View style={styles.bookDetailsCard}>
-          <View style={styles.bookDetails}>
-
-            <Image
-              source={require("../../assets/booksCategory.png")} // Replace with your image source
-              style={styles.bookIcon}
-            />
-            <View style={styles.bookInfo}>
-              <Text style={styles.bookDifficulty}>
-                {bookDetails.difficulty}
-              </Text>
-              <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
+      <View style={styles.parentContainer}>
+        <View
+          style={styles.detailsContainer}
+          contentContainerStyle={styles.detailsContent}
+        >
+          <View style={styles.bookDetailsCard}>
+            <View style={styles.bookDetails}>
+              <Image
+                source={require("../../assets/booksCategory.png")} // Replace with your image source
+                style={styles.bookIcon}
+              />
+              <View style={styles.bookInfo}>
+                <Text style={styles.bookDifficulty}>
+                  {bookDetails.difficulty}
+                </Text>
+                <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
+              </View>
             </View>
           </View>
+          {chapterDetails.map((chapter) => (
+            <View
+              key={chapter.chapterId}
+              style={[
+                styles.chapterCard,
+                chapter.isCurrent === 1 ? styles.currentChapterCard : null,
+              ]}
+            >
+              <View style={styles.chapterDetails}>
+                <Text style={styles.chapterOrder}>{chapter.order}</Text>
+                <View style={styles.chapterTextContainer}>
+                  {chapter.isCurrent === 1 && selectedFiles.length > 0 ? (
+                    selectedFiles.map((file, index) => (
+                      <TouchableOpacity
+                        onPress={handleFileSelection}
+                        key={index}
+                      >
+                        <Text style={styles.chapterTitle}>{file.fileName}</Text>
+                      </TouchableOpacity>
+                    ))
+                  ) : (
+                    <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                  )}
+                </View>
+                <View
+                  style={[
+                    styles.checkBox,
+                    currentChapter === chapter.chapterId &&
+                    chapter.isUploaded != 1
+                      ? styles.yellowCheckBox
+                      : updatedUploadedChapters.includes(chapter.chapterId)
+                      ? styles.greenCheckBox
+                      : styles.grayCheckBox,
+                  ]}
+                  onPress={() => handleChapterPress(chapter.chapterId)}
+                >
+                  {updatedUploadedChapters.includes(chapter.chapterId) ? (
+                    <Text style={styles.checkMark}>✓</Text>
+                  ) : null}
+                </View>
+              </View>
+            </View>
+          ))}
         </View>
-        {/* {selectedFiles.length > 0 ? (
-  selectedFiles.map((file, index) => (
-    <TouchableOpacity
-        onPress={handleFileSelection}
-      >
-    <View key={index} style={styles.fileCard}>
-      <View style={styles.fileInfo}>
-        <Text style={styles.fileName}>{file.fileName}</Text>
-        <Text style={styles.fileSize}>
-          {(file.fileSize / 1048576).toFixed(2)} MB
-        </Text>
-      </View>
-        <Image
-        style = {styles.uploadIcon}
-         source={require("../../assets/uploadIcon.png")}/>
-     
-    </View>
-    </TouchableOpacity>
-  ))
-) : (
-  
-  <TouchableOpacity
-        onPress={handleFileSelection}
-      >
-    <View style={styles.fileCard}>
-      <View style={styles.fileInfo}>
-        <Text style={styles.fileName}>Upload Assignment</Text>
-        
-      </View>
-        <Image 
-        style = {styles.uploadIcon}
-        source={require("../../assets/uploadIcon.png")}/>
-     
-    </View>
-    </TouchableOpacity>
-)} */}
-     
-     {chapterDetails.map((chapter) => (
-  <View key={chapter.chapterId} style={styles.chapterCard}>
-    <View style={styles.chapterDetails}>
-      <Text style={styles.chapterOrder}>{chapter.order}</Text>
-      
-      <View style={styles.chapterTextContainer}>
-      
-        {chapter.isCurrent === 1  && selectedFiles.length > 0 ? (
-          selectedFiles.map((file, index) => (
+        <View style={styles.bottomContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter score here"
+            value={score}
+            onChangeText={setScore}
+          />
+          <TextInput
+            style={styles.textArea}
+            placeholder="Observations"
+            value={observations}
+            onChangeText={setObservations}
+            multiline
+          />
+          <View style={styles.buttonContainer}>
             <TouchableOpacity
-      onPress={handleFileSelection}
-      >
-            <Text key={index} style={styles.chapterTitle}>
-              {file.fileName}
-            </Text>
+              style={styles.deleteButton}
+              onPress={handleDeleteFile}
+            >
+              <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
-          ))
-        ) : (
-          <Text style={styles.chapterTitle}>{chapter.title}</Text>
-        )}
-
-      </View>
-      
-      <View
-        style={[
-          styles.checkBox,
-          (currentChapter === chapter.chapterId && chapter.isUploaded!=1)
-            ? styles.yellowCheckBox
-            : updatedUploadedChapters.includes(chapter.chapterId)
-            ? styles.greenCheckBox
-            : styles.grayCheckBox,
-        ]}
-        onPress={() => handleChapterPress(chapter.chapterId)}
-      >
-        {updatedUploadedChapters.includes(chapter.chapterId) ? (
-          <Text style={styles.checkMark}>✓</Text>
-        ) : null}
-      </View>
-    </View>
-  </View>
-))}
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleUpload}
+            >
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style  = {styles.bottomContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter score here"
-          value={score}
-          onChangeText={setScore}
-        />
-        <TextInput
-          style={styles.textArea}
-          placeholder="Observations"
-          value={observations}
-          onChangeText={setObservations}
-          multiline
-        />
-        
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.deleteButton} 
-          onPress={handleDeleteFile}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.submitButton} onPress={handleUpload}>
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-     
-    </View>
-   
-    </View>
-    <DuplicateAssignment 
+      </View>
+      <DuplicateAssignment
         modalVisible={modalVisible}
-        setModalVisible={setModalVisible}/>
+        setModalVisible={setModalVisible}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow:1,
+    flexGrow: 1,
     backgroundColor: "#fff",
   },
   bottomContainer: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     padding: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   parentContainer: {
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
     backgroundColor: "#6A53A2",
-    
   },
   header: {
     flexDirection: "row",
@@ -317,7 +265,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     backgroundColor: "#f7f7f7",
   },
- backButton: {
+  backButton: {
     position: "absolute",
     left: 20,
     justifyContent: "center",
@@ -333,15 +281,13 @@ const styles = StyleSheet.create({
     color: "black",
     padding: 20,
   },
-  uploadIcon:{
-     width: 30,
-      height: 30,
-      resizeMode: 'contain'
+  uploadIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
   },
-  
   detailsContainer: {
     padding: 20,
-    
   },
   detailsContent: {
     alignItems: "center",
@@ -390,6 +336,11 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
+  currentChapterCard: {
+    backgroundColor: "#FFFFE0", // Light yellow background for current chapters
+    borderColor: "#FFD700", // Gold border color for current chapters
+    borderWidth: 1,
+  },
   chapterDetails: {
     flexDirection: "row",
     alignItems: "center",
@@ -429,7 +380,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   input: {
-    borderWidth:1,
+    borderWidth: 1,
     width: "100%",
     padding: 10,
     backgroundColor: "#fff",
@@ -500,26 +451,26 @@ const styles = StyleSheet.create({
   fileSize: {
     fontSize: 14,
     color: "#666",
-  },  
+  },
   deleteFileButtonText: {
     color: "#fff",
     fontSize: 14,
   },
   uploadCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 2,
-    borderColor: '#63C3A8',
-    borderStyle: 'dashed',
+    borderColor: "#63C3A8",
+    borderStyle: "dashed",
   },
   uploadCardText: {
     fontSize: 16,
-    color: '#63C3A8',
-    fontWeight: 'bold',
+    color: "#63C3A8",
+    fontWeight: "bold",
   },
 });
 

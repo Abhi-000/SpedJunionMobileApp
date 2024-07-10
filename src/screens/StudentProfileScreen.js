@@ -6,14 +6,13 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HalfCircleProgress from "../components/HalfCircleProgress";
 import { getJuniorProfile } from "../services/api";
 import { useLoading } from "../navigation/AppWrapper";
+import { parse, format } from "date-fns";
 
 const StudentProfileScreen = () => {
   const [studentData, setStudentData] = useState(null);
@@ -46,36 +45,73 @@ const StudentProfileScreen = () => {
     }
   };
 
+  const parseDate = (dateString) => {
+    try {
+      return format(parse(dateString, "dd/MM/yyyy", new Date()), "dd MMM yyyy");
+    } catch (error) {
+      console.error("Error parsing date:", error);
+      return dateString;
+    }
+  };
+
+  const getDifficultyColor = (difficulty) => {
+    const colors = {
+      BEGINNER: "#6A53A2",
+      INTERMEDIATE: "#FF5733",
+      ADVANCED: "#28A745",
+    };
+    return colors[difficulty] || "#000";
+  };
+
   const renderBookDetails = () => {
     return bookDetails.map((detail, index) => (
-      <View key={index} style={styles.bookCard}>
+      <TouchableOpacity
+        key={index}
+        style={styles.bookCard}
+        onPress={() =>
+          navigation.navigate("Summary", {
+            token: route.params?.token,
+            studentId: route.params?.studentId,
+            bookId: detail.bookId,
+          })
+        }
+      >
         <View style={styles.bookInfo}>
-          <Text style={styles.bookDifficulty}>
-            {detail.bookData.difficulty}
-          </Text>
+          <View
+            style={[
+              styles.bookDifficultyContainer,
+              {
+                backgroundColor: getDifficultyColor(detail.bookData.difficulty),
+              },
+            ]}
+          >
+            <Text style={styles.bookDifficulty}>
+              {detail.bookData.difficulty}
+            </Text>
+          </View>
           <Text style={styles.bookName}>{detail.bookData.bookName}</Text>
           <Text style={styles.bookAssignDate}>
-            Assign Date: {new Date(detail.assignDate).toLocaleDateString()}
+            Assign Date: {parseDate(detail.assignDate)}
           </Text>
         </View>
         <View style={styles.progress}>
           <HalfCircleProgress
             total={detail.bookData.totalChapter}
             completed={detail.uploadedAssignmentCount}
+            color={getDifficultyColor(detail.bookData.difficulty)}
+            thickness={20} // Make the progress bar thicker
+            showText={true} // Show text inside the progress bar
           />
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Summary", {
-                token: route.params?.token,
-                studentId: route.params?.studentId,
-                bookId: detail.bookId,
-              })
-            }
+          <Text
+            style={[
+              styles.summaryText,
+              { color: getDifficultyColor(detail.bookData.difficulty) },
+            ]}
           >
-            <Text style={styles.summaryText}>Summary</Text>
-          </TouchableOpacity>
+            Summary
+          </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     ));
   };
 
@@ -129,7 +165,7 @@ const StudentProfileScreen = () => {
               <View style={styles.profileDetails}>
                 <Text style={styles.studentName}>{studentData.name}</Text>
                 <Text style={styles.studentInfo}>
-                  DOB: {new Date(studentData.birthDate).toLocaleDateString()}
+                  DOB: {parseDate(studentData.birthDate)}
                 </Text>
                 <Text style={styles.studentInfo}>
                   {studentData.class} | Age: {studentData.age} years
@@ -138,37 +174,40 @@ const StudentProfileScreen = () => {
             </View>
           </View>
           <View style={styles.assignedBooksContainer}>
-          <ScrollView style={styles.bookListContainer}>
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity 
-              onPress={() =>
-                navigation.navigate("QRCodeInput", {
-                  token: token,
-                  studentId: studentId, // Pass studentId to the next screen
-                })}
-              style={styles.button}>
-                <Text style={styles.buttonText}>Upload Assignment</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-              onPress={() => navigation.navigate("Books", { token })}
-              style={styles.button}>
-                <Text style={styles.buttonText}>Assign Books</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.sectionTitle}>
-              Assigned Books & Assignments
-            </Text>
-          
+            <ScrollView style={styles.bookListContainer}>
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("QRCodeInput", {
+                      token: token,
+                      studentId: studentId,
+                    })
+                  }
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Upload Assignment</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Books", { token })}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Assign Books</Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.sectionTitle}>
+                Assigned Books & Assignments
+              </Text>
               {renderBookDetails()}
-           
-            <View style={styles.additionalSections}>
-              <TouchableOpacity style={styles.additionalSection}>
-                <Text style={styles.sectionTitle}>Student behavior</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.additionalSection}>
-                <Text style={styles.sectionTitle}>Academic recommendation</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={styles.additionalSections}>
+                <TouchableOpacity style={styles.additionalSection}>
+                  <Text style={styles.sectionTitle}>Student behavior</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.additionalSection}>
+                  <Text style={styles.sectionTitle}>
+                    Academic recommendation
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </ScrollView>
           </View>
         </View>
@@ -305,16 +344,24 @@ const styles = StyleSheet.create({
   },
   bookInfo: {
     flex: 1,
+    marginRight: 20,
+  },
+  bookDifficultyContainer: {
+    borderRadius: 15,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignSelf: "flex-start", // Aligns the background tightly around the text
+    marginBottom: 5,
   },
   bookDifficulty: {
     fontSize: 14,
-    color: "#FF5733",
     fontWeight: "bold",
+    color: "#fff",
   },
   bookName: {
     fontSize: 16,
     color: "#333",
-    marginVertical: 5,
+    marginVertical: 3,
   },
   bookAssignDate: {
     fontSize: 14,
@@ -327,21 +374,18 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: "#6A53A2",
   },
   summaryText: {
     fontSize: 14,
-    color: "#6A53A2",
     fontWeight: "bold",
     marginTop: 5,
   },
   additionalSections: {
-    
     margin: 10,
   },
   additionalSection: {
     backgroundColor: "#fff",
-    padding: 20,
+    padding: 10,
     borderRadius: 10,
     marginBottom: 5,
     borderColor: "#e0e0e0",

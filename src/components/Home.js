@@ -11,15 +11,19 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { getJStudents, getStudentFilters,getUserDetails } from "../services/api";
+import {
+  getJStudents,
+  getStudentFilters,
+  getUserDetails,
+} from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation,useRoute  } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
-import { useLoading } from '../navigation/AppWrapper';
+import { useLoading } from "../navigation/AppWrapper";
 
-const Home = ({ token,referenceId, roleId }) => {
-  console.log("reference: ",referenceId,roleId);
+const Home = ({ token, referenceId, roleId }) => {
+  console.log("reference: ", referenceId, roleId);
   const { setLoading } = useLoading();
 
   const insets = useSafeAreaInsets();
@@ -40,23 +44,20 @@ const Home = ({ token,referenceId, roleId }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [viewAll, setViewAll] = useState(false);
   const navigation = useNavigation();
-  
 
   useEffect(() => {
     fetchFilters();
     fetchStudents(); // Fetch initial list of students without any filters
   }, [token]);
   useEffect(() => {
-    
     const fetchUserDetails = async () => {
       try {
         setLoading(true);
         const userDetails = await getUserDetails(token, referenceId, roleId);
         setUsername(userDetails.name);
         setLoading(false);
-
       } catch (error) {
-        console.error('Error fetching user details:', error);
+        console.error("Error fetching user details:", error);
       }
     };
 
@@ -69,10 +70,10 @@ const Home = ({ token,referenceId, roleId }) => {
       await fetchStudents(generateConditions());
       setLoading(false);
     };
-  
+
     fetchAndSetStudents();
   }, [selectedAge, selectedClass, filters]);
-  
+
   const fetchStudents = async (conditions = []) => {
     try {
       const response = await getJStudents(token, conditions);
@@ -81,7 +82,6 @@ const Home = ({ token,referenceId, roleId }) => {
     } catch (error) {
       console.error("Error fetching students:", error);
     }
-    
   };
 
   const fetchFilters = async () => {
@@ -200,8 +200,8 @@ const Home = ({ token,referenceId, roleId }) => {
       style={[
         styles.container,
         {
-          borderTopLeftRadius:0,
-          borderTopRightRadius:0,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
@@ -209,18 +209,14 @@ const Home = ({ token,referenceId, roleId }) => {
         },
       ]}
     >
-      
       <View style={styles.parentContainer}>
-     
         <View style={styles.headersParent}>
-        
           <Image
             source={require("../../assets/sampleProfile.png")}
             style={{ width: 60, height: 60 }}
           />
           <View style={styles.header}>
             <Text style={styles.headerText}>{username}</Text>
-            <Text style={styles.headerText}>Tec no: {roleId}</Text>
           </View>
         </View>
         <View style={styles.container}>
@@ -380,36 +376,50 @@ const Home = ({ token,referenceId, roleId }) => {
           <View style={styles.studentsContainer}>
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
             <View style={styles.categories}>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("StudentsSearch", { token })
-                }
-              >
-                <Image
-                  source={require("../../assets/studentsCategory.png")}
-                  style={styles.category}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Books", { token })}
-              >
-                <Image
-                  source={require("../../assets/booksCategory.png")}
-                  style={styles.category}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Scan", { token })}
-              >
-                <Image
-                  source={require("../../assets/scanCategory.png")}
-                  style={styles.category}
-                />
-              </TouchableOpacity>
-              <Image
-                source={require("../../assets/calendarCategory.png")}
-                style={styles.category}
-              />
+              <View style={styles.categoryItem}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("StudentsSearch", { token })
+                  }
+                >
+                  <Image
+                    source={require("../../assets/studentsCategory.png")}
+                    style={styles.category}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.categoryLabel}>Students</Text>
+              </View>
+              <View style={styles.categoryItem}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Books", { token })}
+                >
+                  <Image
+                    source={require("../../assets/booksCategory.png")}
+                    style={styles.category}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.categoryLabel}>Books</Text>
+              </View>
+              <View style={styles.categoryItem}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Scan", { token })}
+                >
+                  <Image
+                    source={require("../../assets/scanCategory.png")}
+                    style={styles.category}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.categoryLabel}>Uploads</Text>
+              </View>
+              <View style={styles.categoryItem}>
+                <TouchableOpacity>
+                  <Image
+                    source={require("../../assets/calendarCategory.png")}
+                    style={styles.category}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.categoryLabel}>Sessions</Text>
+              </View>
             </View>
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
             <FlatList
@@ -423,7 +433,6 @@ const Home = ({ token,referenceId, roleId }) => {
           </View>
         </View>
       </View>
-      
     </View>
   );
 };
@@ -434,22 +443,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "#6A53A2",
-    borderTopLeftRadius:30,
-    borderTopRightRadius:30,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     paddingTop: 10,
   },
   parentContainer: {
     flex: 1,
-    
     justifyContent: "flex-start",
     backgroundColor: "white",
     paddingTop: 10,
   },
   header: {
     flexDirection: "column",
-    justifyContent: "space-between",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    justifyContent: "center", // Center username vertically
+    marginLeft: 10, // Add margin to separate from image
   },
   headersParent: {
     margin: 20,
@@ -464,7 +471,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop:10,
+    marginTop: 10,
     padding: 5,
     width: "90%",
     alignSelf: "center",
@@ -655,15 +662,24 @@ const styles = StyleSheet.create({
   },
   categories: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-around", // Distribute space evenly
     padding: 20,
+  },
+  categoryItem: {
+    alignItems: "center", // Center align items within category item
   },
   category: {
     borderRadius: 100,
     width: 70,
     height: 70,
     fontWeight: "bold",
-    marginRight: 15,
+  },
+  categoryLabel: {
+    marginTop: 5,
+    fontWeight: "bold",
+    fontSize: 14,
+    color: "#333",
+    textAlign: "center", // Center align text
   },
 });
 

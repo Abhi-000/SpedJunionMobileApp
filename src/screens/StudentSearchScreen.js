@@ -175,8 +175,8 @@ const StudentsSearchScreen = ({ route }) => {
       style={[
         styles.container,
         {
-          borderTopLeftRadius:0,
-          borderTopRightRadius:0,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
@@ -185,7 +185,10 @@ const StudentsSearchScreen = ({ route }) => {
       ]}
     >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Image
             source={require("../../assets/backButton.png")}
             style={styles.backButtonImage}
@@ -196,7 +199,7 @@ const StudentsSearchScreen = ({ route }) => {
       <View style={styles.parentContainer}>
         <View style={styles.container}>
           <View style={styles.searchBar}>
-            <FontAwesome name="search" size={20} color="black" style={styles.searchIcon} />
+            {/* <FontAwesome name="search" size={20} color="black" style={styles.searchIcon} /> */}
             <TextInput
               style={styles.searchInput}
               placeholder="Search Students..."
@@ -369,8 +372,8 @@ const styles = StyleSheet.create({
   mainContainer: { flex: 1 },
   container: {
     flex: 1,
-    borderTopLeftRadius:30,
-    borderTopRightRadius:30,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     justifyContent: "flex-start",
     backgroundColor: "#6A53A2",
     paddingTop: 10,
@@ -387,7 +390,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
-   
+
     backgroundColor: "#f7f7f7",
   },
   headerText: {
@@ -414,7 +417,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop:10,
+    marginTop: 10,
     padding: 5,
     width: "90%",
     alignSelf: "center",

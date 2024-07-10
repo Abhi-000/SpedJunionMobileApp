@@ -10,6 +10,8 @@ import {
 import { getAllBooks } from "../services/api";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLoading } from "../navigation/AppWrapper";
+import Loader from "../components/Loader"; // Adjust the path based on your file structure
 
 const AssignedBooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
@@ -17,22 +19,23 @@ const AssignedBooksScreen = ({ token: propToken }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
+  const { loading, setLoading } = useLoading(); // Adjusted to include loading state
 
   const fetchBooks = async (currentToken) => {
     try {
+      setLoading(true);
       const response = await getAllBooks(currentToken);
       console.log("Fetched books data:", response.data);
       setBooks(response.data.getAllBooksResponses); // Update this line
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching books:", error);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     const currentToken = propToken || route.params?.token;
-    console.log(propToken);
-    console.log(route.params?.token);
-    console.log(currentToken);
     fetchBooks(currentToken);
   }, [propToken]);
 
@@ -56,6 +59,9 @@ const AssignedBooksScreen = ({ token: propToken }) => {
       />
       <View style={styles.cardContent}>
         <Text style={styles.bookTitle}>{item.name}</Text>
+        {/* <Text style={styles.bookDetails}>
+          Assign Date: {new Date(item.assignDate).toLocaleDateString()}
+        </Text> */}
         <Text style={styles.bookDetails}>
           Total Students: {item.studentCounts.totalStudents || 0}
         </Text>
@@ -89,6 +95,7 @@ const AssignedBooksScreen = ({ token: propToken }) => {
         },
       ]}
     >
+      <Loader loading={loading} />
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
@@ -267,7 +274,7 @@ const styles = StyleSheet.create({
   bookDetails: {
     fontSize: 14,
     color: "#555",
-    marginBottom: 10,
+    marginBottom: 2, // Reduced margin to remove extra space
   },
   studentsButton: {
     backgroundColor: "#E7F1ED",

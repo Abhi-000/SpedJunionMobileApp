@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     alignItems: "center",
     marginBottom: 20,
+    paddingHorizontal: 20, // Add padding to the sides to center text
   },
   iconBoyImage: {
     resizeMode: "contain",

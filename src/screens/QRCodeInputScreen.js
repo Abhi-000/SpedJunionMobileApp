@@ -48,45 +48,25 @@ const QRCodeInputScreen = ({ route }) => {
       setBookDetails(response.bookDetails);
       setChapterDetails(response.chapterDetails);
       const selectedChapters = response.chapterDetails
-        .filter(chapter => chapter.isCurrent)
-        .map(chapter => chapter.chapterId);
+        .filter((chapter) => chapter.isCurrent)
+        .map((chapter) => chapter.chapterId);
       setSelectedChapters(selectedChapters);
 
       const uploadedChapters = response.chapterDetails
-        .filter(chapter => chapter.isUploaded)
-        .map(chapter => chapter.chapterId);
+        .filter((chapter) => chapter.isUploaded)
+        .map((chapter) => chapter.chapterId);
       setUploadedChapters(uploadedChapters);
-
     } catch (error) {
       console.error("Error fetching qr:", error);
     }
   };
 
   const handleUploadAssignments = () => {
-    setModalVisible(true); 
-    // Alert.alert(
-    //   "Upload Assignments",
-    //   "Choose an option",
-    //   [
-    //     {
-    //       text: "Open Camera",
-    //       onPress: handleOpenCamera,
-    //     },
-    //     {
-    //       text: "Select from Files",
-    //       onPress: handlePickImage,
-    //     },
-    //     {
-    //       text: "Cancel",
-    //       style: "cancel",
-    //     },
-    //   ],
-    //   { cancelable: true }
-    // );
+    setModalVisible(true);
   };
 
   const handleOpenCamera = async () => {
-    setModalVisible(false); 
+    setModalVisible(false);
     try {
       let result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -110,7 +90,7 @@ const QRCodeInputScreen = ({ route }) => {
   };
 
   const handlePickImage = async () => {
-    setModalVisible(false); 
+    setModalVisible(false);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -119,14 +99,6 @@ const QRCodeInputScreen = ({ route }) => {
 
       if (!result.canceled) {
         const image = result.assets[0];
-
-        // Optionally resize image to reduce memory usage
-        // const resizedImage = await ImageManipulator.manipulateAsync(
-        //   image.uri,
-        //   [{ resize: { width: 800 } }],
-        //   { compress: 1, format: ImageManipulator.SaveFormat.PNG }
-        // );
-
         const imageUri = image.uri;
         const barcodeScanned = await scanImageForQRCode(imageUri);
 
@@ -171,7 +143,6 @@ const QRCodeInputScreen = ({ route }) => {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-      // Convert the base64 string to a Uint8Array
       const binaryString = atob(imageData);
       const len = binaryString.length;
       const bytes = new Uint8Array(len);
@@ -179,7 +150,6 @@ const QRCodeInputScreen = ({ route }) => {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      // Use BarcodeScanner to scan the Uint8Array
       const results = await BarCodeScanner.scanFromURLAsync(imageUri);
       if (results.length > 0) {
         return results[0].data;
@@ -195,7 +165,7 @@ const QRCodeInputScreen = ({ route }) => {
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
   }
-  if (hasPermission === false) {  
+  if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
 
@@ -214,7 +184,9 @@ const QRCodeInputScreen = ({ route }) => {
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Scan", { token: route.params?.token })}
+            onPress={() =>
+              navigation.navigate("Scan", { token: route.params?.token })
+            }
             style={styles.backButton}
           >
             <Image
@@ -240,14 +212,32 @@ const QRCodeInputScreen = ({ route }) => {
           )}
         </View>
         <View style={styles.bottomContainer}>
-          <TouchableOpacity onPress={handlePickImage} style={styles.bottomButton}>
-            <Image source={require("../../assets/gallerySelect.png")} style={styles.bottomIcon} />
+          <TouchableOpacity
+            onPress={handlePickImage}
+            style={styles.bottomButton}
+          >
+            <Image
+              source={require("../../assets/gallerySelect.png")}
+              style={styles.bottomIcon}
+            />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setScanned(false)} style={styles.bottomButton}>
-            <Image source={require("../../assets/scan.png")} style={styles.bottomIcon} />
+          <TouchableOpacity
+            onPress={() => setScanned(false)}
+            style={styles.bottomButton}
+          >
+            <Image
+              source={require("../../assets/scan.png")}
+              style={styles.bottomIcon}
+            />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setFlashlight(!flashlight)} style={styles.bottomButton}>
-            <Image source={require("../../assets/flashlightIcon.png")} style={styles.bottomIcon} />
+          <TouchableOpacity
+            onPress={() => setFlashlight(!flashlight)}
+            style={styles.bottomButton}
+          >
+            <Image
+              source={require("../../assets/flashlightIcon.png")}
+              style={styles.bottomIcon}
+            />
           </TouchableOpacity>
         </View>
         {chapterDetails && (
@@ -266,14 +256,18 @@ const QRCodeInputScreen = ({ route }) => {
                     <Text style={styles.bookDifficulty}>
                       {bookDetails.difficulty}
                     </Text>
-                    <Text style={styles.bookTitle}>
-                      {bookDetails.bookName}
-                    </Text>
+                    <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
                   </View>
                 </View>
               </View>
               {chapterDetails.map((chapter) => (
-                <View key={chapter.chapterId} style={styles.chapterCard}>
+                <View
+                  key={chapter.chapterId}
+                  style={[
+                    styles.chapterCard,
+                    chapter.isCurrent && styles.currentChapterCard,
+                  ]}
+                >
                   <View style={styles.chapterDetails}>
                     <Text style={styles.chapterOrder}>{chapter.order}</Text>
                     <View style={styles.chapterTextContainer}>
@@ -407,35 +401,49 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     flex: 1,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    backgroundColor: "#f0f0f0",
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   chapterDetailsContainer: {
     flex: 1,
   },
   chapterDetailsContent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 2,
   },
   bookDetailsCard: {
     marginBottom: 20,
+    padding: 15,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   bookDetails: {
     flexDirection: "row",
     alignItems: "center",
   },
   bookIcon: {
-    width: 40,
-    height: 40,
+    width: 50, // Increase the size of the book image
+    height: 50, // Increase the size of the book image
     marginRight: 10,
   },
   bookInfo: {
     flex: 1,
   },
   bookDifficulty: {
-    fontSize: 16,
+    fontSize: 18, // Increase the font size of the book difficulty text
     fontWeight: "bold",
-    color: "#333",
+    color: "#d81b60",
   },
   bookTitle: {
-    fontSize: 18,
+    fontSize: 12, // Decrease the font size of the book title text
     fontWeight: "bold",
     color: "#000",
   },
@@ -443,13 +451,18 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 15,
     backgroundColor: "#fff",
-    borderRadius: 15,
+    borderRadius: 20,
     marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 3,
+  },
+  currentChapterCard: {
+    backgroundColor: "#FFFFE0", // Light yellow background for current chapters
+    borderColor: "#FFD700", // Gold border color for current chapters
+    borderWidth: 1,
   },
   chapterDetails: {
     flexDirection: "row",
@@ -477,7 +490,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-
   uploadedIndicator: {
     backgroundColor: "#63C3A8",
   },
@@ -499,8 +511,8 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     backgroundColor: "#63C3A8",
-    padding:20,
-    margin:10,
+    padding: 20,
+    margin: 10,
     borderRadius: 25,
     marginTop: 20,
     alignItems: "center",
@@ -554,8 +566,6 @@ const styles = StyleSheet.create({
     color: "#4C2F15",
     fontSize: 16,
   },
-
-
 });
 
 export default QRCodeInputScreen;

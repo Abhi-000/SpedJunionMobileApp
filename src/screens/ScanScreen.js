@@ -106,7 +106,7 @@ const ScanScreen = ({ token }) => {
           <Text style={styles.backButtonText}>{"<"}</Text>
         </TouchableOpacity> */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("Home",token)}
+          onPress={() => navigation.navigate("Home", token)}
           style={styles.backButton}
         >
           <Image
@@ -180,21 +180,36 @@ const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: "#fff",
     borderRadius: 25,
-    padding: 20,
+    padding: 15,
     fontSize: 16,
     marginBottom: 10,
   },
   flatList: {
     flex: 1,
-    
+
     paddingHorizontal: 20,
     paddingTop: 10,
   },
   studentCard: {
+    // flexDirection: "row",
+    // alignItems: "center",
+    // backgroundColor: "#fff",
+    // padding: 15,
+    // marginBottom: 10,
+    // borderRadius: 20,
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.5,
+    // shadowRadius: 3.84,
+    // elevation: 5,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 15,
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 15,
     marginBottom: 10,
     borderRadius: 20,
     shadowColor: "#000",
@@ -202,9 +217,11 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.1,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
   },
   profilePic: {
     width: 50,
