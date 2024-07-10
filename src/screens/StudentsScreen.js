@@ -5,17 +5,22 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  ScrollView,
   TouchableOpacity,
   Image,
 } from "react-native";
-import { getBookSummary, getStudentDetailsByIds } from "../services/api";
+import { getAllBooks, getStudentDetailsByIds } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const StudentsScreen = () => {
+  const [bookData, setBookData] = useState(null);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploadedDate, setUploadedDate] = useState(null);
+  const [activeTab, setActiveTab] = useState("Students");
+
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token, bookDetails } = route.params;
@@ -24,28 +29,30 @@ const StudentsScreen = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const summaryResponse = await getBookSummary(bookId, token);
+        const booksResponse = await getAllBooks(token);
+        console.log(booksResponse.data.getAllBooksResponses);
+        
         const studentBookSummaryResponses =
-          summaryResponse.data.studentBookSummaryResponses;
-
+          booksResponse.data.getAllBooksResponses;
         // Extract uploadedDate for the specific bookId
         const bookUploadInfo = studentBookSummaryResponses.find(
           (item) => item.bookId === bookId
         );
+        setBookData(bookUploadInfo);
         setUploadedDate(bookUploadInfo?.uploadedDate);
-
-        const studentIds = studentBookSummaryResponses
-          .map((item) => item.studentId)
-          .filter((id) => id !== undefined && id !== null);
-        if (studentIds.length > 0) {
+        const studentIdsString = bookUploadInfo.studentCounts.studentIds;
+        if(studentIdsString){
           const studentDetails = await getStudentDetailsByIds(
             token,
-            studentIds
+            studentIdsString
+            
           );
+          console.log(studentDetails);
           setStudents(studentDetails);
         }
+        //}
       } catch (error) {
-        console.error("Error fetching students:", error);
+        console.log("Error fetching students:", error);
       } finally {
         setLoading(false);
       }
@@ -54,37 +61,46 @@ const StudentsScreen = () => {
     fetchStudents();
   }, [bookId, token]);
 
-  if (loading) {
+  
+  const renderStudentCard = (student) => {
     return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
+      <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("StudentProfile", {
+          studentId: student.id,
+          token: token,
+        })
+      }
+    >
+      <View key={student.id} style={styles.studentCard}>
+        <Image style={styles.profileImage} source={require("../../assets/sampleProfile.png")} />
+        <View style={styles.profileDetails}>
+          <Text style={styles.studentName}>{student.firstName} {student.lastName}</Text>
+          <Text style={styles.studentInfoText}>Class {student.class} | Age {student.age} years</Text>
+        </View>
       </View>
+      </TouchableOpacity>
     );
-  }
+  };
 
-  if (students.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text>No students found.</Text>
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.loadingContainer}>
+  //       <ActivityIndicator size="large" color="#0000ff" />
+  //     </View>
+  //   );
+  // }
 
-  const renderStudentItem = ({ item }) => (
-    <View style={styles.studentCard}>
-      <Image
-        source={require("../../assets/sampleProfile.png")}
-        style={styles.avatar}
-      />
-      <View style={styles.studentInfo}>
-        <Text style={styles.studentName}>
-          {item.firstName} {item.lastName}
-        </Text>
-        <Text style={styles.studentDetails}>Class: {item.class}</Text>
-        <Text style={styles.studentDetails}>Age: {item.age} years</Text>
-      </View>
-    </View>
-  );
+  // if (error) {
+  //   return (
+  //     <View style={styles.errorContainer}>
+  //       <Text style={styles.errorText}>{error}</Text>
+  //       <TouchableOpacity onPress={fetchBookAndStudents} style={styles.retryButton}>
+  //         <Text style={styles.retryButtonText}>Retry</Text>
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View
@@ -98,68 +114,56 @@ const StudentsScreen = () => {
         },
       ]}
     >
-      <View style={styles.container}>
-        <View style={styles.topContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Image
-              style={styles.backButtonImage}
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Image
+              style={styles.backButtonText}
               source={require("../../assets/backButton.png")}
             />
-          </TouchableOpacity>
-
-          {/* <View style={styles.header}> */}
-          <Text style={styles.headerText}>Assigned Books</Text>
-          {/* </View> */}
-        </View>
-        <View style={styles.card}>
-          <View style={styles.levelBox}>
-            <Text style={styles.levelText}>{bookDetails.difficulty}</Text>
-          </View>
-          <Text style={styles.bookTitle}>{bookDetails.name}</Text>
-          <Text style={styles.bookDetails}>
-            Assign Date:{" "}
-            {uploadedDate ? new Date(uploadedDate).toLocaleDateString() : "N/A"}
-          </Text>
-          <Text style={styles.bookDetails}>Students: {students.length}</Text>
-        </View>
-
-        <FlatList
-          data={students}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderStudentItem}
-          contentContainerStyle={styles.list}
-        />
-        {/* <View style={styles.footer}>
-        <TouchableOpacity>
-          <Text style={styles.footerText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.footerText}>Books</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.footerText}>Profile</Text>
-        </TouchableOpacity>
-      </View> */}
+        <Text style={styles.headerTitle}>Summary</Text>
       </View>
+      {bookData && (
+        <View style={styles.bookInfoContainer}>
+          <View style = {styles.bookContainer}>
+          <Image
+              style={{ width: 50, height: 50 }}
+              source={require("../../assets/booksCategory.png")}
+            />
+            <View style = {styles.bookDetails}>
+          <Text style={styles.bookDifficulty}>{bookData.difficulty}</Text>
+          <Text style={styles.bookName}>{bookData.name}</Text>
+          </View>
+          </View>
+        
+      
+      <View style={styles.tabContainer}>
+        <Text style={styles.tabTextInactive}>Chapters</Text>
+        <Text style={styles.tabTextActive}>Students</Text>
+      </View>
+      <ScrollView style={styles.scrollView}>
+        {students.map((student) => renderStudentCard(student))}
+      </ScrollView>
+      </View>)}
     </View>
+    </View>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f8f8f8",
+    paddingBottom:15,
   },
-  topContainer: {
+  headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
     paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingBottom: 10,
     backgroundColor: "#f7f7f7",
   },
   backButton: {
@@ -168,115 +172,131 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  backButtonImage: {
+  backButtonText: {
     width: 50,
     height: 50,
   },
-  backButtonText: {
-    fontSize: 18,
-    color: "#000",
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  headerText: {
+  headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
+    color: "black",
+    padding: 20,
   },
-  bookTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
+  bookInfoContainer: {
+    flex: 7,
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
+    backgroundColor: "#6A53A2",
   },
-  card: {
-    marginLeft: 20,
-    marginRight: 20,
-    padding: 10,
-    marginBottom: 30,
-    alignContent: "center",
-    backgroundColor: "white",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.84,
-    elevation: 5,
-    position: "relative",
-    paddingTop: 60,
-  },
-  levelBox: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    backgroundColor: "#d81b60",
+  bookContainer:
+  {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: 'white',
     borderRadius: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    zIndex: 1,
-  },
-  levelText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
+    padding: 20,
+    margin: 20,
   },
   bookDetails: {
+    alignItems: 'flex-start',
+  },
+  bookDifficulty: {
+    fontSize: 14,
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  bookName: {
+    fontSize: 10,
+    color: 'black',
+  },
+  bookStage: {
+    fontSize: 8,
+    color: "white",
+  },
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "#6A53A2",
+    paddingVertical: 10,
+  },
+  tabTextInactive: {
     fontSize: 16,
-    marginBottom: 5,
+    color: "white",
+    marginHorizontal: 20,
+  },
+  tabTextActive: {
+    fontSize: 16,
+    color: "#6A53A2",
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: "white",
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    padding: 20,
+    
   },
   studentCard: {
     flexDirection: "row",
-    padding: 10,
-    marginBottom: 5,
-    marginHorizontal: 20,
-    alignContent: "center",
+    alignItems: "center",
     backgroundColor: "white",
+    padding: 15,
+    borderRadius: 10,
     marginBottom: 10,
-    borderRadius: 20,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.84,
-    elevation: 5,
-    position: "relative", // Add position relative to position the level box
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 5,
+    elevation: 2,
   },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 15,
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
-  studentInfo: {
+  profileDetails: {
     flex: 1,
   },
   studentName: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#333",
   },
-  studentDetails: {
+  studentInfoText: {
     fontSize: 14,
     color: "#666",
   },
-  list: {
-    paddingBottom: 20,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 15,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
-  footerText: {
-    fontSize: 16,
-    color: "#000",
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+  },
+  retryButton: {
+    padding: 10,
+    backgroundColor: "#6A53A2",
+    borderRadius: 5,
+  },
+  retryButtonText: {
+    color: "white",
   },
 });
 
 export default StudentsScreen;
+
+

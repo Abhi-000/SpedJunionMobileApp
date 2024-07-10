@@ -138,6 +138,7 @@ const StudentProfileScreen = () => {
             </View>
           </View>
           <View style={styles.assignedBooksContainer}>
+          <ScrollView style={styles.bookListContainer}>
             <View style={styles.buttonsContainer}>
               <TouchableOpacity 
               onPress={() =>
@@ -157,9 +158,9 @@ const StudentProfileScreen = () => {
             <Text style={styles.sectionTitle}>
               Assigned Books & Assignments
             </Text>
-           <ScrollView style={styles.bookListContainer}>
+          
               {renderBookDetails()}
-            </ScrollView>
+           
             <View style={styles.additionalSections}>
               <TouchableOpacity style={styles.additionalSection}>
                 <Text style={styles.sectionTitle}>Student behavior</Text>
@@ -168,6 +169,7 @@ const StudentProfileScreen = () => {
                 <Text style={styles.sectionTitle}>Academic recommendation</Text>
               </TouchableOpacity>
             </View>
+            </ScrollView>
           </View>
         </View>
       )}

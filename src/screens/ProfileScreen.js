@@ -96,10 +96,10 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
             <Ionicons name="lock-closed-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Change Password</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          {/* <TouchableOpacity style={styles.menuItem}>
             <Ionicons name="document-text-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Privacy Policy</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
           onPress={() => setModalVisible(true)}
           style={styles.menuItem}>

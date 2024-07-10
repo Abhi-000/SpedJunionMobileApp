@@ -16,12 +16,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const AssignBookScreen = () => {
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [newlySelectedStudents, setNewlySelectedStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token, alreadyAssignedStudents } = route.params;
   const insets = useSafeAreaInsets();
-
+  console.log(alreadyAssignedStudents);
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -47,11 +48,19 @@ const AssignBookScreen = () => {
         ? prevSelected.filter((id) => id !== studentId)
         : [...prevSelected, studentId]
     );
+
+    setNewlySelectedStudents((prevNewlySelected) =>
+      prevNewlySelected.includes(studentId)
+        ? prevNewlySelected.filter((id) => id !== studentId)
+        : [...prevNewlySelected, studentId]
+    );
   };
 
   const handleAssign = async () => {
     try {
-      await assignBook(bookId, selectedStudents, token);
+      console.log(newlySelectedStudents);
+      const response = await assignBook(bookId, newlySelectedStudents, token);
+      console.log("res:", response.data);
       navigation.navigate("Success", {
         title: "Successfully Assigned",
         message: "Successfully Assigned To Students",

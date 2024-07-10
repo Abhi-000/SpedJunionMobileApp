@@ -80,16 +80,10 @@ export const getAllBooks = async (token) => {
     conditions: [],
   };
 
-  api.interceptors.request.use((request) => {
-    console.log("Starting Request", JSON.stringify(request, null, 2));
-    return request;
-  });
-
   try {
     const response = await api.post("/Book/GetAllSpedJuniorBooks", body, {
       headers,
     });
-    console.log("Books response:", response.data);
     return response;
   } catch (error) {
     console.error("Error fetching books:", error);
@@ -147,7 +141,8 @@ export const getBookSummary = (bookId, token) => {
 };
 
 export const getStudentDetailsByIds = async (token, studentIds) => {
-  const uniqueIds = [...new Set(studentIds)];
+  const studentIdsArray = studentIds.split(",").map(id => id.trim());
+  const uniqueIds = [...new Set(studentIdsArray)];
   const studentDetails = [];
 
   for (let id of uniqueIds) {
@@ -161,7 +156,7 @@ export const getStudentDetailsByIds = async (token, studentIds) => {
           PageCount: 1,
           Conditions: [
             {
-              Field: "id",
+              Field: "studentId",
               Operation: "=",
               Value: id.toString(),
             },
