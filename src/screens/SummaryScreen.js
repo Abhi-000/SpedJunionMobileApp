@@ -26,7 +26,7 @@ const SummaryScreen = () => {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await getBookSummary(bookId, token);
+        const response = await getBookSummary(studentId, bookId, token);
         console.log(response.data);
         // Mock API response for testing
         // const response = {
@@ -100,9 +100,14 @@ const SummaryScreen = () => {
         // };
 
         const { jStudent, jBooks, filteredJChapters } = response.data;
+        const sortedChapters = filteredJChapters.jChapters.sort(
+          (a, b) => a.order - b.order
+        );
+
+        console.log(filteredJChapters.jChapters);
         setStudentData(jStudent);
         setBookData(jBooks);
-        setChapters(filteredJChapters.jChapters);
+        setChapters(sortedChapters);
       } catch (error) {
         console.error("Error fetching summary:", error);
       }

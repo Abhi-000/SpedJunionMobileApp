@@ -115,14 +115,14 @@ export const assignBook = (bookId, studentIds, token) => {
   );
 };
 
-export const getBookSummary = (bookId, token) => {
+export const getBookSummary = (studentId, bookId, token) => {
   console.log("here:", bookId);
   console.log("here", token);
   return api.post(
     "/Book/GetBookSummary",
     {
-      studentId: 2861,
-      bookId: 3,
+      studentId: studentId,
+      bookId: bookId,
       filters: {
         sortBy: "bookId",
         sortOrder: "DESC",
