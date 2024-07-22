@@ -94,13 +94,16 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center', // Center content horizontally
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
     backgroundColor: '#f7f7f7',
+    position: 'relative', // Ensure the container is a positioned element for absolute children
   },
   backButton: {
+    position: 'absolute', // Position the back button absolutely
+    left: 20, // Align it to the left
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -112,12 +115,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
-    flex: 1,
-    textAlign: 'center',
+    textAlign: 'center', // Center the text within the Text component
   },
   topLogo: {
     width: 60,
     height: 60,
+    position: 'absolute', // Position the logo absolutely
+    right: 20, // Align it to the right
   },
   profileContainer: {
     alignItems: 'center',
@@ -165,5 +169,6 @@ const styles = StyleSheet.create({
     color: '#333',
   },
 });
+
 
 export default MyProfileScreen;

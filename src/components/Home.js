@@ -217,7 +217,9 @@ const Home = ({ token, referenceId, roleId }) => {
             source={require("../../assets/sampleProfile.png")}
             style={{ width: 60, height: 60 }}
           />
-            <Text style={styles.headerText}>Hi, {username} !</Text>
+           <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen', { token, referenceId, roleId })}>
+  <Text style={styles.headerText}>Hi, {username} !</Text>
+</TouchableOpacity>
           </View>
           <Image
             source={require("../../assets/TopLogo.png")}

@@ -44,15 +44,21 @@ const BooksStack = ({ token }) => (
 
 const ProfileStack = ({ token, referenceId, roleId }) => (
   <Stack.Navigator screenOptions={defaultStackScreenOptions}>
-    <Stack.Screen name="Profile">
-      {() => <ProfileScreen token={token} referenceId={referenceId} roleId={roleId} />}
+    <Stack.Screen name="Profile" options={{ headerShown: false }}>
+      {(props) => (
+        <ProfileScreen
+          {...props}
+          token={token}
+          referenceId={referenceId}
+          roleId={roleId}
+        />
+      )}
     </Stack.Screen>
   </Stack.Navigator>
 );
 
 const BottomTabNavigator = ({ route }) => {
   const { token, studentId, referenceId, roleId } = route.params;
-  console.log("student id:", studentId);
 
   return (
     <Tab.Navigator
@@ -99,14 +105,14 @@ const BottomTabNavigator = ({ route }) => {
       })}
     >
       <Tab.Screen name="Home">
-        {() => <HomeStack token={token} referenceId={referenceId} roleId={roleId} />}
+        {(props) => <HomeStack {...props} token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
       <Tab.Screen name="Books">
-        {() => <BooksStack token={token} />}
+        {(props) => <BooksStack {...props} token={token} />}
       </Tab.Screen>
       <Tab.Screen name="Profile">
-        {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
-      </Tab.Screen>
+  {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
+</Tab.Screen>
     </Tab.Navigator>
   );
 };

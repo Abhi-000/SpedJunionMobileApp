@@ -13,11 +13,13 @@ import QRCodeInputScreen from '../screens/QRCodeInputScreen';
 import UploadScreen from '../screens/UploadScreen';
 import StudentProfileScreen from '../screens/StudentProfileScreen';
 import SummaryScreen from '../screens/SummaryScreen';
-import StudentsSearchScreen from '../screens/StudentSearchScreen'; // Import the new screen
+import StudentsSearchScreen from '../screens/StudentSearchScreen'; 
 import MyProfileScreen from '../screens/MyProfileScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
-import EndSessionScreen from '../screens/EndSessionScreen'; // Import EndSessionScreen
-import AppWrapper from './AppWrapper'; // Import AppWrapper
+import EndSessionScreen from '../screens/EndSessionScreen'; 
+import ProfileScreen from '../screens/ProfileScreen';
+import SplashScreen from '../screens/SplashScreen'; // Import SplashScreen
+import AppWrapper from './AppWrapper'; 
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
@@ -29,13 +31,19 @@ const AppNavigator = () => {
   return (
     <AppWrapper>
       <Stack.Navigator 
-      screenOptions={{
-        headerShown: false,
-        gestureEnabled: true,
-        cardOverlayEnabled: true,
-        ...TransitionPresets.DefaultTransition,
-      }}
-      initialRouteName="Login">
+        screenOptions={{
+          headerShown: false,
+          gestureEnabled: true,
+          cardOverlayEnabled: true,
+          ...TransitionPresets.DefaultTransition,
+        }}
+        initialRouteName="Splash" // Set Splash as the initial route
+      >
+        <Stack.Screen
+          name="Splash"
+          component={SplashScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -50,7 +58,7 @@ const AppNavigator = () => {
           name="HomeTabs"
           component={BottomTabNavigator}
           options={{ headerShown: false }}
-          initialParams={{ token: '', studentId: '', referenceId: '', roleId: '' }} // Add default params
+          initialParams={{ token: '', studentId: '', referenceId: '', roleId: '' }}
         />
         <Stack.Screen
           name="Success"
@@ -119,12 +127,17 @@ const AppNavigator = () => {
         />
         <Stack.Screen
           name="StudentsSearch"
-          component={StudentsSearchScreen} // Add the new screen
+          component={StudentsSearchScreen} 
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="EndSession"
-          component={EndSessionScreen} // Add EndSessionScreen
+          component={EndSessionScreen} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -1,87 +1,83 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation  } from "@react-navigation/native";
-const IncorrectPasswordModal = ({modalVisible, setModalVisible}) => {
-  const navigation = useNavigation();
+import React from "react";
+import {
+  View,
+  Text,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+
+const IncorrectPasswordModal = ({ modalVisible, setModalVisible }) => {
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={() => {
+        setModalVisible(!modalVisible);
+      }}
     >
-      <View style={styles.modalOverlay}>
+      <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>You have entered incorrect credentials. Please try again</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.cancelButtonText}>Retry</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.modalText}>
+            You have entered incorrect credentials. Please try again.
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setModalVisible(!modalVisible)}
+          >
+            <Text style={styles.buttonText}>Retry</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
   );
-
 };
 
 const styles = StyleSheet.create({
-    modalOverlay: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalView: {
+    width: 300,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    modalView: {
-      margin:20,
-      paddingVertical:50,
-      paddingHorizontal:20,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      alignItems: 'center',
-    },
-    modalText: {
-      marginBottom: 20,
-      fontSize: 25,
-      fontWeight:'500',
-      textAlign: 'center',
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      width: '100%',
-    },
-    cancelButton: {
-      flex: 1,
-      marginRight: 10,
-      padding: 20,
-      borderRadius: 30,
-      borderWidth: 1,
-      borderColor: '#FF3B30',
-      alignItems: 'center',
-    },
-    cancelButtonText: {
-        fontWeight:'bold',
-      color: '#FF3B30',
-      fontSize: 16,
-    },
-    logoutButton: {
-      flex: 1,
-      marginLeft: 10,
-      padding: 20,
-      borderRadius: 30,
-      backgroundColor: '#6A53A2',
-      alignItems: 'center',
-    },
-    logoutButtonText: {
-      fontWeight:'bold',
-      color: '#fff',
-      fontSize: 16,
-    },
-  });
-  
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 16,
+  },
+  button: {
+    width: "80%", // Occupy the entire width
+    borderWidth: 1,
+    borderColor: "#FF5733", // Red border color
+    borderRadius: 10,
+    padding: 10,
+    alignItems: "center",
+    backgroundColor: "white", // Keep button background white
+    borderRadius: 50,
+  },
+  buttonText: {
+    color: "#FF5733", // Red text color
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 16,
+  },
+});
 
 export default IncorrectPasswordModal;
+

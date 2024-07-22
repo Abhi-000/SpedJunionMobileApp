@@ -9,20 +9,23 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { uploadAssignments, getQuestions, submitObservations } from "../services/api"; // Ensure this is correct
+import { uploadAssignments, getQuestions, submitObservations } from "../services/api";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const EndSessionScreen = ({ route }) => {
-  const { token, studentId, bookDetails, chapterDetails, uploadedChapters } = route.params;
+  const { token, studentId, bookDetails, chapterDetails, uploadedChapters, selectedFileName } = route.params;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [score, setScore] = useState("");
-  const [observations, setObservations] = useState("");
-  const [dropdownValues, setDropdownValues] = useState({}); // To store selected values
+  const [dropdownValues, setDropdownValues] = useState({});
   const [questions, setQuestions] = useState([]);
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const screenHeight = Dimensions.get('window').height;
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -46,7 +49,7 @@ const EndSessionScreen = ({ route }) => {
       <View style={styles.dropdownRow}>
         {questions.map((question, index) => {
           const options = question.options ? question.options.split(",") : [];
-          const zIndexStyle = { zIndex: 5000 - index }; // Dynamically change zIndex based on index
+          const zIndexStyle = { zIndex: 5000 - index };
 
           return (
             <View key={question.question} style={[styles.dropdownContainer, zIndexStyle]}>
@@ -67,21 +70,19 @@ const EndSessionScreen = ({ route }) => {
                 />
               ) : (
                 <DropDownPicker
-                  open={dropdownValues[question.question]?.open || false}
+                  open={openDropdown === question.question}
                   value={dropdownValues[question.question]?.value || null}
                   items={options.map((option) => ({
                     label: option,
                     value: option,
                   }))}
-                  setOpen={(open) =>
-                    setDropdownValues((prev) => ({
-                      ...prev,
-                      [question.question]: {
-                        ...prev[question.question],
-                        open,
-                      },
-                    }))
-                  }
+                  setOpen={(open) => {
+                    if (open) {
+                      setOpenDropdown(question.question);
+                    } else {
+                      setOpenDropdown(null);
+                    }
+                  }}
                   setValue={(callback) =>
                     setDropdownValues((prev) => ({
                       ...prev,
@@ -93,7 +94,15 @@ const EndSessionScreen = ({ route }) => {
                   }
                   placeholder="Select an option..."
                   style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownOptions}
+                  dropDownContainerStyle={[
+                    styles.dropdownOptions,
+                    { position: 'absolute', top: '100%', left: 0, right: 0 }
+                  ]}
+                  listMode="SCROLLVIEW"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                  maxHeight={screenHeight * 0.3}
                 />
               )}
             </View>
@@ -170,7 +179,7 @@ const EndSessionScreen = ({ route }) => {
           <View style={styles.chapterCard}>
             <View style={styles.chapterDetails}>
               <View style={styles.chapterTextContainer}>
-                <Text style={styles.chapterTitle}>Sample File</Text>
+                <Text style={styles.chapterTitle}>{selectedFileName || "No file selected"}</Text>
               </View>
             </View>
           </View>

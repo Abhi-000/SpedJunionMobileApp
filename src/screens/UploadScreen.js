@@ -85,8 +85,16 @@ const UploadScreen = ({ route }) => {
   };
 
   const handleEndSession = () => {
-    // Navigate to the appropriate screen or perform end session logic
-    navigation.navigate("EndSession", { token, studentId, bookDetails, chapterDetails, uploadedChapters });
+    const selectedFileName = selectedFiles.length > 0 ? selectedFiles[0].fileName : "No file selected";
+    navigation.navigate("EndSession", { 
+      token, 
+      studentId, 
+      bookDetails, 
+      chapterDetails, 
+      uploadedChapters,
+      selectedFileName
+    });
+    console.log("Selected Files:", selectedFiles);
   };
   
   const handleChapterPress = (chapterId) => {

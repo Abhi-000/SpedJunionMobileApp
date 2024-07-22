@@ -354,7 +354,7 @@ const QRCodeInputScreen = ({ route }) => {
   />
 </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => setFlashlight(!flashlight)}
             style={styles.bottomButton}
           >
@@ -362,7 +362,7 @@ const QRCodeInputScreen = ({ route }) => {
               source={require("../../assets/flashlightIcon.png")}
               style={styles.bottomIcon}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>)}
         
       </View>

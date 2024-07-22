@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
   },
   bookDetails: {
     alignItems: "flex-start",
+    flex: 1,
   },
   bookDifficulty: {
     fontSize: 14,
@@ -199,6 +200,9 @@ const styles = StyleSheet.create({
   bookName: {
     fontSize: 10,
     color: "black",
+    flexShrink: 1,
+    flexWrap: "wrap",
+    flexBasis: "auto",
   },
   studentInfoContainer: {
     flexDirection: "row",

@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10, // Add vertical padding
     paddingHorizontal: 15,
     backgroundColor: "white",
+    position: 'relative', // Add this to the top container
   },
   backButton: {
     justifyContent: "center",
@@ -168,6 +169,11 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     marginHorizontal: 10, // Add horizontal margin for better spacing
+    
+    left: 0,
+    right: 0,
+    textAlign: 'center', // Center the text
+   
   },
   searchContainer: {
     backgroundColor: "#6A53A2",

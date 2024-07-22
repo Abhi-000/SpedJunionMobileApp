@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
   },
   bookDetails: {
     alignItems: "flex-start",
+    flex: 1,
   },
   bookDifficulty: {
     fontSize: 14,
@@ -194,6 +195,9 @@ const styles = StyleSheet.create({
   bookName: {
     fontSize: 10,
     color: "black",
+    flexShrink: 1,
+    flexWrap: "wrap",
+    flexBasis: "auto",
   },
   tabContainer: {
     flexDirection: "row",
@@ -222,17 +226,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   studentCard: {
-    // flexDirection: "row",
-    // alignItems: "center",
-    // backgroundColor: "white",
-    // padding: 15,
-    // borderRadius: 10,
-    // marginBottom: 10,
-    // shadowColor: "#000",
-    // shadowOpacity: 0.1,
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowRadius: 5,
-    // elevation: 2,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
