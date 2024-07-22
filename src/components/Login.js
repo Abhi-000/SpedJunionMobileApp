@@ -12,8 +12,8 @@ import {
   Platform,
   Keyboard,
 } from "react-native";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { login } from "../services/api.js";
 import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
 
@@ -86,9 +86,12 @@ const Login = () => {
                 secureTextEntry={!passwordVisible}
               />
               <TouchableWithoutFeedback onPress={togglePasswordVisibility}>
-                <Text style={styles.eyeIcon}>
-                  {passwordVisible ? "👁️" : "👁️‍🗨️"}
-                </Text>
+                <Ionicons
+                  name={passwordVisible ? "eye" : "eye-off"}
+                  size={24}
+                  color="gray"
+                  style={styles.eyeIcon}
+                />
               </TouchableWithoutFeedback>
             </View>
             <View style={styles.actions}>
@@ -100,12 +103,13 @@ const Login = () => {
               </TouchableOpacity>
               <Text style={styles.forgotPassword}>Forgot Password?</Text>
             </View>
+            <View style={styles.flexSpacer} />
             <View style={styles.logoContainer}>
-            <Image
-              source={require("../../assets/logo.png")}
-              style={styles.logo}
-            />
-          </View>
+              <Image
+                source={require("../../assets/logo.png")}
+                style={styles.logo}
+              />
+            </View>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -143,7 +147,6 @@ const styles = StyleSheet.create({
   },
   loginContainer: {
     width: "100%",
-    height: "70%",
     padding: 20,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -156,6 +159,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    flex: 1,
   },
   input: {
     width: "100%",
@@ -191,16 +195,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   eyeIcon: {
-    width: 24,
-    height: 24,
+    marginLeft: -30, // Adjust margin to position the icon inside the input field
   },
   forgotPassword: {
     color: "#007aff",
   },
+  flexSpacer: {
+    flex: 1,
+  },
   logoContainer: {
-    marginTop: 290,
     alignItems: "center",
     paddingBottom: 30,
+  },
+  logo: {
+    // width: 100,
+    // height: 100,
   },
 });
 
