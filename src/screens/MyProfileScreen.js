@@ -8,7 +8,7 @@ import { getUserDetails } from '../services/api';
 const MyProfileScreen = () => {
   const route = useRoute();
   console.log(route.params);
-  const {token,referenceId,roleId}  =route.params;
+  const { token, referenceId, roleId } = route.params;
   const [user, setUser] = useState({
     name: '',
     email: '',
@@ -48,7 +48,7 @@ const MyProfileScreen = () => {
         },
       ]}
     >
-     <View style={styles.topContainer}>
+      <View style={styles.topContainer}>
         <TouchableOpacity
           onPress={() => navigation.navigate('Profile', { token })}
           style={styles.backButton}
@@ -59,6 +59,10 @@ const MyProfileScreen = () => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Profile</Text>
+        <Image
+          source={require("../../assets/TopLogo.png")}
+          style={styles.topLogo}
+        />
       </View>
       <View style={styles.profileContainer}>
         <Image
@@ -90,15 +94,13 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
     backgroundColor: '#f7f7f7',
   },
   backButton: {
-    position: 'absolute',
-    left: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -110,6 +112,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
+    flex: 1,
+    textAlign: 'center',
+  },
+  topLogo: {
+    width: 60,
+    height: 60,
   },
   profileContainer: {
     alignItems: 'center',
@@ -125,18 +133,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   userName: {
-    
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
   },
   userEmail: {
-    
     color: '#fff',
     fontSize: 16,
   },
   infoContainer: {
-    
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 20,
@@ -149,10 +154,9 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   infoText: {
-    borderWidth:1,
-    borderRadius:15,
-    padding:20,
-    
+    borderWidth: 1,
+    borderRadius: 15,
+    padding: 20,
     fontSize: 16,
     borderColor: '#ccc',
     borderBottomWidth: 1,

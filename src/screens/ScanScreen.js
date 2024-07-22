@@ -98,20 +98,22 @@ const ScanScreen = ({ token }) => {
         },
       ]}
     >
-       <View style={styles.topContainer}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.goBack()
-            }
-            style={styles.backButton}
-          >
-            <Image
-              style={styles.backButtonText}
-              source={require("../../assets/backButton.png")}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Upload Assigment</Text>
-        </View>
+      <View style={styles.topContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Image
+            style={styles.backButtonText}
+            source={require("../../assets/backButton.png")}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Upload Assignment</Text>
+        <Image
+          source={require("../../assets/TopLogo.png")}
+          style={styles.topLogo}
+        />
+      </View>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -140,32 +142,32 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    height: 60,
-    backgroundColor: "white",
+    justifyContent: "space-between",
+    paddingVertical: 10, // Add vertical padding
     paddingHorizontal: 15,
+    backgroundColor: "white",
   },
   backButton: {
-    position: "absolute",
-    left: 15,
+    justifyContent: "center",
+    alignItems: "center",
   },
   backButtonText: {
     width: 50,
     height: 50,
   },
+  topLogo: {
+    width: 60,
+    height: 60,
+    marginLeft: 10,
+    marginBottom: 10, // Add margin bottom to avoid collision
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
-  },
-  historyButton: {
-    padding: 10,
-    backgroundColor: "#00FF8B",
-    borderRadius: 5,
-  },
-  historyButtonText: {
-    fontSize: 16,
-    color: "#fff",
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: 10, // Add horizontal margin for better spacing
   },
   searchContainer: {
     backgroundColor: "#6A53A2",
@@ -182,25 +184,10 @@ const styles = StyleSheet.create({
   },
   flatList: {
     flex: 1,
-
     paddingHorizontal: 20,
     paddingTop: 10,
   },
   studentCard: {
-    // flexDirection: "row",
-    // alignItems: "center",
-    // backgroundColor: "#fff",
-    // padding: 15,
-    // marginBottom: 10,
-    // borderRadius: 20,
-    // shadowColor: "#000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.5,
-    // shadowRadius: 3.84,
-    // elevation: 5,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
@@ -261,3 +248,4 @@ const styles = StyleSheet.create({
 });
 
 export default ScanScreen;
+

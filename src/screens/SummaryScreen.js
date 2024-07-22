@@ -1,4 +1,3 @@
-// src/screens/SummaryScreen.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -9,7 +8,6 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import axios from "axios";
 import { FontAwesome } from "@expo/vector-icons"; // Make sure you have installed @expo/vector-icons
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getBookSummary } from "../services/api";
@@ -28,76 +26,6 @@ const SummaryScreen = () => {
       try {
         const response = await getBookSummary(studentId, bookId, token);
         console.log(response.data);
-        // Mock API response for testing
-        // const response = {
-        //   "jStudent": {
-        //     "name": "Prashant Phadatare",
-        //     "class": "Class II",
-        //     "age": 6
-        //   },
-        //   "jBooks": {
-        //     "bookId": 3,
-        //     "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS",
-        //     "difficulty": "INTERMEDIATE"
-        //   },
-        //   "filteredJChapters": {
-        //     "jChapters": [
-        //       {
-        //         "chapterId": 1,
-        //         "order": 1,
-        //         "title": "Beginning sounds",
-        //         "chapter": "Phonics",
-        //         "isUploaded": true,
-        //         "uploadedDate": "2024-01-03T00:00:00"
-        //       },
-        //       {
-        //         "chapterId": 2,
-        //         "order": 2,
-        //         "title": "Mixed words",
-        //         "chapter": "Vocabulary",
-        //         "isUploaded": true,
-        //         "uploadedDate": "2024-01-03T00:00:00"
-        //       },
-        //       {
-        //         "chapterId": 3,
-        //         "order": 3,
-        //         "title": "Word making",
-        //         "chapter": "Spelling",
-        //         "isUploaded": false,
-        //         "uploadedDate": "0001-01-01T00:00:00"
-        //       },
-        //       {
-        //         "chapterId": 3,
-        //         "order": 3,
-        //         "title": "Word making",
-        //         "chapter": "Spelling",
-        //         "isUploaded": false,
-        //         "uploadedDate": "0001-01-01T00:00:00"
-        //       },
-        //       {
-        //         "chapterId": 3,
-        //         "order": 3,
-        //         "title": "Word making",
-        //         "chapter": "Spelling",
-        //         "isUploaded": false,
-        //         "uploadedDate": "0001-01-01T00:00:00"
-        //       },{
-        //         "chapterId": 3,
-        //         "order": 3,
-        //         "title": "Word making",
-        //         "chapter": "Spelling",
-        //         "isUploaded": false,
-        //         "uploadedDate": "0001-01-01T00:00:00"
-        //       }
-
-        //     ],
-        //     "pagingInfo": {
-        //       "pageSize": "25",
-        //       "pageCount": "1",
-        //       "totalRecords": "3"
-        //     }
-        //   }
-        // };
 
         const { jStudent, jBooks, filteredJChapters } = response.data;
         const sortedChapters = filteredJChapters.jChapters.sort(
@@ -165,21 +93,13 @@ const SummaryScreen = () => {
             />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Summary</Text>
+          <Image
+            source={require("../../assets/TopLogo.png")}
+            style={styles.topLogo}
+          />
         </View>
       </View>
       <View style={styles.parentContainer}>
-        {bookData && (
-          <View style={styles.bookInfoContainer}>
-            <Image
-              style={{ width: 50, height: 50 }}
-              source={require("../../assets/booksCategory.png")}
-            />
-            <View style={styles.bookDetails}>
-              <Text style={styles.bookDifficulty}>{bookData.difficulty}</Text>
-              <Text style={styles.bookName}>{bookData.bookName}</Text>
-            </View>
-          </View>
-        )}
         {studentData && (
           <View style={styles.studentInfoContainer}>
             <Image
@@ -191,6 +111,18 @@ const SummaryScreen = () => {
               <Text style={styles.studentInfo}>
                 {studentData.class} | Age: {studentData.age} years
               </Text>
+            </View>
+          </View>
+        )}
+        {bookData && (
+          <View style={styles.bookInfoContainer}>
+            <Image
+              style={{ width: 50, height: 50 }}
+              source={require("../../assets/booksCategory.png")}
+            />
+            <View style={styles.bookDetails}>
+              <Text style={styles.bookDifficulty}>{bookData.difficulty}</Text>
+              <Text style={styles.bookName}>{bookData.bookName}</Text>
             </View>
           </View>
         )}
@@ -210,7 +142,7 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
@@ -222,8 +154,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#6A53A2",
   },
   backButton: {
-    position: "absolute",
-    left: 20,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -231,11 +161,18 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
+  topLogo: {
+    width: 60,
+    height: 60,
+    marginLeft: 10,
+    marginBottom: 10,
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
-    padding: 20,
+    flex: 1,
+    textAlign: "center",
   },
   contentContainer: {
     flexDirection: "column",
@@ -249,6 +186,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     margin: 20,
+    marginTop: 5,
   },
   bookDetails: {
     alignItems: "flex-start",
@@ -270,7 +208,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     margin: 20,
-    marginTop: 5,
   },
   profileImage: {
     width: 50,
