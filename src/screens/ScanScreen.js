@@ -98,27 +98,20 @@ const ScanScreen = ({ token }) => {
         },
       ]}
     >
-      <View style={styles.header}>
-        {/* <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>{"<"}</Text>
-        </TouchableOpacity> */}
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Home", token)}
-          style={styles.backButton}
-        >
-          <Image
-            style={styles.backButtonImage}
-            source={require("../../assets/backButton.png")}
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Upload</Text>
-        <TouchableOpacity style={styles.historyButton}>
-          <Text style={styles.historyButtonText}>History</Text>
-        </TouchableOpacity>
-      </View>
+       <View style={styles.topContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.goBack()
+            }
+            style={styles.backButton}
+          >
+            <Image
+              style={styles.backButtonText}
+              source={require("../../assets/backButton.png")}
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Upload Assigment</Text>
+        </View>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -144,23 +137,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  header: {
+  topContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
-    backgroundColor: "#fff",
+    justifyContent: "center",
+    height: 60,
+    backgroundColor: "white",
+    paddingHorizontal: 15,
   },
   backButton: {
-    padding: 10,
+    position: "absolute",
+    left: 15,
   },
   backButtonText: {
-    fontSize: 18,
-    color: "#000",
+    width: 50,
+    height: 50,
   },
-  headerText: {
-    fontSize: 24,
+  headerTitle: {
+    fontSize: 20,
     fontWeight: "bold",
+    color: "black",
   },
   historyButton: {
     padding: 10,

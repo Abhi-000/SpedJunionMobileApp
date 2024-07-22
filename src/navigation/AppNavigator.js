@@ -1,4 +1,3 @@
-// AppNavigator.js
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/LoginScreen';
 import BottomTabNavigator from './BottomTabNavigator';
@@ -17,6 +16,7 @@ import SummaryScreen from '../screens/SummaryScreen';
 import StudentsSearchScreen from '../screens/StudentSearchScreen'; // Import the new screen
 import MyProfileScreen from '../screens/MyProfileScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import EndSessionScreen from '../screens/EndSessionScreen'; // Import EndSessionScreen
 import AppWrapper from './AppWrapper'; // Import AppWrapper
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -120,6 +120,11 @@ const AppNavigator = () => {
         <Stack.Screen
           name="StudentsSearch"
           component={StudentsSearchScreen} // Add the new screen
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EndSession"
+          component={EndSessionScreen} // Add EndSessionScreen
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

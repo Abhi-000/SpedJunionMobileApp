@@ -34,6 +34,9 @@ const UploadScreen = ({ route }) => {
 
   const [updatedUploadedChapters, setUpdatedUploadedChapters] =
     useState(uploadedChapters);
+
+    
+  const allChaptersUploaded = chapterDetails.length === updatedUploadedChapters.length;
   useEffect(() => {
     if (selectedChapters.length > 0) {
       setCurrentChapter(selectedChapters[0]); // Set the first selected chapter as the current chapter
@@ -59,15 +62,21 @@ const UploadScreen = ({ route }) => {
       if (response.data.success) {
         setUpdatedUploadedChapters((prev) => [...prev, currentChapter]);
         setCurrentChapter(null); // Reset current chapter after upload
-
-        // Navigate to ScanScreen on successful upload
-        navigation.navigate("Scan", {
-          token,
-          studentId,
+        navigation.navigate("Success", {
+          title: "Successfully Submitted",
+          message: "Assignment submitted sucesfully",
+          buttonText: "Continue",
+          nextScreen: "Scan",
+          nextScreenParams: { token },
         });
+        // Navigate to ScanScreen on successful upload
+        // navigation.navigate("Scan", {
+        //   token,
+        //   studentId,
+        // });
       } else {
         setModalVisible(true);
-        Alert.alert("Error", "Failed to upload assignments.");
+        //Alert.alert("Error", "Failed to upload assignments.");
       }
     } catch (error) {
       console.error("Error uploading assignments:", error);
@@ -75,6 +84,11 @@ const UploadScreen = ({ route }) => {
     }
   };
 
+  const handleEndSession = () => {
+    // Navigate to the appropriate screen or perform end session logic
+    navigation.navigate("EndSession", { token, studentId, bookDetails, chapterDetails, uploadedChapters });
+  };
+  
   const handleChapterPress = (chapterId) => {
     setCurrentChapter(chapterId);
   };
@@ -202,39 +216,38 @@ const UploadScreen = ({ route }) => {
           ))}
         </View>
         <View style={styles.bottomContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter score here"
-            value={score}
-            onChangeText={setScore}
-          />
-          <TextInput
-            style={styles.textArea}
-            placeholder="Observations"
-            value={observations}
-            onChangeText={setObservations}
-            multiline
-          />
-          <View style={styles.buttonContainer}>
+        
+        <View style={styles.buttonContainer}>
+          {allChaptersUploaded ? (
             <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDeleteFile}
+              style={styles.endSessionButton}
+              onPress={handleEndSession}
             >
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <Text style={styles.endSessionButtonText}>End Session</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handleUpload}
-            >
-              <Text style={styles.submitButtonText}>Submit</Text>
-            </TouchableOpacity>
-          </View>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={handleDeleteFile}
+              >
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleUpload}
+              >
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
       <DuplicateAssignment
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
       />
+    </View>
     </View>
   );
 };
@@ -397,7 +410,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    marginTop:20,
+    justifyContent: "center",
     width: "100%",
   },
   deleteButton: {
@@ -472,6 +486,19 @@ const styles = StyleSheet.create({
     color: "#63C3A8",
     fontWeight: "bold",
   },
+  endSessionButton: {
+    backgroundColor: "#FF2C2C", // Green color for end session button
+    paddingVertical: 10,
+    borderRadius: 25,
+    alignSelf:'center',
+    alignItems: "center",
+    width: "50%",
+  },
+  endSessionButtonText: {
+    fontSize: 16,
+    color: "#fff",
+  },
+
 });
 
 export default UploadScreen;

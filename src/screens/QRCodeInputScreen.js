@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import * as ImagePicker from "expo-image-picker";
+import { Animated, Easing } from "react-native";
 import { getSessionWiseAssessmentDetails } from "../services/api";
 import * as FileSystem from "expo-file-system";
 
@@ -28,6 +29,29 @@ const QRCodeInputScreen = ({ route }) => {
   const [uploadedChapters, setUploadedChapters] = useState([]);
   const [selectedChapters, setSelectedChapters] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isCameraVisible, setIsCameraVisible] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
+  const containerSize = useRef(new Animated.Value(1)).current;
+  const expandContainer = () => {
+    Animated.timing(containerSize, {
+      toValue: 1,
+      duration: 300,
+      easing: Easing.ease,
+      useNativeDriver: false,
+    }).start();
+  };
+  
+  const shrinkContainer = () => {
+    Animated.timing(containerSize, {
+      toValue: 0.5,  // This will make the container half its original size
+      duration: 300,
+      easing: Easing.ease,
+      useNativeDriver: false,
+    }).start();
+  };
+  
+  
+
 
   useEffect(() => {
     (async () => {
@@ -38,13 +62,18 @@ const QRCodeInputScreen = ({ route }) => {
 
   const handleBarCodeScanned = async ({ data }) => {
     console.log("scann", data);
-    setScanned(true);
+  setScanned(true);
+  setIsCameraVisible(false);
+  setShowDetails(true);  // Add this line
+  //shrinkContainer();
     try {
-      const response = await getSessionWiseAssessmentDetails(
-        data,
-        studentId,
-        token
-      );
+      // const response = await getSessionWiseAssessmentDetails(
+      //   data,
+      //   studentId,
+      //   token
+      // );
+      const response = 
+      {"bookDetails": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER"}, "chapterDetails": [{"bookId": 1, "chapter": "Synonyms", "chapterId": 1, "isCurrent": 1, "isUploaded": 1, "order": 1, "title": "Circle the correct words for beautiful"}, {"bookId": 1, "chapter": "Missing Number", "chapterId": 2, "isCurrent": 0, "isUploaded": 1, "order": 2, "title": "Fill each egg with the missing numbers"}, {"bookId": 1, "chapter": "Common Noun", "chapterId": 3, "isCurrent": 0, "isUploaded": 1, "order": 3, "title": "People, Places, Animals and Things"}]}
       setBookDetails(response.bookDetails);
       setChapterDetails(response.chapterDetails);
       const selectedChapters = response.chapterDetails
@@ -196,22 +225,112 @@ const QRCodeInputScreen = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Scan to Upload</Text>
         </View>
-        <View style={styles.qrCodeContainer}>
-          <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={StyleSheet.absoluteFillObject}
-            torchMode={flashlight ? "on" : "off"}
-          />
-          {scanned && (
-            <TouchableOpacity
-              onPress={() => setScanned(false)}
-              style={styles.rescanButton}
-            >
-              <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <View style={styles.bottomContainer}>
+        <Animated.View 
+  style={[
+    styles.qrCodeContainer,
+    {
+      transform: [
+        {
+          scale: containerSize,
+        },
+      ],
+    },
+  ]}
+>
+  {isCameraVisible ? (
+    <BarCodeScanner
+      onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+      style={StyleSheet.absoluteFillObject}
+      torchMode={flashlight ? "on" : "off"}
+    />
+  ) : showDetails ? (
+    <View style={styles.detailsContainer}>
+      <ScrollView
+        style={styles.chapterDetailsContainer}
+        contentContainerStyle={styles.chapterDetailsContent}
+      >
+        {chapterDetails && (
+            <View style={styles.detailsContainer}>
+              <ScrollView
+                style={styles.chapterDetailsContainer}
+                contentContainerStyle={styles.chapterDetailsContent}
+              >
+                <View style={styles.bookDetailsCard}>
+                  <View style={styles.bookDetails}>
+                    <Image
+                      source={require("../../assets/booksCategory.png")}
+                      style={styles.bookIcon}
+                    />
+                    <View style={styles.bookInfo}>
+                      <Text style={styles.bookDifficulty}>
+                        {bookDetails.difficulty}
+                      </Text>
+                      <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
+                    </View>
+                  </View>
+                </View>
+                {chapterDetails.map((chapter) => (
+                  <View
+                    key={chapter.chapterId}
+                    style={[
+                      styles.chapterCard,
+                      chapter.isCurrent && !chapter.isUploaded && styles.currentChapterCard,
+                    ]}
+                  >
+                    <View style={styles.chapterDetails}>
+                      <Text style={styles.chapterOrder}>{chapter.order}</Text>
+                      <View style={styles.chapterTextContainer}>
+                        <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                      </View>
+                      <View
+                        style={[
+                          styles.statusIndicator,
+                          chapter.isUploaded
+                            ? styles.uploadedIndicator
+                            : chapter.isCurrent
+                            ? styles.currentIndicator
+                            : styles.defaultIndicator,
+                        ]}
+                      >
+                        {chapter.isUploaded ? (
+                          <Text style={styles.checkMark}>✓</Text>
+                        ) : chapter.isCurrent ? (
+                          <View style={styles.yellowMark} />
+                        ) : null}
+                      </View>
+                    </View>
+                  </View>
+                  
+                ))}
+                 <TouchableOpacity
+        style={styles.uploadButton}
+        onPress={handleUploadAssignments}
+      >
+        <Text style={styles.uploadButtonText}>Upload Assignments</Text>
+      </TouchableOpacity>
+              </ScrollView>
+            </View>
+          ) }
+      </ScrollView>
+     
+    </View>
+  ) : null}
+  {scanned && (
+    <TouchableOpacity
+      onPress={() => {
+        setScanned(false);
+        setIsCameraVisible(true);
+        setShowDetails(false);  // Add this line
+        //expandContainer();
+      }}
+      style={styles.rescanButton}
+    >
+      <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
+    </TouchableOpacity>
+  )}
+</Animated.View>
+
+{!scanned && (<View style={styles.bottomContainer}>
           <TouchableOpacity
             onPress={handlePickImage}
             style={styles.bottomButton}
@@ -222,14 +341,19 @@ const QRCodeInputScreen = ({ route }) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setScanned(false)}
-            style={styles.bottomButton}
-          >
-            <Image
-              source={require("../../assets/scan.png")}
-              style={styles.bottomIcon}
-            />
-          </TouchableOpacity>
+  onPress={() => {
+    setScanned(false);
+    setIsCameraVisible(true);
+    setShowDetails(false);  // Add this line
+  }}
+  style={styles.bottomButton}
+>
+  <Image
+    source={require("../../assets/scan.png")}
+    style={styles.bottomIcon}
+  />
+</TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => setFlashlight(!flashlight)}
             style={styles.bottomButton}
@@ -239,69 +363,10 @@ const QRCodeInputScreen = ({ route }) => {
               style={styles.bottomIcon}
             />
           </TouchableOpacity>
-        </View>
-        {chapterDetails && (
-          <View style={styles.detailsContainer}>
-            <ScrollView
-              style={styles.chapterDetailsContainer}
-              contentContainerStyle={styles.chapterDetailsContent}
-            >
-              <View style={styles.bookDetailsCard}>
-                <View style={styles.bookDetails}>
-                  <Image
-                    source={require("../../assets/booksCategory.png")}
-                    style={styles.bookIcon}
-                  />
-                  <View style={styles.bookInfo}>
-                    <Text style={styles.bookDifficulty}>
-                      {bookDetails.difficulty}
-                    </Text>
-                    <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
-                  </View>
-                </View>
-              </View>
-              {chapterDetails.map((chapter) => (
-                <View
-                  key={chapter.chapterId}
-                  style={[
-                    styles.chapterCard,
-                    chapter.isCurrent && styles.currentChapterCard,
-                  ]}
-                >
-                  <View style={styles.chapterDetails}>
-                    <Text style={styles.chapterOrder}>{chapter.order}</Text>
-                    <View style={styles.chapterTextContainer}>
-                      <Text style={styles.chapterTitle}>{chapter.title}</Text>
-                    </View>
-                    <View
-                      style={[
-                        styles.statusIndicator,
-                        chapter.isUploaded
-                          ? styles.uploadedIndicator
-                          : chapter.isCurrent
-                          ? styles.currentIndicator
-                          : styles.defaultIndicator,
-                      ]}
-                    >
-                      {chapter.isUploaded ? (
-                        <Text style={styles.checkMark}>✓</Text>
-                      ) : chapter.isCurrent ? (
-                        <View style={styles.yellowMark} />
-                      ) : null}
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
-            <TouchableOpacity
-              style={styles.uploadButton}
-              onPress={handleUploadAssignments}
-            >
-              <Text style={styles.uploadButtonText}>Upload Assignments</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        </View>)}
+        
       </View>
+      
       <Modal
         animationType="slide"
         transparent={true}
@@ -341,7 +406,7 @@ const QRCodeInputScreen = ({ route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "white",
   },
   topContainer: {
@@ -365,13 +430,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
   },
+ 
   qrCodeContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 20,
+    flex:1,
+    width: "95%",  // or whatever size you prefer
+    height: "100%",  // or whatever size you prefer
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 10,
-    overflow: "hidden",
+    overflow: 'visible',
   },
   rescanButton: {
     position: "absolute",
@@ -400,16 +468,18 @@ const styles = StyleSheet.create({
     height: 70,
   },
   detailsContainer: {
-    flex: 1,
+    flexGrow:1,
+    width:"100%",
+    height:"100%",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "white",
     paddingTop: 20,
-    paddingHorizontal: 20,
-    marginTop: 20,
+    paddingHorizontal: 5,
+    
   },
   chapterDetailsContainer: {
-    flex: 1,
+    flexGrow: 1,
   },
   chapterDetailsContent: {
     paddingHorizontal: 2,
@@ -460,9 +530,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   currentChapterCard: {
-    backgroundColor: "#FFFFE0", // Light yellow background for current chapters
+    //backgroundColor: "#FFFFE0", // Light yellow background for current chapters
     borderColor: "#FFD700", // Gold border color for current chapters
-    borderWidth: 1,
+    borderWidth: 1.2,
   },
   chapterDetails: {
     flexDirection: "row",

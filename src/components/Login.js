@@ -100,6 +100,12 @@ const Login = () => {
               </TouchableOpacity>
               <Text style={styles.forgotPassword}>Forgot Password?</Text>
             </View>
+            <View style={styles.logoContainer}>
+            <Image
+              source={require("../../assets/logo.png")}
+              style={styles.logo}
+            />
+          </View>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -190,6 +196,11 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     color: "#007aff",
+  },
+  logoContainer: {
+    marginTop: 290,
+    alignItems: "center",
+    paddingBottom: 30,
   },
 });
 

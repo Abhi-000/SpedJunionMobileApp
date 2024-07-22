@@ -293,6 +293,47 @@ export const forgotPassword = async (token, username) => {
   }
 };
 
+export const getQuestions = (type, module, category,token) => {
+  return api.post(
+    "/Assessment/getQuestions",
+    {
+      "type": type,
+      "module": module,
+      "category": category
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
+
+export const submitObservations = (behaviour,eyeContact, compliance, independence,notes, studentId,token) => {
+  console.log(behaviour,eyeContact, compliance, independence,notes, studentId,token);
+  return api.post(
+    "/Therapy/SaveObservations",
+    {
+      "compliance" :compliance,
+    "cooperation": "Partially Cooperative",
+    "behaviour": behaviour,
+    "eyeContact": eyeContact,
+    "duringSession": "60",
+    "levelOfIndependence": independence,
+    "notes": notes,
+    "id": 55,
+    "studentId": studentId,
+    "term": 1
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
 export default {
   api,
   login,
@@ -307,4 +348,5 @@ export default {
   getStudentFilters,
   getUserDetails,
   forgotPassword,
+  getQuestions,
 };

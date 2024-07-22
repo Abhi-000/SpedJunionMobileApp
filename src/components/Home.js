@@ -211,13 +211,18 @@ const Home = ({ token, referenceId, roleId }) => {
     >
       <View style={styles.parentContainer}>
         <View style={styles.headersParent}>
+         
+          <View style={styles.header}>
           <Image
             source={require("../../assets/sampleProfile.png")}
             style={{ width: 60, height: 60 }}
           />
-          <View style={styles.header}>
-            <Text style={styles.headerText}>{username}</Text>
+            <Text style={styles.headerText}>Hi, {username} !</Text>
           </View>
+          <Image
+            source={require("../../assets/TopLogo.png")}
+            style={{ width: 60, height: 60 }}
+          />
         </View>
         <View style={styles.container}>
           <View style={styles.searchBar}>
@@ -454,17 +459,20 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   header: {
-    flexDirection: "column",
+    flexDirection: "row",
+    alignSelf:'center',
+    gap:10,
     justifyContent: "center", // Center username vertically
-    marginLeft: 10, // Add margin to separate from image
+    //marginLeft: 10, // Add margin to separate from image
   },
   headersParent: {
     margin: 20,
-    gap: 20,
+    //gap: 90,
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
   },
   headerText: {
+    marginTop:15,
     fontSize: 18,
     fontWeight: "bold",
   },
