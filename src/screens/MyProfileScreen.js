@@ -59,10 +59,10 @@ const MyProfileScreen = () => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Profile</Text>
-        <Image
+        {/* <Image
           source={require("../../assets/TopLogo.png")}
           style={styles.topLogo}
-        />
+        /> */}
       </View>
       <View style={styles.profileContainer}>
         <Image

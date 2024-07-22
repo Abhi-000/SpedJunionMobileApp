@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LogoutModal from '../components/LogoutModal';
 import { useLoading } from '../navigation/AppWrapper';
+
 const ProfileScreen = ({ token, referenceId, roleId }) => {
   const [user, setUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -29,7 +30,6 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
     fetchUserDetails();
   }, [referenceId, roleId]);
 
-
   return (
     <View
       style={[
@@ -42,7 +42,7 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
         },
       ]}
     >
-       <LogoutModal
+      <LogoutModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
       />
@@ -57,52 +57,57 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
+        <Image
+          source={require("../../assets/TopLogo.png")}
+          style={styles.topLogo}
+        />
       </View>
-      
+
       <View style={styles.parentContainer}>
-      <ImageBackground
-        style = {styles.backgroundImage}
-        source={require("../../assets/wavyPattern.png")}
+        <ImageBackground
+          style={styles.backgroundImage}
+          source={require("../../assets/wavyPattern.png")}
         >
-        {(user && <View style={styles.profileContainer}>
-          <Image
-            style={styles.profileImage}
-            source={require('../../assets/sampleProfile.png')}
-          />
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.userEmail}>{user.email}</Text>
-        </View>)}
+          {user && (
+            <View style={styles.profileContainer}>
+              <Image
+                style={styles.profileImage}
+                source={require('../../assets/sampleProfile.png')}
+              />
+              <Text style={styles.userName}>{user.name}</Text>
+              <Text style={styles.userEmail}>{user.email}</Text>
+            </View>
+          )}
         </ImageBackground>
         <View style={styles.menu}>
           <TouchableOpacity 
-          onPress={() =>
-            navigation.navigate("MyProfile", {
-              token: token,
-              referenceId:referenceId,
-              roleId:roleId
-            })
-          }
-          style={styles.menuItem}>
+            onPress={() =>
+              navigation.navigate("MyProfile", {
+                token: token,
+                referenceId: referenceId,
+                roleId: roleId
+              })
+            }
+            style={styles.menuItem}
+          >
             <Ionicons name="person-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>My Profile</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-          onPress={() =>
-            navigation.navigate("ForgotPassword", {
-              token: token,
-            })
-          }
-          style={styles.menuItem}>
+            onPress={() =>
+              navigation.navigate("ForgotPassword", {
+                token: token,
+              })
+            }
+            style={styles.menuItem}
+          >
             <Ionicons name="lock-closed-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Change Password</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="document-text-outline" size={20} color="#6A53A2" />
-            <Text style={styles.menuText}>Privacy Policy</Text>
-          </TouchableOpacity> */}
           <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={styles.menuItem}>
+            onPress={() => setModalVisible(true)}
+            style={styles.menuItem}
+          >
             <Ionicons name="log-out-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Log Out</Text>
           </TouchableOpacity>
@@ -117,24 +122,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f8f8',
   },
-  backgroundImage:
-  {
-    flexGrow:1,
-    width:"100%",
-    resizeMode:'cover'
+  backgroundImage: {
+    flexGrow: 1,
+    width: "100%",
+    resizeMode: 'cover'
   },
   topContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
     backgroundColor: '#f7f7f7',
   },
   backButton: {
-    position: 'absolute',
-    left: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -146,6 +148,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
+    flex: 1,
+    textAlign: 'center',
+  },
+  topLogo: {
+    width: 60,
+    height: 60,
+    marginLeft: 10,
+    marginBottom: 10,
   },
   parentContainer: {
     borderTopRightRadius: 20,
@@ -154,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileContainer: {
-    paddingTop:20,
+    paddingTop: 20,
     alignItems: 'center',
   },
   profileImage: {
@@ -173,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   menu: {
-    marginTop:20,
+    marginTop: 20,
     width: '100%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
