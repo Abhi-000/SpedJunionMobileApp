@@ -67,13 +67,13 @@ const QRCodeInputScreen = ({ route }) => {
   setShowDetails(true);  // Add this line
   //shrinkContainer();
     try {
-      // const response = await getSessionWiseAssessmentDetails(
-      //   data,
-      //   studentId,
-      //   token
-      // );
-      const response = 
-      {"bookDetails": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER"}, "chapterDetails": [{"bookId": 1, "chapter": "Synonyms", "chapterId": 1, "isCurrent": 1, "isUploaded": 1, "order": 1, "title": "Circle the correct words for beautiful"}, {"bookId": 1, "chapter": "Missing Number", "chapterId": 2, "isCurrent": 0, "isUploaded": 1, "order": 2, "title": "Fill each egg with the missing numbers"}, {"bookId": 1, "chapter": "Common Noun", "chapterId": 3, "isCurrent": 0, "isUploaded": 1, "order": 3, "title": "People, Places, Animals and Things"}]}
+      const response = await getSessionWiseAssessmentDetails(
+        data,
+        studentId,
+        token
+      );
+      // const response = 
+      // {"bookDetails": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER"}, "chapterDetails": [{"bookId": 1, "chapter": "Synonyms", "chapterId": 1, "isCurrent": 1, "isUploaded": 0, "order": 1, "title": "Circle the correct words for beautiful"}, {"bookId": 1, "chapter": "Missing Number", "chapterId": 2, "isCurrent": 0, "isUploaded": 1, "order": 2, "title": "Fill each egg with the missing numbers"}, {"bookId": 1, "chapter": "Common Noun", "chapterId": 3, "isCurrent": 0, "isUploaded": 1, "order": 3, "title": "People, Places, Animals and Things"}]}
       setBookDetails(response.bookDetails);
       setChapterDetails(response.chapterDetails);
       const selectedChapters = response.chapterDetails

@@ -36,14 +36,14 @@ const UploadScreen = ({ route }) => {
     useState(uploadedChapters);
 
     
-  const allChaptersUploaded = chapterDetails.length === updatedUploadedChapters.length;
+  const allChaptersUploaded = chapterDetails.length-1 <= updatedUploadedChapters.length;
   useEffect(() => {
     if (selectedChapters.length > 0) {
       setCurrentChapter(selectedChapters[0]); // Set the first selected chapter as the current chapter
     }
   }, [selectedChapters]);
 
-  const handleUpload = async () => {
+  const handleUpload = async (successScreen) => {
     try {
       const formData = new FormData();
       selectedFiles.forEach((file, index) => {
@@ -59,7 +59,7 @@ const UploadScreen = ({ route }) => {
 
       const response = await uploadAssignments(token, formData);
       console.log(response.data);
-      if (response.data.success) {
+      if (response.data.success && successScreen) {
         setUpdatedUploadedChapters((prev) => [...prev, currentChapter]);
         setCurrentChapter(null); // Reset current chapter after upload
         navigation.navigate("Success", {
@@ -74,18 +74,13 @@ const UploadScreen = ({ route }) => {
         //   token,
         //   studentId,
         // });
-      } else {
+      } else if(successScreen || !response.data.data){
         setModalVisible(true);
         //Alert.alert("Error", "Failed to upload assignments.");
       }
-    } catch (error) {
-      console.error("Error uploading assignments:", error);
-      Alert.alert("Error", "An error occurred while uploading assignments.");
-    }
-  };
-
-  const handleEndSession = () => {
-    const selectedFileName = selectedFiles.length > 0 ? selectedFiles[0].fileName : "No file selected";
+      else if(!successScreen && response.data.success)
+      {
+        const selectedFileName = selectedFiles.length > 0 ? selectedFiles[0].fileName : "No file selected";
     navigation.navigate("EndSession", { 
       token, 
       studentId, 
@@ -94,6 +89,16 @@ const UploadScreen = ({ route }) => {
       uploadedChapters,
       selectedFileName
     });
+      }
+    } catch (error) {
+      console.error("Error uploading assignments:", error);
+      Alert.alert("Error", "An error occurred while uploading assignments.");
+    }
+  };
+
+  const handleEndSession = async () => {
+    await handleUpload(false);
+    
     console.log("Selected Files:", selectedFiles);
   };
   
@@ -243,7 +248,7 @@ const UploadScreen = ({ route }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.submitButton}
-                onPress={handleUpload}
+                onPress={handleUpload(true)}
               >
                 <Text style={styles.submitButtonText}>Submit</Text>
               </TouchableOpacity>
@@ -358,7 +363,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   currentChapterCard: {
-    backgroundColor: "#FFFFE0", // Light yellow background for current chapters
+    //backgroundColor: "#FFFFE0", // Light yellow background for current chapters
     borderColor: "#FFD700", // Gold border color for current chapters
     borderWidth: 1,
   },

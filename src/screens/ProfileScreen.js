@@ -6,12 +6,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LogoutModal from '../components/LogoutModal';
 import { useLoading } from '../navigation/AppWrapper';
-const ProfileScreen = ({ token, referenceId, roleId }) => {
+const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, roleId: propRoleId  }) => {
+  //const { token, referenceId, roleId } = route.params;
   const [user, setUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { setLoading } = useLoading();
+  const token = route.params?.token || propToken;
+  const referenceId = route.params?.referenceId || propReferenceId;
+  const roleId = route.params?.roleId || propRoleId;
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -55,8 +59,14 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
             style={styles.backButtonText}
             source={require('../../assets/backButton.png')}
           />
+          
         </TouchableOpacity>
+        
         <Text style={styles.headerTitle}>Profile</Text>
+        <Image
+          source={require("../../assets/TopLogo.png")}
+          style={styles.topLogo}
+        />
       </View>
       
       <View style={styles.parentContainer}>
@@ -114,7 +124,7 @@ const ProfileScreen = ({ token, referenceId, roleId }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#f8f8f8',
   },
   backgroundImage:
@@ -126,11 +136,18 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center', // Center content horizontally
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
     backgroundColor: '#f7f7f7',
+    position: 'relative', // Ensure the container is a positioned element for absolute children
+  },
+  topLogo: {
+    width: 60,
+    height: 60,
+    position: 'absolute', // Position the logo absolutely
+    right: 20, // Align it to the right
   },
   backButton: {
     position: 'absolute',
@@ -146,6 +163,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
+    textAlign: 'center', // Center the text within the Text component
   },
   parentContainer: {
     borderTopRightRadius: 20,
