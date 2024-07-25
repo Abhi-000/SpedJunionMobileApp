@@ -154,18 +154,21 @@ const styles = StyleSheet.create({
     resizeMode:'cover'
   },
   topContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center', // Center content horizontally
+    flexDirection: "row",
+    alignItems: "center",
+    height:"10%",
+    justifyContent: "center",
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    backgroundColor: '#f7f7f7',
-    position: 'relative', // Ensure the container is a positioned element for absolute children
+    paddingHorizontal: 15,
+    backgroundColor: "white",
+    //marginTop:10,
+    //position: 'relative',
+    marginBottom:30,
   },
   topLogo: {
     width: 60,
     height: 60,
+    top:20,
     position: 'absolute', // Position the logo absolutely
     right: 10, // Align it to the right
   },
@@ -211,6 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   menu: {
+    paddingBottom:"100%",
     marginTop:20,
     width: '100%',
     backgroundColor: '#fff',

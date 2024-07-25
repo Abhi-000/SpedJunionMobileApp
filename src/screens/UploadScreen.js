@@ -56,9 +56,10 @@ const UploadScreen = ({ route }) => {
       formData.append("StudentId", studentId);
       formData.append("ChapterId", selectedChapters.join(",")); // Ensure ChapterId is correctly formatted
       formData.append("BookId", bookDetails.bookId);
-
+      
       const response = await uploadAssignments(token, formData);
       console.log(response.data);
+      console.log("HELLO",successScreen, response.data.data, response.data);
       if (response.data.success && successScreen) {
         setUpdatedUploadedChapters((prev) => [...prev, currentChapter]);
         setCurrentChapter(null); // Reset current chapter after upload
@@ -74,7 +75,7 @@ const UploadScreen = ({ route }) => {
         //   token,
         //   studentId,
         // });
-      } else if(successScreen || !response.data.data){
+      } else if(successScreen || !response.data.success){
         setModalVisible(true);
         //Alert.alert("Error", "Failed to upload assignments.");
       }
@@ -97,6 +98,7 @@ const UploadScreen = ({ route }) => {
   };
 
   const handleEndSession = async () => {
+    console.log("END SESSION");
     await handleUpload(false);
     
     console.log("Selected Files:", selectedFiles);
@@ -248,7 +250,8 @@ const UploadScreen = ({ route }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.submitButton}
-                onPress={handleUpload(true)}
+                
+                onPress={async() => await handleUpload(true)}
               >
                 <Text style={styles.submitButtonText}>Submit</Text>
               </TouchableOpacity>

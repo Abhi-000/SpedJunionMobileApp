@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: "white",
-    position: 'relative',
+    marginTop:10,
+    //position: 'relative',
     marginBottom:30,
   },
   backButton: {
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   },
   topLogo: {
     position: 'absolute',
-    top:-10,
+    top:-5,
     right: 10,
     zIndex: 1,
   },
@@ -173,6 +174,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
+    justifyContent:'center',
     alignContent:'center',
     textAlign: 'center',
     flex: 1,
