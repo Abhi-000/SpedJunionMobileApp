@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { login } from "../services/api.js";
 import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
+import YourSvgImage from '../../assets/2.svg';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -105,10 +106,11 @@ const Login = () => {
             </View>
             <View style={styles.flexSpacer} />
             <View style={styles.logoContainer}>
-              <Image
-                source={require("../../assets/logo.png")}
+              {/* <Image
+                source={require("../../assets/2.svg")}
                 style={styles.logo}
-              />
+              /> */}
+              <YourSvgImage width={200} height={200} />
             </View>
           </View>
         </ScrollView>

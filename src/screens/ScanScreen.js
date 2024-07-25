@@ -11,6 +11,7 @@ import {
 import { getJStudents } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import YourSvgImage from '../../assets/1.svg';
 
 const ScanScreen = ({ token }) => {
   const insets = useSafeAreaInsets();
@@ -108,11 +109,14 @@ const ScanScreen = ({ token }) => {
             source={require("../../assets/backButton.png")}
           />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Upload Assignment</Text>
-        <Image
+        <Text style={styles.headerTitle}>Upload Assigment</Text>
+        <YourSvgImage
+         style={styles.topLogo}
+          width={80} height={80} />
+        {/* <Image
           source={require("../../assets/TopLogo.png")}
           style={styles.topLogo}
-        />
+        /> */}
       </View>
       <View style={styles.searchContainer}>
         <TextInput
@@ -142,39 +146,38 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 10, // Add vertical padding
+    justifyContent: "center",
+    paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: "white",
-    position: 'relative', // Add this to the top container
+    position: 'relative',
+    marginBottom:30,
   },
   backButton: {
-    justifyContent: "center",
-    alignItems: "center",
+    position: 'absolute',
+    left: 15,
+    zIndex: 1,
   },
   backButtonText: {
     width: 50,
     height: 50,
   },
   topLogo: {
-    width: 60,
-    height: 60,
-    marginLeft: 10,
-    marginBottom: 10, // Add margin bottom to avoid collision
+    position: 'absolute',
+    top:-10,
+    right: 10,
+    zIndex: 1,
   },
+
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
-    flex: 1,
+    alignContent:'center',
     textAlign: 'center',
-    marginHorizontal: 10, // Add horizontal margin for better spacing
-    
-    left: 0,
-    right: 0,
-    textAlign: 'center', // Center the text
-   
+    flex: 1,
   },
+
   searchContainer: {
     backgroundColor: "#6A53A2",
     padding: 15,

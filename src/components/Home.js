@@ -21,6 +21,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
 import { useLoading } from "../navigation/AppWrapper";
+import YourSvgImage from '../../assets/1.svg';
 
 const Home = ({ token, referenceId, roleId }) => {
   console.log("reference: ", referenceId, roleId);
@@ -221,10 +222,11 @@ const Home = ({ token, referenceId, roleId }) => {
   <Text style={styles.headerText}>Hi, {username} !</Text>
 </TouchableOpacity>
           </View>
-          <Image
+          {/* <Image
             source={require("../../assets/TopLogo.png")}
             style={{ width: 60, height: 60 }}
-          />
+          /> */}
+          <YourSvgImage right={-10} top={10} width={80} height={80} />
         </View>
         <View style={styles.container}>
           <View style={styles.searchBar}>

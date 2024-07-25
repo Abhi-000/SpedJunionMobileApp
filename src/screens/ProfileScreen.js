@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground,Linking  } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getUserDetails } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LogoutModal from '../components/LogoutModal';
+import YourSvgImage from '../../assets/1.svg';
+
 import { useLoading } from '../navigation/AppWrapper';
 const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, roleId: propRoleId  }) => {
   //const { token, referenceId, roleId } = route.params;
@@ -46,6 +48,7 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
         },
       ]}
     >
+      <View style = {{backgroundColor: "#6A53A2",}}>
        <LogoutModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
@@ -63,10 +66,13 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
         </TouchableOpacity>
         
         <Text style={styles.headerTitle}>Profile</Text>
-        <Image
+        {/* <Image
           source={require("../../assets/TopLogo.png")}
           style={styles.topLogo}
-        />
+        /> */}
+         <YourSvgImage
+         style={styles.topLogo}
+          width={80} height={80} />
       </View>
       
       <View style={styles.parentContainer}>
@@ -106,10 +112,23 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
             <Ionicons name="lock-closed-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Change Password</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+           onPress={async() =>
+            await Linking.openURL('https://spedathome.com/privacy-policy/')
+          }
+          style={styles.menuItem}>
             <Ionicons name="document-text-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Privacy Policy</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+           onPress={async() =>
+            await Linking.openURL('https://spedathome.com/terms-of-use/')
+          }
+          style={styles.menuItem}>
+            <Ionicons name="clipboard-outline" size={20} color="#6A53A2" />
+            <Text style={styles.menuText}>Terms of use</Text>
+          </TouchableOpacity>
           <TouchableOpacity
           onPress={() => setModalVisible(true)}
           style={styles.menuItem}>
@@ -118,6 +137,7 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
           </TouchableOpacity>
         </View>
       </View>
+    </View>
     </View>
   );
 };
@@ -147,7 +167,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     position: 'absolute', // Position the logo absolutely
-    right: 20, // Align it to the right
+    right: 10, // Align it to the right
   },
   backButton: {
     position: 'absolute',
