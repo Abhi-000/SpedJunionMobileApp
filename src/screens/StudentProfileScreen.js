@@ -23,6 +23,8 @@ const StudentProfileScreen = () => {
   const route = useRoute();
   const insets = useSafeAreaInsets();
   const { studentId, token } = route.params;
+  const hasAssignedBooks = bookDetails.length > 0;
+
 
   useEffect(() => {
     fetchStudents();
@@ -176,38 +178,31 @@ const StudentProfileScreen = () => {
           <View style={styles.assignedBooksContainer}>
             <ScrollView style={styles.bookListContainer}>
               <View style={styles.buttonsContainer}>
+              {hasAssignedBooks && (
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("QRCodeInput", {
+          token: token,
+          studentId: studentId,
+        })
+      }
+      style={styles.button}
+    >
+      <Text style={styles.buttonText}>Upload Assignment</Text>
+    </TouchableOpacity>
+  )}
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("QRCodeInput", {
-                      token: token,
-                      studentId: studentId,
-                    })
-                  }
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Upload Assignment</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Books", { token })}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Assign Books</Text>
-                </TouchableOpacity>
+    onPress={() => navigation.navigate("Books", { token, studentId })}
+    style={[styles.button, !hasAssignedBooks && styles.fullWidthButton]}
+  >
+    <Text style={styles.buttonText}>Assign Books</Text>
+  </TouchableOpacity>
               </View>
               <Text style={styles.sectionTitle}>
                 Assigned Books & Assignments
               </Text>
               {renderBookDetails()}
-              <View style={styles.additionalSections}>
-                <TouchableOpacity style={styles.additionalSection}>
-                  <Text style={styles.sectionTitle}>Student behavior</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.additionalSection}>
-                  <Text style={styles.sectionTitle}>
-                    Academic recommendation
-                  </Text>
-                </TouchableOpacity>
-              </View>
+             
             </ScrollView>
           </View>
         </View>
@@ -257,6 +252,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     padding: 20,
+  },
+  fullWidthButton: {
+    flex: 1,
   },
   profileContainer: {
     backgroundColor: "#ffffff",

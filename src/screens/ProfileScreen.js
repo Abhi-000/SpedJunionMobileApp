@@ -87,6 +87,7 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
           />
           <Text style={styles.userName}>{user.name}</Text>
           <Text style={styles.userEmail}>{user.email}</Text>
+          <Text style={styles.userSchool}>{user.schoolName}</Text>
         </View>)}
         </ImageBackground>
         <View style={styles.menu}>
@@ -212,6 +213,10 @@ const styles = StyleSheet.create({
   userEmail: {
     color: '#fff',
     fontSize: 16,
+  },
+  userSchool:{
+    color: '#fff',
+    fontSize: 14,
   },
   menu: {
     paddingBottom:"100%",

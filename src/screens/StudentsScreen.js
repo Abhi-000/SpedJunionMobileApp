@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { getAllBooks, getStudentDetailsByIds } from "../services/api";
+import { getAllBooks, getStudentDetailsByIds, getBookSummary } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLoading } from "../navigation/AppWrapper";
@@ -17,13 +17,54 @@ import Loader from "../components/Loader"; // Adjust the path based on your file
 const StudentsScreen = () => {
   const [bookData, setBookData] = useState(null);
   const [students, setStudents] = useState([]);
+  const [chapters, setChapters] = useState([]);
+  const [activeTab, setActiveTab] = useState('students');
+
   const { loading, setLoading } = useLoading(); // Adjusted to include loading state
 
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token } = route.params;
   const insets = useSafeAreaInsets();
-
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await getBookSummary(null, bookId, token);
+        console.log(response.data);
+    
+        // Unescape the JSON string
+        const unescapedData = response.data.data.replace(/\\"/g, '"').replace(/\\\\n/g, '\\n');
+        
+        // Remove the surrounding quotes if they exist
+        const cleanedData = unescapedData.replace(/^"(.*)"$/, '$1');
+    
+        // Parse the cleaned JSON string
+        const parsedData = JSON.parse(cleanedData);
+        console.log(parsedData); 
+        setBookData(parsedData.sjBooks);
+        setStudents(parsedData.jStudents);
+        
+        // Combine chapter info with count
+        const chaptersWithCount = parsedData.sjChapterss.map(chapter => {
+          const countInfo = parsedData.jChapterCounts.find(c => c.chapterId === chapter.chapterId);
+          return {
+            ...chapter,
+            studentCount: countInfo ? countInfo.studentCount : '0 / 0'
+          };
+        });
+        setChapters(chaptersWithCount);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [bookId, token]);
+  
+  
   useEffect(() => {
     const fetchStudents = async () => {
       setLoading(true);
@@ -85,7 +126,31 @@ const StudentsScreen = () => {
       </TouchableOpacity>
     );
   };
-
+  const renderChapterCard = (chapter) => {
+    return (
+      <View key={chapter.chapterId} style={styles.chapterContainer}>
+        <Text style={styles.chapterOrder}>
+          {chapter.order.toString().padStart(2, "0")}
+        </Text>
+        <View style={styles.chapterDetails}>
+          <Text style={styles.chapterTitle}>{chapter.title}</Text>
+          <Text style={styles.chapterChapter}>{chapter.chapter}</Text>
+         
+        </View>
+        <View style={styles.chapterCountContainer}>
+        <Text style={styles.chapterCount}>{chapter.studentCount || '0 / 0'}</Text>
+      </View>
+        {/* <View style={styles.chapterStatus}>
+          {chapter.isUploaded ? (
+            <FontAwesome name="check-circle" size={24} color="#4CAF50" />
+          ) : (
+            <FontAwesome name="circle-o" size={24} color="#ccc" />
+          )}
+        </View> */}
+      </View>
+    );
+  };
+  
   return (
     <View
       style={[
@@ -125,12 +190,23 @@ const StudentsScreen = () => {
               </View>
             </View>
             <View style={styles.tabContainer}>
-              <Text style={styles.tabTextInactive}>Chapters</Text>
-              <Text style={styles.tabTextActive}>Students</Text>
-            </View>
-            <ScrollView style={styles.scrollView}>
-              {students.map((student) => renderStudentCard(student))}
-            </ScrollView>
+          <TouchableOpacity onPress={() => setActiveTab('students')}>
+            <Text style={activeTab === 'students' ? styles.tabTextActive : styles.tabTextInactive}>
+              Students
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('chapters')}>
+            <Text style={activeTab === 'chapters' ? styles.tabTextActive : styles.tabTextInactive}>
+              Chapters
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView style={styles.scrollView}>
+          {activeTab === 'students' ? 
+            students.map((student) => renderStudentCard(student)) :
+            chapters.map((chapter) => renderChapterCard(chapter))
+          }
+        </ScrollView>
           </View>
         )}
       </View>
@@ -208,6 +284,8 @@ const styles = StyleSheet.create({
   tabTextInactive: {
     fontSize: 16,
     color: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
     marginHorizontal: 20,
   },
   tabTextActive: {
@@ -285,6 +363,78 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: "white",
   },
+  chapterCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    marginBottom: 10,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+  },
+  chaptersContainer: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    flexGrow: 1,
+  },
+  chapterContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+  },
+  chapterOrder: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#FF5733",
+    marginRight: 10,
+  },
+  chapterDetails: {
+    flex: 1,
+  },
+  chapterChapter: {
+    fontSize: 14,
+    color: "#666",
+    fontStyle: "italic",
+  },
+  chapterTitle: {
+    fontSize: 16,
+    color: "#333",
+  },
+  chapterDate: {
+    fontSize: 12,
+    color: "#666",
+  },
+  chapterStatus: {
+    alignItems: "center",
+  },
+  chapterCountContainer: {
+    backgroundColor: "#6A53A2",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  chapterCount: {
+    fontSize: 14,
+    color: "white",
+  },
+
 });
+
 
 export default StudentsScreen;

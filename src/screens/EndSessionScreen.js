@@ -50,11 +50,14 @@ const EndSessionScreen = ({ route }) => {
         {questions.map((question, index) => {
           const options = question.options ? question.options.split(",") : [];
           const zIndexStyle = { zIndex: 5000 - index };
-
+          const isNotes = question.question === "Notes";
+          const containerStyle = isNotes ? styles.fullWidthContainer : [styles.dropdownContainer, zIndexStyle];
+  
           return (
-            <View key={question.question} style={[styles.dropdownContainer, zIndexStyle]}>
+            <View key={question.question} style={containerStyle}>
               <Text style={styles.questionText}>{question.question}</Text>
-              {question.question === "Notes" ? (
+              {isNotes ? (
+                
                 <TextInput
                   style={styles.textArea}
                   multiline={true}
@@ -111,6 +114,7 @@ const EndSessionScreen = ({ route }) => {
       </View>
     );
   };
+  
 
   const handleSubmit = async () => {
     const behaviour = dropdownValues["Behaviour"]?.value || "";
@@ -362,6 +366,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
     borderRadius: 10,
+    borderWidth:.5,
     marginVertical: 10,
     height: 100,
     textAlignVertical: "top", // Ensure text starts from the top of the text area
@@ -394,6 +399,11 @@ const styles = StyleSheet.create({
     width: "48%", // Adjust width to fit two dropdowns per row
     zIndex: 1,
   },
+  fullWidthContainer: {
+    marginBottom: 10,
+    width: "100%", // Full width for the Notes section
+    zIndex: 1,
+  },
   questionText: {
     fontSize: 16,
     fontWeight: "bold",
@@ -419,5 +429,6 @@ const styles = StyleSheet.create({
     zIndex: 5000,
   },
 });
+
 
 export default EndSessionScreen;

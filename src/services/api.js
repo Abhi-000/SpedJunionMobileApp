@@ -116,21 +116,29 @@ export const assignBook = (bookId, studentIds, token) => {
 };
 
 export const getBookSummary = (studentId, bookId, token) => {
-  console.log("here:", bookId);
-  console.log("here", token);
+  console.log("Book ID:", bookId);
+  console.log("Token:", token);
+
+  // Create the base request body
+  const requestBody = {
+    bookId: bookId,
+    filters: {
+      sortBy: "bookId",
+      sortOrder: "DESC",
+      pageSize: 25,
+      pageCount: 1,
+      conditions: [],
+    },
+  };
+
+  // If studentId is provided and not null, add it to the request body
+  if (studentId !== null && studentId !== undefined) {
+    requestBody.studentId = studentId;
+  }
+
   return api.post(
     "/Book/GetBookSummary",
-    {
-      studentId: studentId,
-      bookId: bookId,
-      filters: {
-        sortBy: "bookId",
-        sortOrder: "DESC",
-        pageSize: 25,
-        pageCount: 1,
-        conditions: [],
-      },
-    },
+    requestBody,
     {
       headers: {
         Authorization: `Bearer ${token}`,

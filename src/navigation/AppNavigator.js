@@ -24,12 +24,15 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
 import { TransitionPresets } from '@react-navigation/stack';
+import { StatusBar } from 'react-native';
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
+    
     <AppWrapper>
+      <StatusBar backgroundColor="#6A53A2" barStyle="light-content" />
       <Stack.Navigator 
         screenOptions={{
           headerShown: false,

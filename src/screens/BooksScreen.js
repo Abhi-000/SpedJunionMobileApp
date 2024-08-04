@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { getAllBooks } from "../services/api";
+import { getAllBooks, assignBook } from "../services/api";
+import DuplicateAssignment from "../components/DuplicateAssignment";
 import {
   useNavigation,
   useRoute,
@@ -24,6 +25,48 @@ const BooksScreen = ({ token: propToken }) => {
   const route = useRoute();
   const insets = useSafeAreaInsets();
   const { loading, setLoading } = useLoading(); // Adjusted to include loading state
+  const studentId = route.params?.studentId;
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleAssignBook = async (bookId) => {
+    console.log(bookId,studentId);
+    if (studentId) {
+      try {
+        setLoading(true);
+        const response = await assignBook(bookId, [studentId], propToken || route.params?.token);
+        console.log(response.data);
+        setLoading(false);
+
+        if(response.data.message == "Success")
+        {
+        navigation.navigate("Success", {
+          title: "Successfully Assigned",
+          message: "Successfully Assigned To Students",
+          buttonText: "Continue",
+          nextScreen: "Books",
+          nextScreenParams: { token: propToken || route.params?.token, studentId },
+      });
+    }
+    else{
+      setModalVisible(true);
+      
+    }
+        //navigation.goBack();
+      } catch (error) {
+        setLoading(false);
+        console.error("Error assigning book:", error);
+        Alert.alert("Error", "Failed to assign book. Please try again.");
+      }
+    } else {
+      navigation.navigate("AssignBook", {
+        bookId: bookId,
+        token: propToken || route.params?.token,
+        alreadyAssignedStudents: item.studentCounts.studentIds
+          .split(",")
+          .map((id) => parseInt(id)),
+      });
+    }
+  };
 
   const fetchBooks = async (currentToken) => {
     try {
@@ -67,22 +110,17 @@ const BooksScreen = ({ token: propToken }) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.assignButton}
-            onPress={() =>
-              navigation.navigate("AssignBook", {
-                bookId: item.bookId,
-                token: propToken || route.params?.token,
-                alreadyAssignedStudents: item.studentCounts.studentIds
-                  .split(",")
-                  .map((id) => parseInt(id)), // Pass already assigned students
-              })
-            }
+            onPress={() => handleAssignBook(item.bookId)}
           >
-            <Text style={styles.buttonText}>Assign</Text>
+            <Text style={styles.buttonText}>
+             Assign
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
+
 
   const categories = ["All", "Beginner", "Intermediate", "Advanced"];
 
@@ -98,6 +136,10 @@ const BooksScreen = ({ token: propToken }) => {
         },
       ]}
     >
+      <DuplicateAssignment
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
       <Loader loading={loading} />
       <View style={styles.container}>
         <View style={styles.topContainer}>

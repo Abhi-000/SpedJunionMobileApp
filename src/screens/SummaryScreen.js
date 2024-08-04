@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { FontAwesome } from "@expo/vector-icons"; // Make sure you have installed @expo/vector-icons
+import { FontAwesome } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getBookSummary } from "../services/api";
 
@@ -26,12 +26,23 @@ const SummaryScreen = () => {
       try {
         const response = await getBookSummary(studentId, bookId, token);
         console.log(response.data);
-
-        const { jStudent, jBooks, filteredJChapters } = response.data;
+    
+        // Unescape the JSON string
+        const unescapedData = response.data.data.replace(/\\"/g, '"').replace(/\\\\n/g, '\\n');
+        
+        // Remove the surrounding quotes if they exist
+        const cleanedData = unescapedData.replace(/^"(.*)"$/, '$1');
+    
+        // Parse the cleaned JSON string
+        const parsedData = JSON.parse(cleanedData);
+        
+        const { jStudent, jBooks, filteredJChapters } = parsedData;
+        
+        // Sort chapters by order
         const sortedChapters = filteredJChapters.jChapters.sort(
           (a, b) => a.order - b.order
         );
-
+    
         console.log(filteredJChapters.jChapters);
         setStudentData(jStudent);
         setBookData(jBooks);
@@ -40,7 +51,6 @@ const SummaryScreen = () => {
         console.error("Error fetching summary:", error);
       }
     };
-
     fetchSummary();
   }, [studentId, bookId]);
 
@@ -52,8 +62,11 @@ const SummaryScreen = () => {
         </Text>
         <View style={styles.chapterDetails}>
           <Text style={styles.chapterTitle}>{chapter.title}</Text>
+          <Text style={styles.chapterChapter}>{chapter.chapter}</Text>
           <Text style={styles.chapterDate}>
-            {new Date(chapter.uploadedDate).toLocaleDateString()}
+            {chapter.isUploaded
+              ? new Date(chapter.uploadedDate).toLocaleDateString()
+              : "Not uploaded yet"}
           </Text>
         </View>
         <View style={styles.chapterStatus}>
@@ -66,7 +79,6 @@ const SummaryScreen = () => {
       </View>
     ));
   };
-
   return (
     <View
       style={[
@@ -148,6 +160,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     backgroundColor: "#f7f7f7",
   },
+  
   parentContainer: {
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
@@ -241,6 +254,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     padding: 20,
     flexGrow: 1,
+  },
+  chapterChapter: {
+    fontSize: 14,
+    color: "#666",
+    fontStyle: "italic",
   },
   chapterContainer: {
     flexDirection: "row",

@@ -10,6 +10,7 @@ import {
   Button,
   Image,
   ScrollView,
+  StatusBar
 } from "react-native";
 import {
   getJStudents,
@@ -29,6 +30,7 @@ const Home = ({ token, referenceId, roleId }) => {
 
   const insets = useSafeAreaInsets();
   const [username, setUsername] = useState("");
+  const [schoolName, setSchoolName] = useState("");
   const [students, setStudents] = useState([]);
   const [filters, setFilters] = useState({
     studentClass: "",
@@ -55,7 +57,9 @@ const Home = ({ token, referenceId, roleId }) => {
       try {
         setLoading(true);
         const userDetails = await getUserDetails(token, referenceId, roleId);
+        console.log("user:",userDetails);
         setUsername(userDetails.name);
+        setSchoolName(userDetails.schoolName);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -220,6 +224,7 @@ const Home = ({ token, referenceId, roleId }) => {
           />
            <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen', { token, referenceId, roleId })}>
   <Text style={styles.headerText}>Hi, {username} !</Text>
+  <Text style={styles.schoolText}>{schoolName}</Text>
 </TouchableOpacity>
           </View>
           {/* <Image
@@ -479,6 +484,12 @@ const styles = StyleSheet.create({
     marginTop:15,
     fontSize: 18,
     fontWeight: "bold",
+  },
+  schoolText:
+  {
+    marginTop:15,
+    fontSize: 14,
+    fontWeight: "light",
   },
   searchBar: {
     flexDirection: "row",

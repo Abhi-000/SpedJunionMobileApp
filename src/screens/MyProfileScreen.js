@@ -13,7 +13,8 @@ const MyProfileScreen = () => {
     name: '',
     email: '',
     phoneNumber: '',
-    gender: ''
+    gender: '',
+    schoolName : ''
   });
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -26,7 +27,8 @@ const MyProfileScreen = () => {
           name: userDetails.name,
           email: userDetails.email,
           phoneNumber: userDetails.mobile,
-          gender: userDetails.gender
+          gender: userDetails.gender,
+          schoolName: userDetails.schoolName,
         });
       } catch (error) {
         console.error('Error fetching user details:', error);
@@ -71,6 +73,7 @@ const MyProfileScreen = () => {
         />
         <Text style={styles.userName}>{user.name}</Text>
         <Text style={styles.userEmail}>{user.email}</Text>
+        <Text style={styles.userSchoolName}>{user.schoolName}</Text>
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.label}>Full Name</Text>
@@ -144,6 +147,11 @@ const styles = StyleSheet.create({
   userEmail: {
     color: '#fff',
     fontSize: 16,
+  },
+  userSchoolName: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'light',
   },
   infoContainer: {
     backgroundColor: '#fff',
