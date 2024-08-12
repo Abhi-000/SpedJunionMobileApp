@@ -24,7 +24,9 @@ const UploadScreen = ({ route }) => {
     selectedChapters,
     selectedFiles,
     uploadedChapters,
+    sessionId
   } = route.params;
+  console.log("session id:",sessionId);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [score, setScore] = useState("");
@@ -56,6 +58,7 @@ const UploadScreen = ({ route }) => {
       formData.append("StudentId", studentId);
       formData.append("ChapterId", selectedChapters.join(",")); // Ensure ChapterId is correctly formatted
       formData.append("BookId", bookDetails.bookId);
+      formData.append("SessionNumber", sessionId);
       
       const response = await uploadAssignments(token, formData);
       console.log(response.data);

@@ -5,7 +5,7 @@ import { getUserDetails } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LogoutModal from '../components/LogoutModal';
-import YourSvgImage from '../../assets/1.svg';
+import YourSvgImage from '../../assets/bell.svg';
 
 import { useLoading } from '../navigation/AppWrapper';
 const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, roleId: propRoleId  }) => {
@@ -67,12 +67,12 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
         
         <Text style={styles.headerTitle}>Profile</Text>
         {/* <Image
-          source={require("../../assets/TopLogo.png")}
+          source={require("../../assets/notificationIcon.png")}
           style={styles.topLogo}
         /> */}
          <YourSvgImage
          style={styles.topLogo}
-          width={80} height={80} />
+          width={30} height={30} />
       </View>
       
       <View style={styles.parentContainer}>
@@ -169,9 +169,9 @@ const styles = StyleSheet.create({
   topLogo: {
     width: 60,
     height: 60,
-    top:20,
+    top:35,
     position: 'absolute', // Position the logo absolutely
-    right: 10, // Align it to the right
+    right: 20, // Align it to the right
   },
   backButton: {
     position: 'absolute',

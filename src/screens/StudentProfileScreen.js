@@ -39,7 +39,15 @@ const StudentProfileScreen = () => {
       );
       console.log("profile screen:", response);
       setStudentData(response.spedStudent);
+      // const booksSample = [{"assignDate": "09/08/2024", "bookData": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER", "totalChapter": 3}, "bookId": 1, "uploadedAssignmentCount": 0}, 
+      //   {"assignDate": "09/08/2024", "bookData": {"bookId": 2, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "INTERMEDIATE", "totalChapter": 2}, "bookId": 2, "uploadedAssignmentCount": 0},
+      //   {"assignDate": "09/08/2024", "bookData": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER", "totalChapter": 3}, "bookId": 1, "uploadedAssignmentCount": 0},
+      //   {"assignDate": "09/08/2024", "bookData": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER", "totalChapter": 3}, "bookId": 1, "uploadedAssignmentCount": 0},
+      //   {"assignDate": "09/08/2024", "bookData": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER", "totalChapter": 3}, "bookId": 1, "uploadedAssignmentCount": 0},
+      //   {"assignDate": "09/08/2024", "bookData": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER", "totalChapter": 3}, "bookId": 1, "uploadedAssignmentCount": 0}]
+      console.log(response.spedStudentBookDetails);
       setBookDetails(response.spedStudentBookDetails);
+      //setBookDetails(booksSample);
       setLoading(false);
     } catch (error) {
       setError("Error fetching student data. Please try again.");
@@ -198,9 +206,9 @@ const StudentProfileScreen = () => {
     <Text style={styles.buttonText}>Assign Books</Text>
   </TouchableOpacity>
               </View>
-              <Text style={styles.sectionTitle}>
+              { bookDetails.length>0 &&  (<Text style={styles.sectionTitle}>
                 Assigned Books & Assignments
-              </Text>
+              </Text>)}
               {renderBookDetails()}
              
             </ScrollView>

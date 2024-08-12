@@ -22,7 +22,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
 import { useLoading } from "../navigation/AppWrapper";
-import YourSvgImage from '../../assets/1.svg';
+import YourSvgImage from '../../assets/bell.svg';
 
 const Home = ({ token, referenceId, roleId }) => {
   console.log("reference: ", referenceId, roleId);
@@ -58,7 +58,7 @@ const Home = ({ token, referenceId, roleId }) => {
         setLoading(true);
         const userDetails = await getUserDetails(token, referenceId, roleId);
         console.log("user:",userDetails);
-        setUsername(userDetails.name);
+        setUsername(userDetails.name.split(' ')[0]);
         setSchoolName(userDetails.schoolName);
         setLoading(false);
       } catch (error) {
@@ -228,10 +228,10 @@ const Home = ({ token, referenceId, roleId }) => {
 </TouchableOpacity>
           </View>
           {/* <Image
-            source={require("../../assets/TopLogo.png")}
+            source={require("../../assets/notificationIcon.png")}
             style={{ width: 60, height: 60 }}
           /> */}
-          <YourSvgImage right={-10} top={10} width={80} height={80} />
+          <YourSvgImage right={5} top={20} width={30} height={30} />
         </View>
         <View style={styles.container}>
           <View style={styles.searchBar}>
@@ -481,13 +481,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   headerText: {
-    marginTop:15,
+    marginTop:5,
     fontSize: 18,
     fontWeight: "bold",
   },
   schoolText:
   {
-    marginTop:15,
+    
     fontSize: 14,
     fontWeight: "light",
   },

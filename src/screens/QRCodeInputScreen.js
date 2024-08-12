@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect,useRef,useCallback  } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ const QRCodeInputScreen = ({ route }) => {
   const [scanned, setScanned] = useState(false);
   const [flashlight, setFlashlight] = useState(false);
   const [bookDetails, setBookDetails] = useState([]);
+  const [sessionId, setSessionId] = useState(null);
   const [chapterDetails, setChapterDetails] = useState(null);
   const [uploadedChapters, setUploadedChapters] = useState([]);
   const [selectedChapters, setSelectedChapters] = useState([]);
@@ -50,7 +51,9 @@ const QRCodeInputScreen = ({ route }) => {
     }).start();
   };
   
-  
+  useEffect(() => {
+    console.log("Updated sessionId:", sessionId);
+  }, [sessionId]);
 
 
   useEffect(() => {
@@ -76,6 +79,16 @@ const QRCodeInputScreen = ({ route }) => {
       // {"bookDetails": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER"}, "chapterDetails": [{"bookId": 1, "chapter": "Synonyms", "chapterId": 1, "isCurrent": 1, "isUploaded": 0, "order": 1, "title": "Circle the correct words for beautiful"}, {"bookId": 1, "chapter": "Missing Number", "chapterId": 2, "isCurrent": 0, "isUploaded": 1, "order": 2, "title": "Fill each egg with the missing numbers"}, {"bookId": 1, "chapter": "Common Noun", "chapterId": 3, "isCurrent": 0, "isUploaded": 1, "order": 3, "title": "People, Places, Animals and Things"}]}
       setBookDetails(response.bookDetails);
       setChapterDetails(response.chapterDetails);
+      const currentChapter = response.chapterDetails.find(chapter => chapter.isCurrent === 1);
+    if (currentChapter) {
+      console.log("session",currentChapter.sessionId);
+      
+      setSessionId(currentChapter.sessionId);
+    } else {
+      console.log("No current chapter found");
+      setSessionId(null); // or handle this case as needed
+    }
+    
       const selectedChapters = response.chapterDetails
         .filter((chapter) => chapter.isCurrent)
         .map((chapter) => chapter.chapterId);
@@ -88,35 +101,54 @@ const QRCodeInputScreen = ({ route }) => {
     } catch (error) {
       console.error("Error fetching qr:", error);
     }
+    console.log(sessionId);
   };
 
   const handleUploadAssignments = () => {
     setModalVisible(true);
   };
 
-  const handleOpenCamera = async () => {
+  const handleOpenCamera = useCallback(async () => {
     setModalVisible(false);
+    
+    if (!sessionId) {
+      Alert.alert("Error", "Session ID is not available. Please scan the QR code first.");
+      return;
+    }
+    console.log(sessionId);
     try {
       let result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsMultipleSelection: true,
       });
+      
       if (!result.canceled) {
         navigation.navigate("Upload", {
           token,
           studentId,
-          bookDetails: bookDetails,
-          chapterDetails: chapterDetails,
+          bookDetails,
+          chapterDetails,
           selectedFiles: result.assets,
-          selectedChapters: selectedChapters,
-          uploadedChapters: uploadedChapters,
+          selectedChapters,
+          uploadedChapters,
+          sessionId
         });
       }
     } catch (error) {
       console.error("Error selecting files:", error);
       Alert.alert("Error", "An error occurred while selecting files.");
     }
-  };
+  }, [
+    navigation, 
+    token, 
+    studentId, 
+    bookDetails, 
+    chapterDetails, 
+    selectedChapters, 
+    uploadedChapters, 
+    sessionId  // Include sessionId in the dependency array
+  ]);
+
 
   const handlePickImage = async () => {
     setModalVisible(false);
@@ -142,8 +174,9 @@ const QRCodeInputScreen = ({ route }) => {
       Alert.alert("Error", "An error occurred while picking the image.");
     }
   };
-  const handlePickAssignmentFile = async () => {
+  const handlePickAssignmentFile = useCallback(async () => {
     setModalVisible(false);
+    console.log("sesh",sessionId);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -158,13 +191,24 @@ const QRCodeInputScreen = ({ route }) => {
           selectedFiles: result.assets,
           selectedChapters: selectedChapters,
           uploadedChapters: uploadedChapters,
+          sessionId:sessionId
         });
       }
     } catch (error) {
       console.error("Error selecting assignment files:", error);
       Alert.alert("Error", "An error occurred while selecting files.");
     }
-  };
+  },[
+    navigation, 
+    token, 
+    studentId, 
+    bookDetails, 
+    chapterDetails, 
+    selectedChapters, 
+    uploadedChapters, 
+    sessionId
+
+  ]);
 
   const scanImageForQRCode = async (imageUri) => {
     try {

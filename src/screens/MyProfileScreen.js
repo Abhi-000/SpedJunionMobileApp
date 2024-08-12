@@ -62,7 +62,7 @@ const MyProfileScreen = () => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Profile</Text>
         {/* <Image
-          source={require("../../assets/TopLogo.png")}
+          source={require("../../assets/notificationIcon.png")}
           style={styles.topLogo}
         /> */}
       </View>

@@ -106,7 +106,7 @@ const SummaryScreen = () => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Summary</Text>
           <Image
-            source={require("../../assets/TopLogo.png")}
+            source={require("../../assets/notificationIcon.png")}
             style={styles.topLogo}
           />
         </View>

@@ -8,10 +8,10 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { getJStudents } from "../services/api";
+import { getJStudents, getJuniorProfile } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import YourSvgImage from '../../assets/1.svg';
+import YourSvgImage from '../../assets/bell.svg';
 
 const ScanScreen = ({ token }) => {
   const insets = useSafeAreaInsets();
@@ -32,8 +32,17 @@ const ScanScreen = ({ token }) => {
       console.log("Fetching students with token:", currentToken);
       const response = await getJStudents(currentToken, []);
       console.log("Students response:", response);
-      setStudents(response.juniorStudentResponse); // Adjust based on actual response structure
-      setFilteredStudents(response.juniorStudentResponse);
+      const studentsWithProfiles = await Promise.all(
+        response.juniorStudentResponse.map(async (student) => {
+          const profile = await getJuniorProfile(student.id, currentToken);
+          return {
+            ...student,
+            spedStudentBookDetails: profile.spedStudentBookDetails || [],
+          };
+        })
+      );
+      setStudents(studentsWithProfiles);
+      setFilteredStudents(studentsWithProfiles);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -70,20 +79,22 @@ const ScanScreen = ({ token }) => {
           Class {item.class} | Age {item.age} years
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.scanIcon}
-        onPress={() =>
-          navigation.navigate("QRCodeInput", {
-            token: currentToken,
-            studentId: item.id, // Pass studentId to the next screen
-          })
-        }
-      >
-        <Image
-          source={require("../../assets/scanCategory.png")} // Add your scan icon here
-          style={styles.scanImage}
-        />
-      </TouchableOpacity>
+      {item.spedStudentBookDetails.length > 0 && (
+        <TouchableOpacity
+          style={styles.scanIcon}
+          onPress={() =>
+            navigation.navigate("QRCodeInput", {
+              token: currentToken,
+              studentId: item.id,
+            })
+          }
+        >
+          <Image
+            source={require("../../assets/scanCategory.png")}
+            style={styles.scanImage}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -109,14 +120,10 @@ const ScanScreen = ({ token }) => {
             source={require("../../assets/backButton.png")}
           />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Upload Assigment</Text>
+        <Text style={styles.headerTitle}>Upload Assignment</Text>
         <YourSvgImage
          style={styles.topLogo}
-          width={80} height={80} />
-        {/* <Image
-          source={require("../../assets/TopLogo.png")}
-          style={styles.topLogo}
-        /> */}
+          width={30} height={30} />
       </View>
       <View style={styles.searchContainer}>
         <TextInput
@@ -150,7 +157,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: "white",
-    marginTop:10,
+    marginTop:20,
     //position: 'relative',
     marginBottom:30,
   },
@@ -164,10 +171,11 @@ const styles = StyleSheet.create({
     height: 50,
   },
   topLogo: {
-    position: 'absolute',
-    top:-5,
-    right: 10,
-    zIndex: 1,
+    width: 60,
+    height: 60,
+    top:10,
+    position: 'absolute', // Position the logo absolutely
+    right: 20, // Align it to the right
   },
 
   headerTitle: {

@@ -17,19 +17,25 @@ import { Ionicons } from "@expo/vector-icons";
 import { login } from "../services/api.js";
 import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
 import YourSvgImage from '../../assets/2.svg';
+import { Checkbox } from 'react-native-paper';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const navigation = useNavigation();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
   const handleLogin = async () => {
+    if (!agreed) {
+      alert("Please agree to the Privacy Policy and Terms of Use before logging in.");
+      return;
+    }
     try {
       const response = await login(email, password);
       console.log("API response:", response.data);
@@ -47,6 +53,14 @@ const Login = () => {
     } catch (error) {
       setModalVisible(true);
     }
+  };
+
+  const handlePrivacyPolicy = () => {
+    navigation.navigate("PrivacyPolicy");
+  };
+
+  const handleTermsOfUse = () => {
+    navigation.navigate("TermsOfUse");
   };
 
   return (
@@ -95,10 +109,28 @@ const Login = () => {
                 />
               </TouchableWithoutFeedback>
             </View>
+            <View style={styles.checkboxContainer}>
+              <Checkbox
+                status={agreed ? 'checked' : 'unchecked'}
+                onPress={() => setAgreed(!agreed)}
+                color="#00bfa5"
+              />
+              <Text style={styles.checkboxText}>
+                I agree to the{' '}
+                <Text style={styles.linkText} onPress={handlePrivacyPolicy}>
+                  Privacy Policy
+                </Text>{' '}
+                and{' '}
+                <Text style={styles.linkText} onPress={handleTermsOfUse}>
+                  Terms of Use
+                </Text>
+              </Text>
+            </View>
             <View style={styles.actions}>
               <TouchableOpacity
                 onPress={handleLogin}
-                style={styles.loginButton}
+                style={[styles.loginButton, !agreed && styles.loginButtonDisabled]}
+                disabled={!agreed}
               >
                 <Text style={styles.loginButtonText}>Log In</Text>
               </TouchableOpacity>
@@ -106,10 +138,6 @@ const Login = () => {
             </View>
             <View style={styles.flexSpacer} />
             <View style={styles.logoContainer}>
-              {/* <Image
-                source={require("../../assets/2.svg")}
-                style={styles.logo}
-              /> */}
               <YourSvgImage width={200} height={200} />
             </View>
           </View>
@@ -118,7 +146,6 @@ const Login = () => {
     </KeyboardAvoidingView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -213,6 +240,26 @@ const styles = StyleSheet.create({
     // width: 100,
     // height: 100,
   },
+
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  checkboxText: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#333',
+  },
+  linkText: {
+    color: '#007aff',
+    textDecorationLine: 'underline',
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#cccccc',
+  },
+
 });
 
 export default Login;
