@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SpedJunionMobileApp",
-    "slug": "spedjunionmobileapp",
+    "slug": "SpedJunionMobileApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -33,7 +33,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "d6ecf6a2-b7c5-4c94-a1d2-90fbcc3fce81"
+        "projectId": "60c281a7-19ab-455a-842e-70269e3cf943"
       }
     },
     "updates": {

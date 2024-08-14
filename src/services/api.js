@@ -99,7 +99,7 @@ export const getAllBooks = async (token) => {
   }
 };
 
-export const assignBook = (bookId, studentIds, token) => {
+export const  assignBook = (bookId, studentIds, token) => {
   return api.post(
     "/Book/AssignBook",
     {
@@ -147,7 +147,17 @@ export const getBookSummary = (studentId, bookId, token) => {
     }
   );
 };
-
+export const getRecommendedBooks = (studentId, token) => {
+  return api.get(
+    `/Book/GetJSessionStudentBook/3117`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
 export const getStudentDetailsByIds = async (token, studentIds) => {
   const studentIdsArray = studentIds.split(",").map(id => id.trim());
   const uniqueIds = [...new Set(studentIdsArray)];
@@ -357,4 +367,5 @@ export default {
   getUserDetails,
   forgotPassword,
   getQuestions,
+  getRecommendedBooks
 };

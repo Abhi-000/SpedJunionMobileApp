@@ -25,7 +25,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
 import { TransitionPresets } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
-
+import PrivacyPolicy from '../screens/PrivacyPolicyScreen';
+import TermsOfUse from '../screens/TermsOfUseScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -71,6 +72,16 @@ const AppNavigator = () => {
         <Stack.Screen
           name="AssignBook"
           component={AssignBookScreen}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="PrivacyPolicy"
+          component={PrivacyPolicy}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="TermsOfUse"
+          component={TermsOfUse}
           options={{ headerShown: false }}
         />
         <Stack.Screen

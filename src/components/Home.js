@@ -68,6 +68,27 @@ const Home = ({ token, referenceId, roleId }) => {
 
     fetchUserDetails();
   }, [referenceId, roleId]);
+  const renderNoStudentsMessage = () => (
+    <View style={styles.noStudentsContainer}>
+      <Text style={styles.noStudentsText}>No students to show</Text>
+      <Text style={styles.noStudentsText}>Contact adminstrator for more details</Text>
+    </View>
+  );
+  const renderCategory = (image, label, onPress) => (
+    <View style={[styles.categoryItem, students.length === 0 && styles.disabledCategory]}>
+      <TouchableOpacity
+        onPress={students.length>0? onPress : null}
+        disabled={students.length == 0}
+      >
+        <Image
+          source={image}
+          style={[styles.category, students.length == 0 && styles.grayedOutImage]}
+        />
+      </TouchableOpacity>
+      <Text style={[styles.categoryLabel, students.length == 0 && styles.grayedOutText]}>{label}</Text>
+    </View>
+  );
+
 
   useEffect(() => {
     const fetchAndSetStudents = async () => {
@@ -381,71 +402,35 @@ const Home = ({ token, referenceId, roleId }) => {
                     style={styles.applyButton}
                     onPress={applyFilters}
                   >
-                    <Text>Apply</Text>
+                    <Text style ={{color:'white'}}>Apply</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
           <View style={styles.studentsContainer}>
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>
-            <View style={styles.categories}>
-              <View style={styles.categoryItem}>
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("StudentsSearch", { token })
-                  }
-                >
-                  <Image
-                    source={require("../../assets/studentsCategory.png")}
-                    style={styles.category}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.categoryLabel}>Students</Text>
-              </View>
-              <View style={styles.categoryItem}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Books", { token })}
-                >
-                  <Image
-                    source={require("../../assets/booksCategory.png")}
-                    style={styles.category}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.categoryLabel}>Books</Text>
-              </View>
-              <View style={styles.categoryItem}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Scan", { token })}
-                >
-                  <Image
-                    source={require("../../assets/scanCategory.png")}
-                    style={styles.category}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.categoryLabel}>Uploads</Text>
-              </View>
-              <View style={styles.categoryItem}>
-                <TouchableOpacity>
-                  <Image
-                    source={require("../../assets/calendarCategory.png")}
-                    style={styles.category}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.categoryLabel}>Sessions</Text>
-              </View>
-            </View>
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
-            <FlatList
-              data={viewAll ? searchResults : students.slice(0, 5)}
-              renderItem={renderStudent}
-              keyExtractor={(item) => item.id.toString()}
-              style={styles.flatList}
-              contentContainerStyle={{ paddingBottom: 20 }}
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-            />
-          </View>
+          {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>):<Text style={{ fontWeight: "bold", fontSize: 20, opacity:.6 }}>Categories</Text>}
+        <View style={styles.categories}>
+          {renderCategory(require("../../assets/studentsCategory.png"), "Students", () => navigation.navigate("StudentsSearch", { token }))}
+          {renderCategory(require("../../assets/booksCategory.png"), "Books", () => navigation.navigate("Books", { token }))}
+          {renderCategory(require("../../assets/scanCategory.png"), "Uploads", () => navigation.navigate("Scan", { token }))}
+          {renderCategory(require("../../assets/calendarCategory.png"), "Sessions", () => {})}
         </View>
+        {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>): <Text></Text>}
+        {students.length>0 ? (
+          <FlatList
+            data={viewAll ? searchResults : students.slice(0, 5)}
+            renderItem={renderStudent}
+            keyExtractor={(item) => item.id.toString()}
+            style={styles.flatList}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+          />
+        ) : (
+          renderNoStudentsMessage()
+        )}
+      </View>
+    </View>
       </View>
     </View>
   );
@@ -485,6 +470,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  noStudentsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  noStudentsText: {
+    fontSize: 18,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  disabledCategory: {
+    opacity: 0.5,
+  },
+  grayedOutImage: {
+    opacity: 0.5, // This makes the entire image slightly transparent
+  },
+
+  grayedOutText: {
+    color: '#888',
+  },
+
   schoolText:
   {
     

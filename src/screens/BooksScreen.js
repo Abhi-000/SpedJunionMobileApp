@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { getAllBooks, assignBook } from "../services/api";
+import { getAllBooks, assignBook, getRecommendedBooks  } from "../services/api";
 import DuplicateAssignment from "../components/DuplicateAssignment";
 import {
   useNavigation,
@@ -20,6 +20,7 @@ import Loader from "../components/Loader"; // Adjust the path based on your file
 
 const BooksScreen = ({ token: propToken }) => {
   const [books, setBooks] = useState([]);
+  const [recommendedBooks, setRecommendedBooks] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const navigation = useNavigation();
   const route = useRoute();
@@ -71,14 +72,25 @@ const BooksScreen = ({ token: propToken }) => {
   const fetchBooks = async (currentToken) => {
     try {
       setLoading(true);
-      const response = await getAllBooks(currentToken);
-      setBooks(response.data.getAllBooksResponses); // Update this line
+      const booksResponse = await getAllBooks(currentToken);
+      setBooks(booksResponse.data.getAllBooksResponses);
+  
+      if (studentId) {
+        const recommendedResponse = await getRecommendedBooks(studentId, currentToken);
+        setRecommendedBooks(recommendedResponse.data);
+      } else {
+        setRecommendedBooks([]);
+      }
+  
       setLoading(false);
     } catch (error) {
       console.error("Error fetching books:", error);
       setLoading(false);
     }
   };
+  
+  
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -86,42 +98,67 @@ const BooksScreen = ({ token: propToken }) => {
       fetchBooks(currentToken);
     }, [propToken])
   );
-
   const filterBooks = () => {
-    if (selectedCategory === "All") {
-      return books;
+    // Start with all recommended books
+    let result = [...recommendedBooks];
+  
+    // Create a Set of book IDs that are in the recommended list
+    const recommendedBookIds = new Set(result.map(book => book.bookId));
+  
+    // Filter and add remaining books that are not in the recommended list
+    let remainingBooks = books.filter(book => !recommendedBookIds.has(book.bookId));
+  
+    // If a specific category is selected, filter the remaining books
+    if (selectedCategory !== "All") {
+      remainingBooks = remainingBooks.filter(
+        (book) => book.difficulty === selectedCategory.toUpperCase()
+      );
     }
-    return books.filter(
-      (book) => book.difficulty === selectedCategory.toUpperCase()
-    );
+  
+    // Combine recommended books with remaining books
+    result = [...result, ...remainingBooks];
+  
+    return result;
   };
-
-  const renderBook = ({ item }) => (
-    <View style={styles.card}>
-      <Image
-        source={require("../../assets/bookSample.png")}
-        style={styles.bookImage}
-      />
-      <View style={styles.cardContent}>
-        <Text style={styles.bookTitle}>{item.name}</Text>
-        <Text style={styles.bookDetails}>
-          For children from ages 3 to 8 years.
-        </Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.assignButton}
-            onPress={() => handleAssignBook(item.bookId)}
-          >
-            <Text style={styles.buttonText}>
-             Assign
-            </Text>
-          </TouchableOpacity>
+  
+  
+  
+  const renderBook = ({ item }) => {
+    const isRecommended = recommendedBooks.some(book => book.bookId === item.bookId);
+  
+    return (
+      <View style={[styles.card, isRecommended && styles.recommendedCard]}>
+        {isRecommended && (
+          <View style={styles.recommendedBadge}>
+            <Text style={styles.recommendedText}>Recommended</Text>
+          </View>
+        )}
+        <Image
+          source={require("../../assets/bookSample.png")}
+          style={styles.bookImage}
+        />
+        <View style={styles.cardContent}>
+          <Text style={styles.bookTitle}>{item.name}</Text>
+          <Text style={styles.bookDetails}>
+            For children from ages {item.ageGroup} years.
+          </Text>
+          <Text style={styles.difficultyText}>
+            Difficulty: {item.difficulty.charAt(0) + item.difficulty.slice(1).toLowerCase()}
+          </Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.assignButton}
+              onPress={() => handleAssignBook(item.bookId)}
+            >
+              <Text style={styles.buttonText}>Assign</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  );
-
-
+    );
+  };
+  
+  
   const categories = ["All", "Beginner", "Intermediate", "Advanced"];
 
   return (
@@ -227,6 +264,32 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
+  recommendedCard: {
+    borderColor: '#FFD700',
+    borderWidth: 2,
+  },
+  recommendedBadge: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    zIndex:200,
+    backgroundColor: '#FFD700',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  recommendedText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  difficultyText: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 5,
+  },
+  
+
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
@@ -332,6 +395,7 @@ const styles = StyleSheet.create({
   bookTitle: {
     fontSize: 16,
     fontWeight: "bold",
+    marginTop:20,
     marginBottom: 5,
   },
   bookDetails: {

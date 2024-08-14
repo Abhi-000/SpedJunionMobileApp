@@ -114,17 +114,24 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
             <Text style={styles.menuText}>Change Password</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-           onPress={async() =>
-            await Linking.openURL('https://spedathome.com/privacy-policy/')
-          }
+          //  onPress={async() =>
+          //   await Linking.openURL('https://spedathome.com/privacy-policy/')
+          // }
+          onPress={() =>
+              navigation.navigate("PrivacyPolicy")
+            }
+
           style={styles.menuItem}>
             <Ionicons name="document-text-outline" size={20} color="#6A53A2" />
             <Text style={styles.menuText}>Privacy Policy</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
-           onPress={async() =>
-            await Linking.openURL('https://spedathome.com/terms-of-use/')
+          //  onPress={async() =>
+          //   await Linking.openURL('https://spedathome.com/terms-of-use/')
+          // }
+          onPress={() =>
+            navigation.navigate("TermsOfUse")
           }
           style={styles.menuItem}>
             <Ionicons name="clipboard-outline" size={20} color="#6A53A2" />
