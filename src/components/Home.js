@@ -238,21 +238,27 @@ const Home = ({ token, referenceId, roleId }) => {
       <View style={styles.parentContainer}>
         <View style={styles.headersParent}>
          
-          <View style={styles.header}>
+         
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen', { token, referenceId, roleId })}>
+          <View style = {styles.header}>
+         
           <Image
             source={require("../../assets/sampleProfile.png")}
             style={{ width: 60, height: 60 }}
           />
-           <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen', { token, referenceId, roleId })}>
-  <Text style={styles.headerText}>Hi, {username} !</Text>
+            <View>
+  <Text style={styles.headerText}>Hi, {username},</Text>
+  
   <Text style={styles.schoolText}>{schoolName}</Text>
+  </View>
+  </View>
 </TouchableOpacity>
-          </View>
+         
           {/* <Image
             source={require("../../assets/notificationIcon.png")}
             style={{ width: 60, height: 60 }}
           /> */}
-          <YourSvgImage right={5} top={20} width={30} height={30} />
+          {/* <YourSvgImage right={5} top={20} width={30} height={30} /> */}
         </View>
         <View style={styles.container}>
           <View style={styles.searchBar}>

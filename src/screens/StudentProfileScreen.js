@@ -66,65 +66,71 @@ const StudentProfileScreen = () => {
 
   const getDifficultyColor = (difficulty) => {
     const colors = {
-      BEGINNER: "#6A53A2",
-      INTERMEDIATE: "#FF5733",
-      ADVANCED: "#28A745",
+      Beginner: "#6A53A2",
+      Intermediate: "#FF5733",
+      Advanced: "#28A745",
     };
     return colors[difficulty] || "#000";
   };
 
   const renderBookDetails = () => {
-    return bookDetails.map((detail, index) => (
-      <TouchableOpacity
-        key={index}
-        style={styles.bookCard}
-        onPress={() =>
-          navigation.navigate("Summary", {
-            token: route.params?.token,
-            studentId: route.params?.studentId,
-            bookId: detail.bookId,
-          })
-        }
-      >
-        <View style={styles.bookInfo}>
-          <View
-            style={[
-              styles.bookDifficultyContainer,
-              {
-                backgroundColor: getDifficultyColor(detail.bookData.difficulty),
-              },
-            ]}
-          >
-            <Text style={styles.bookDifficulty}>
-              {detail.bookData.difficulty}
+    return bookDetails.map((detail, index) => {
+      // Skip rendering if bookData is null
+      if (!detail.bookData) {
+        return null;
+      }
+  
+      return (
+        <TouchableOpacity
+          key={index}
+          style={styles.bookCard}
+          onPress={() =>
+            navigation.navigate("Summary", {
+              token: route.params?.token,
+              studentId: route.params?.studentId,
+              bookId: detail.bookId,
+            })
+          }
+        >
+          <View style={styles.bookInfo}>
+            <View
+              style={[
+                styles.bookDifficultyContainer,
+                {
+                  backgroundColor: getDifficultyColor(detail.bookData.difficulty),
+                },
+              ]}
+            >
+              <Text style={styles.bookDifficulty}>
+                {detail.bookData.difficulty}
+              </Text>
+            </View>
+            <Text style={styles.bookName}>{detail.bookData.bookName}</Text>
+            <Text style={styles.bookAssignDate}>
+              Assign Date: {parseDate(detail.assignDate)}
             </Text>
           </View>
-          <Text style={styles.bookName}>{detail.bookData.bookName}</Text>
-          <Text style={styles.bookAssignDate}>
-            Assign Date: {parseDate(detail.assignDate)}
-          </Text>
-        </View>
-        <View style={styles.progress}>
-          <HalfCircleProgress
-            total={detail.bookData.totalChapter}
-            completed={detail.uploadedAssignmentCount}
-            color={getDifficultyColor(detail.bookData.difficulty)}
-            thickness={20} // Make the progress bar thicker
-            showText={true} // Show text inside the progress bar
-          />
-          <Text
-            style={[
-              styles.summaryText,
-              { color: getDifficultyColor(detail.bookData.difficulty) },
-            ]}
-          >
-            Summary
-          </Text>
-        </View>
-      </TouchableOpacity>
-    ));
+          <View style={styles.progress}>
+            <HalfCircleProgress
+              total={detail.bookData.totalChapter}
+              completed={detail.uploadedAssignmentCount}
+              color={getDifficultyColor(detail.bookData.difficulty)}
+              thickness={20}
+              showText={true}
+            />
+            <Text
+              style={[
+                styles.summaryText,
+                { color: getDifficultyColor(detail.bookData.difficulty) }
+              ]}
+            >
+              Summary
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }).filter(Boolean); // Remove null entries
   };
-
   if (error) {
     return (
       <View style={[styles.container, styles.errorContainer]}>

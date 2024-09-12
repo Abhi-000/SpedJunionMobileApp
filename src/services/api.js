@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://testing.spedathome.com:7233/api"; //development
+const API_BASE_URL = "https://uat.spedathome.com:7253/api"; //development
 ///const API_BASE_URL_1 = "https://testing.spedathome.com:7253/api"; //testing
 
 const api = axios.create({
@@ -149,7 +149,7 @@ export const getBookSummary = (studentId, bookId, token) => {
 };
 export const getRecommendedBooks = (studentId, token) => {
   return api.get(
-    `/Book/GetJSessionStudentBook/3117`,
+    `/Book/GetJSessionStudentBook/${studentId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -219,7 +219,7 @@ export const getSessionWiseAssessmentDetails = async (
 
   try {
     const response = await fetch(
-      `https://testing.spedathome.com:7233/api/Book/GetSessionWiseAssessmentDetailsPost`,
+      `https://uat.spedathome.com:7253/api/Book/GetSessionWiseAssessmentDetailsPost`,
       {
         method: "POST",
         headers: headers,

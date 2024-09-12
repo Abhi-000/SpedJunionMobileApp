@@ -84,6 +84,8 @@ const MyProfileScreen = () => {
         <Text style={styles.infoText}>{user.phoneNumber}</Text>
         <Text style={styles.label}>Gender</Text>
         <Text style={styles.infoText}>{user.gender}</Text>
+        <Text style={styles.label}>School Name</Text>
+        <Text style={styles.infoText}>{user.schoolName}</Text>
       </View>
     </ScrollView>
   );
@@ -101,6 +103,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
+    paddingTop:30,
     backgroundColor: '#f7f7f7',
     position: 'relative', // Ensure the container is a positioned element for absolute children
   },

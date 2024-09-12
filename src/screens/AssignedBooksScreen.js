@@ -44,7 +44,7 @@ const AssignedBooksScreen = ({ token: propToken }) => {
       return books;
     }
     return books.filter(
-      (book) => book.difficulty === selectedCategory.toUpperCase()
+      (book) => book.difficulty === selectedCategory
     );
   };
 

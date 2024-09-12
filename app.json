@@ -4,7 +4,7 @@
     "slug": "SpedJunionMobileApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/backButton.png",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": [
       "src/assets/*"
@@ -38,6 +38,9 @@
     },
     "updates": {
       "url": "https://u.expo.dev/60c281a7-19ab-455a-842e-70269e3cf943"
-    }
+    },
+    "plugins": [
+      "expo-asset"
+    ]
   }
 }

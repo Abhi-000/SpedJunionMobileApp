@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet,Text } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../screens/HomeScreen";
 import BooksScreen from "../screens/BooksScreen";
@@ -76,8 +76,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
               onPress={onPress}
               style={styles.homeButton}
             >
-              <YourSvgImage  top={15} width={100} height={100} />
-              {/* <Ionicons name="home" size={24} color="#FFFFFF" /> */}
+              <YourSvgImage top={15} width={100} height={100} />
+              {/* <Text style={styles.label}>Home</Text> */}
             </TouchableOpacity>
           );
         }
@@ -93,6 +93,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
               size={24}
               color={isFocused ? '#6A53A2' : '#AEB0B9'}
             />
+            <Text style={[styles.label, isFocused && styles.focusedLabel]}>{label}</Text>
           </TouchableOpacity>
         );
       })}
@@ -109,21 +110,29 @@ const BottomTabNavigator = ({ route }) => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName = "Home"
+      initialRouteName="Home"
     >
-      <Tab.Screen name="Books">
+      <Tab.Screen 
+        name="Books"
+        options={{ tabBarLabel: 'Books' }}
+      >
         {(props) => <BooksStack {...props} token={token} />}
       </Tab.Screen>
-      <Tab.Screen name="Home">
+      <Tab.Screen 
+        name="Home"
+        options={{ tabBarLabel: 'Home' }}
+      >
         {(props) => <HomeStack {...props} token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
-      <Tab.Screen name="Profile">
+      <Tab.Screen 
+        name="Profile"
+        options={{ tabBarLabel: 'Profile' }}
+      >
         {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
     </Tab.Navigator>
   );
 };
-
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',

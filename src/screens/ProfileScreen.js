@@ -70,9 +70,9 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
           source={require("../../assets/notificationIcon.png")}
           style={styles.topLogo}
         /> */}
-         <YourSvgImage
+         {/* <YourSvgImage
          style={styles.topLogo}
-          width={30} height={30} />
+          width={30} height={30} /> */}
       </View>
       
       <View style={styles.parentContainer}>

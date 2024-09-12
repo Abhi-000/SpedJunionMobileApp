@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   ScrollView,
   Platform,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,8 @@ import { login } from "../services/api.js";
 import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
 import YourSvgImage from '../../assets/2.svg';
 import { Checkbox } from 'react-native-paper';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +28,24 @@ const Login = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [svgLoaded, setSvgLoaded] = useState(false);
   const navigation = useNavigation();
+
+ useEffect(() => {
+    preloadSvg();
+  }, []);
+
+  const preloadSvg = async () => {
+    try {
+      // Get the resolved path of the SVG file
+      const svgPath = Image.resolveAssetSource(require('../../assets/2.svg')).uri;
+      // Prefetch the image
+      await Image.prefetch(svgPath);
+      setSvgLoaded(true);
+    } catch (error) {
+      console.error('Failed to preload SVG:', error);
+    }
+  };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -138,8 +158,8 @@ const Login = () => {
             </View>
             <View style={styles.flexSpacer} />
             <View style={styles.logoContainer}>
-              <YourSvgImage width={200} height={200} />
-            </View>
+            <YourSvgImage width={200} height={200} />
+          </View>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -234,8 +254,12 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    paddingBottom: 30,
+    justifyContent: "center",
+    height: 200,
+    width: 200,
+    marginBottom: 20,
   },
+
   logo: {
     // width: 100,
     // height: 100,

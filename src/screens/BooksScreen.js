@@ -38,7 +38,7 @@ const BooksScreen = ({ token: propToken }) => {
         console.log(response.data);
         setLoading(false);
 
-        if(response.data.message == "Success")
+        if(response.data.message == "Book assigned successfully.")
         {
         navigation.navigate("Success", {
           title: "Successfully Assigned",
@@ -109,9 +109,10 @@ const BooksScreen = ({ token: propToken }) => {
     let remainingBooks = books.filter(book => !recommendedBookIds.has(book.bookId));
   
     // If a specific category is selected, filter the remaining books
+    console.log(selectedCategory);
     if (selectedCategory !== "All") {
       remainingBooks = remainingBooks.filter(
-        (book) => book.difficulty === selectedCategory.toUpperCase()
+        (book) => book.difficulty === selectedCategory
       );
     }
   
