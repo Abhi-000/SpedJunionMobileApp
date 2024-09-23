@@ -24,7 +24,7 @@ import { RadioButton } from "react-native-paper";
 import { useLoading } from "../navigation/AppWrapper";
 import YourSvgImage from '../../assets/bell.svg';
 
-const Home = ({ token, referenceId, roleId }) => {
+const Home = ({ token, referenceId, roleId, setHasStudents }) => {
   console.log("reference: ", referenceId, roleId);
   const { setLoading } = useLoading();
 
@@ -47,7 +47,56 @@ const Home = ({ token, referenceId, roleId }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [viewAll, setViewAll] = useState(false);
   const navigation = useNavigation();
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [isFiltering, setIsFiltering] = useState(false);
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await getJStudents(token);
+        setStudents(response.juniorStudentResponse);
+        setHasStudents(response.juniorStudentResponse.length > 0);
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
 
+    fetchStudents();
+  }, [token, setHasStudents]);
+
+  useEffect(() => {
+    if (students.length > 0) {
+      applyFiltersAndSearch();
+    }
+  }, [students, searchText, filters]);
+  
+  const applyFiltersAndSearch = () => {
+    setIsFiltering(true);
+    let result = students;
+
+    // Apply age filter
+    if (filters.ageRange) {
+      const [minAge, maxAge] = filters.ageRange.split('-').map(Number);
+      result = result.filter(student => student.age >= minAge && student.age <= maxAge);
+    }
+
+    // Apply class filter
+    if (filters.studentClass) {
+      result = result.filter(student => student.class === filters.studentClass);
+    }
+
+    // Apply search
+    if (searchText) {
+      result = result.filter(student =>
+        student.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
+        student.lastName.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    setFilteredStudents(result);
+    setIsFiltering(filters.ageRange !== '' || filters.studentClass !== '' || searchText !== '');
+  };
+
+  
   useEffect(() => {
     fetchFilters();
     fetchStudents(); // Fetch initial list of students without any filters
@@ -68,6 +117,13 @@ const Home = ({ token, referenceId, roleId }) => {
 
     fetchUserDetails();
   }, [referenceId, roleId]);
+  const renderNoResultsMessage = () => (
+    <View style={styles.noStudentsContainer}>
+      <Text style={styles.noStudentsText}>No students found matching the current filters.</Text>
+      <Text style={styles.noStudentsText}>Try adjusting your filters or search criteria.</Text>
+    </View>
+  );
+
   const renderNoStudentsMessage = () => (
     <View style={styles.noStudentsContainer}>
       <Text style={styles.noStudentsText}>No students to show</Text>
@@ -100,15 +156,20 @@ const Home = ({ token, referenceId, roleId }) => {
     fetchAndSetStudents();
   }, [selectedAge, selectedClass, filters]);
 
-  const fetchStudents = async (conditions = []) => {
+  const fetchStudents = async () => {
     try {
-      const response = await getJStudents(token, conditions);
-      handleSearch(searchText);
+      setLoading(true);
+      const response = await getJStudents(token);
       setStudents(response.juniorStudentResponse);
+      setFilteredStudents(response.juniorStudentResponse);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching students:", error);
+      setLoading(false);
     }
   };
+
+
 
   const fetchFilters = async () => {
     try {
@@ -214,12 +275,14 @@ const Home = ({ token, referenceId, roleId }) => {
   };
 
   const clearAllFilters = () => {
-    handleSearch(searchText);
-    setSelectedAge("");
-    setSelectedClass("");
-    setFilters({ studentClass: "", ageRange: "" });
-    fetchStudents(); // Fetch all students without any filters
+    setSearchText('');
+    setSelectedAge('');
+    setSelectedClass('');
+    setFilters({ studentClass: '', ageRange: '' });
+    setFilteredStudents(students);
+    setIsFiltering(false);
   };
+
 
   return (
     <View
@@ -268,12 +331,11 @@ const Home = ({ token, referenceId, roleId }) => {
               value={searchText}
               onChangeText={handleSearch}
             />
-            <TouchableOpacity
+            {students.length>0 && (<TouchableOpacity
               style={styles.filterIcon}
-              onPress={() => setModalVisible(true)}
-            >
+              onPress={() => setModalVisible(true)}>
               <FontAwesome name="filter" size={20} color="black" />
-            </TouchableOpacity>
+            </TouchableOpacity>)}
           </View>
           <View style={styles.activeFiltersContainer}>
             {filters.ageRange && (
@@ -422,16 +484,23 @@ const Home = ({ token, referenceId, roleId }) => {
           {renderCategory(require("../../assets/scanCategory.png"), "Uploads", () => navigation.navigate("Scan", { token }))}
           {renderCategory(require("../../assets/calendarCategory.png"), "Sessions", () => {})}
         </View>
-        {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>): <Text></Text>}
-        {students.length>0 ? (
-          <FlatList
-            data={viewAll ? searchResults : students.slice(0, 5)}
-            renderItem={renderStudent}
-            keyExtractor={(item) => item.id.toString()}
-            style={styles.flatList}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-          />
+        {/* {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>): <Text></Text>} */}
+        {students.length > 0 ? (
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
+        ) : null}
+        {students.length > 0 ? (
+          isFiltering && filteredStudents.length === 0 ? (
+            renderNoResultsMessage()
+          ) : (
+            <FlatList
+              data={viewAll ? filteredStudents : filteredStudents.slice(0, 5)}
+              renderItem={renderStudent}
+              keyExtractor={(item) => item.id.toString()}
+              style={styles.flatList}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+            />
+          )
         ) : (
           renderNoStudentsMessage()
         )}

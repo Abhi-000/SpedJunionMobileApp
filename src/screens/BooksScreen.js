@@ -59,12 +59,16 @@ const BooksScreen = ({ token: propToken }) => {
         Alert.alert("Error", "Failed to assign book. Please try again.");
       }
     } else {
+      const book = books.find(b => b.bookId === bookId);
+      const alreadyAssignedStudents = book && book.studentCounts && book.studentCounts.studentIds
+        ? book.studentCounts.studentIds.split(",").map(id => parseInt(id))
+        : [];
+      console.log(alreadyAssignedStudents);
+      console.log("no student Id",route.params?.token, propToken);
       navigation.navigate("AssignBook", {
         bookId: bookId,
         token: propToken || route.params?.token,
-        alreadyAssignedStudents: item.studentCounts.studentIds
-          .split(",")
-          .map((id) => parseInt(id)),
+        alreadyAssignedStudents: alreadyAssignedStudents
       });
     }
   };

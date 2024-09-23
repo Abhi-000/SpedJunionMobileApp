@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
-import { View, TouchableOpacity, StyleSheet,Text } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../screens/HomeScreen";
 import BooksScreen from "../screens/BooksScreen";
@@ -18,10 +18,10 @@ const defaultStackScreenOptions = {
   ...TransitionPresets.DefaultTransition,
 };
 
-const HomeStack = ({ token, referenceId, roleId }) => (
+const HomeStack = ({ token, referenceId, roleId, setHasStudents }) => (
   <Stack.Navigator screenOptions={defaultStackScreenOptions}>
     <Stack.Screen name="Home">
-      {() => <HomeScreen token={token} referenceId={referenceId} roleId={roleId} />}
+      {() => <HomeScreen token={token} referenceId={referenceId} roleId={roleId} setHasStudents={setHasStudents} />}
     </Stack.Screen>
   </Stack.Navigator>
 );
@@ -49,7 +49,7 @@ const ProfileStack = ({ token, referenceId, roleId }) => (
   </Stack.Navigator>
 );
 
-const CustomTabBar = ({ state, descriptors, navigation }) => {
+const CustomTabBar = ({ state, descriptors, navigation, hasStudents }) => {
   return (
     <View style={styles.tabContainer}>
       {state.routes.map((route, index) => {
@@ -58,6 +58,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         const isFocused = state.index === index;
 
         const onPress = () => {
+          if (route.name === 'Books' && !hasStudents) {
+            // Books tab is not interactable when there are no students
+            return;
+          }
+
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
@@ -77,7 +82,6 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
               style={styles.homeButton}
             >
               <YourSvgImage top={15} width={100} height={100} />
-              {/* <Text style={styles.label}>Home</Text> */}
             </TouchableOpacity>
           );
         }
@@ -86,14 +90,24 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           <TouchableOpacity
             key={index}
             onPress={onPress}
-            style={styles.tabButton}
+            style={[
+              styles.tabButton,
+              route.name === 'Books' && !hasStudents && styles.disabledTab
+            ]}
+            disabled={route.name === 'Books' && !hasStudents}
           >
             <Ionicons
               name={route.name === 'Books' ? 'book' : 'person'}
               size={24}
-              color={isFocused ? '#6A53A2' : '#AEB0B9'}
+              color={isFocused ? '#6A53A2' : (route.name === 'Books' && !hasStudents ? '#D3D3D3' : '#AEB0B9')}
             />
-            <Text style={[styles.label, isFocused && styles.focusedLabel]}>{label}</Text>
+            <Text style={[
+              styles.label,
+              isFocused && styles.focusedLabel,
+              route.name === 'Books' && !hasStudents && styles.disabledLabel
+            ]}>
+              {label}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -103,10 +117,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 
 const BottomTabNavigator = ({ route }) => {
   const { token, referenceId, roleId } = route.params;
+  const [hasStudents, setHasStudents] = useState(false);
 
   return (
     <Tab.Navigator
-      tabBar={(props) => <CustomTabBar {...props} />}
+      tabBar={(props) => <CustomTabBar {...props} hasStudents={hasStudents} />}
       screenOptions={{
         headerShown: false,
       }}
@@ -114,25 +129,26 @@ const BottomTabNavigator = ({ route }) => {
     >
       <Tab.Screen 
         name="Books"
-        options={{ tabBarLabel: 'Books' }}
+        options={{ tabBarLabel: 'Books',unmount: true  }}
       >
         {(props) => <BooksStack {...props} token={token} />}
       </Tab.Screen>
       <Tab.Screen 
         name="Home"
-        options={{ tabBarLabel: 'Home' }}
+        options={{ tabBarLabel: 'Home',unmount: true  }}
       >
-        {(props) => <HomeStack {...props} token={token} referenceId={referenceId} roleId={roleId} />}
+        {(props) => <HomeStack {...props} token={token} referenceId={referenceId} roleId={roleId} setHasStudents={setHasStudents} />}
       </Tab.Screen>
       <Tab.Screen 
         name="Profile"
-        options={{ tabBarLabel: 'Profile' }}
+        options={{ tabBarLabel: 'Profile',unmountOnBlur: true  }}
       >
         {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
     </Tab.Navigator>
   );
 };
+
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
@@ -172,6 +188,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
   },
+  disabledTab: {
+    opacity: 0.5,
+  },
+  disabledLabel: {
+    color: '#D3D3D3',
+  },
+
 });
 
 export default BottomTabNavigator;

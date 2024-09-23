@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
   Alert,
+  SafeAreaView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -147,141 +148,133 @@ const UploadScreen = ({ route }) => {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
-        },
-      ]}
-    >
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Image
-            style={styles.backButtonText}
-            source={require("../../assets/backButton.png")}
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Assignments</Text>
-      </View>
-      <View style={styles.parentContainer}>
-        <View
-          style={styles.detailsContainer}
-          contentContainerStyle={styles.detailsContent}
-        >
-          <View style={styles.bookDetailsCard}>
-            <View style={styles.bookDetails}>
-              <Image
-                source={require("../../assets/booksCategory.png")} // Replace with your image source
-                style={styles.bookIcon}
-              />
-              <View style={styles.bookInfo}>
-                <Text style={styles.bookDifficulty}>
-                  {bookDetails.difficulty}
-                </Text>
-                <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
-              </View>
-            </View>
-          </View>
-          {chapterDetails.map((chapter) => (
-            <View
-              key={chapter.chapterId}
-              style={[
-                styles.chapterCard,
-                chapter.isCurrent === 1 ? styles.currentChapterCard : null,
-              ]}
-            >
-              <View style={styles.chapterDetails}>
-                <Text style={styles.chapterOrder}>{chapter.order}</Text>
-                <View style={styles.chapterTextContainer}>
-                  {chapter.isCurrent === 1 && selectedFiles.length > 0 ? (
-                    selectedFiles.map((file, index) => (
-                      <TouchableOpacity
-                        onPress={handleFileSelection}
-                        key={index}
-                      >
-                        <Text style={styles.chapterTitle}>{file.fileName}</Text>
-                      </TouchableOpacity>
-                    ))
-                  ) : (
-                    <Text style={styles.chapterTitle}>{chapter.title}</Text>
-                  )}
-                </View>
-                <View
-                  style={[
-                    styles.checkBox,
-                    currentChapter === chapter.chapterId &&
-                    chapter.isUploaded != 1
-                      ? styles.yellowCheckBox
-                      : updatedUploadedChapters.includes(chapter.chapterId)
-                      ? styles.greenCheckBox
-                      : styles.grayCheckBox,
-                  ]}
-                  onPress={() => handleChapterPress(chapter.chapterId)}
-                >
-                  {updatedUploadedChapters.includes(chapter.chapterId) ? (
-                    <Text style={styles.checkMark}>✓</Text>
-                  ) : null}
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Image
+              style={styles.backButtonText}
+              source={require("../../assets/backButton.png")}
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Assignments</Text>
+        </View>
+        <View style={styles.content}>
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+            <View style={styles.bookDetailsCard}>
+              <View style={styles.bookDetails}>
+                <Image
+                  source={require("../../assets/booksCategory.png")}
+                  style={styles.bookIcon}
+                />
+                <View style={styles.bookInfo}>
+                  <Text style={styles.bookDifficulty}>
+                    {bookDetails.difficulty}
+                  </Text>
+                  <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
                 </View>
               </View>
             </View>
-          ))}
+            {chapterDetails.map((chapter) => (
+              <View
+                key={chapter.chapterId}
+                style={[
+                  styles.chapterCard,
+                  chapter.isCurrent === 1 ? styles.currentChapterCard : null,
+                ]}
+              >
+                <View style={styles.chapterDetails}>
+                  <Text style={styles.chapterOrder}>{chapter.order}</Text>
+                  <View style={styles.chapterTextContainer}>
+                    {chapter.isCurrent === 1 && selectedFiles.length > 0 ? (
+                      selectedFiles.map((file, index) => (
+                        <TouchableOpacity
+                          onPress={handleFileSelection}
+                          key={index}
+                        >
+                          <Text style={styles.chapterTitle}>{file.fileName}</Text>
+                        </TouchableOpacity>
+                      ))
+                    ) : (
+                      <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                    )}
+                  </View>
+                  <View
+                    style={[
+                      styles.checkBox,
+                      currentChapter === chapter.chapterId &&
+                      chapter.isUploaded != 1
+                        ? styles.yellowCheckBox
+                        : updatedUploadedChapters.includes(chapter.chapterId)
+                        ? styles.greenCheckBox
+                        : styles.grayCheckBox,
+                    ]}
+                    onPress={() => handleChapterPress(chapter.chapterId)}
+                  >
+                    {updatedUploadedChapters.includes(chapter.chapterId) ? (
+                      <Text style={styles.checkMark}>✓</Text>
+                    ) : null}
+                  </View>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
         </View>
         <View style={styles.bottomContainer}>
-        
-        <View style={styles.buttonContainer}>
-          {allChaptersUploaded ? (
-            <TouchableOpacity
-              style={styles.endSessionButton}
-              onPress={handleEndSession}
-            >
-              <Text style={styles.endSessionButtonText}>End Session</Text>
-            </TouchableOpacity>
-          ) : (
-            <>
+          <View style={styles.buttonContainer}>
+            {allChaptersUploaded ? (
               <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={handleDeleteFile}
+                style={styles.endSessionButton}
+                onPress={handleEndSession}
               >
-                <Text style={styles.deleteButtonText}>Delete</Text>
+                <Text style={styles.endSessionButtonText}>End Session</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.submitButton}
-                
-                onPress={async() => await handleUpload(true)}
-              >
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-            </>
-          )}
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={handleDeleteFile}
+                >
+                  <Text style={styles.deleteButtonText}>Delete</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={async() => await handleUpload(true)}
+                >
+                  <Text style={styles.submitButtonText}>Submit</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
         </View>
       </View>
       <DuplicateAssignment
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
       />
-    </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
+
+
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#fff",
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f7f7f7",
   },
+  container: {
+    flex: 1,
+  },
+
   bottomContainer: {
     backgroundColor: "#ffffff",
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    padding: 30,
-    alignItems: "center",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
   },
   parentContainer: {
     borderTopRightRadius: 30,
@@ -294,15 +287,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    paddingBottom: 30,
     backgroundColor: "#f7f7f7",
   },
+
   backButton: {
     position: "absolute",
     left: 20,
     justifyContent: "center",
     alignItems: "center",
   },
+
   backButtonText: {
     width: 50,
     height: 50,
@@ -311,8 +305,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
-    padding: 20,
   },
+  content: {
+    flex: 1,
+    backgroundColor: "#6A53A2",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 30,
+  },
+
   uploadIcon: {
     width: 30,
     height: 30,
@@ -325,7 +333,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bookDetailsCard: {
-    backgroundColor: "#fff", // Card background color
+    backgroundColor: "#fff",
     borderRadius: 15,
     padding: 15,
     marginBottom: 20,
@@ -334,8 +342,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 3,
-    width: "100%",
   },
+
   bookDetails: {
     flexDirection: "row",
     alignItems: "center",
@@ -429,31 +437,32 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    marginTop:20,
-    justifyContent: "center",
-    width: "100%",
+    justifyContent: "space-between",
   },
+
   deleteButton: {
     backgroundColor: "#d81b60",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    alignItems: "center",
     flex: 1,
     marginRight: 10,
+    alignItems: "center",
   },
+
   deleteButtonText: {
     fontSize: 16,
     color: "#fff",
   },
   submitButton: {
-    backgroundColor: "#63C3A8", // Updated green color
+    backgroundColor: "#63C3A8",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    alignItems: "center",
     flex: 1,
+    alignItems: "center",
   },
+
   submitButtonText: {
     fontSize: 16,
     color: "#fff",
@@ -489,6 +498,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
   },
+  deleteButtonText: {
+    fontSize: 16,
+    color: "#fff",
+  },
+  
+
   uploadCard: {
     backgroundColor: "#fff",
     borderRadius: 10,

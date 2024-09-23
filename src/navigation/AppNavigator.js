@@ -58,11 +58,11 @@ const AppNavigator = () => {
           component={BooksScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+         <Stack.Screen
           name="HomeTabs"
           component={BottomTabNavigator}
           options={{ headerShown: false }}
-          initialParams={{ token: '', studentId: '', referenceId: '', roleId: '' }}
+          initialParams={{ token: '', studentId: '', referenceId: '', roleId: '', hasStudents: false }}
         />
         <Stack.Screen
           name="Success"

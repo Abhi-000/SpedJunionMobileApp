@@ -112,7 +112,7 @@ const ScanScreen = ({ token }) => {
     >
       <View style={styles.topContainer}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate("HomeTabs")}
           style={styles.backButton}
         >
           <Image
@@ -121,9 +121,9 @@ const ScanScreen = ({ token }) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Upload Assignment</Text>
-        <YourSvgImage
+        {/* <YourSvgImage
          style={styles.topLogo}
-          width={30} height={30} />
+          width={30} height={30} /> */}
       </View>
       <View style={styles.searchContainer}>
         <TextInput

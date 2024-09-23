@@ -105,10 +105,10 @@ const SummaryScreen = () => {
             />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Summary</Text>
-          <Image
+          {/* <Image
             source={require("../../assets/notificationIcon.png")}
             style={styles.topLogo}
-          />
+          /> */}
         </View>
       </View>
       <View style={styles.parentContainer}>
@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   headerTitle: {
+    right:20,
     fontSize: 20,
     fontWeight: "bold",
     color: "black",

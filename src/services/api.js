@@ -295,7 +295,6 @@ export const getUserDetails = async (token, referenceId, roleId) => {
 
 export const forgotPassword = async (token, username) => {
   const headers = {
-    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
   try {

@@ -31,21 +31,7 @@ const Login = () => {
   const [svgLoaded, setSvgLoaded] = useState(false);
   const navigation = useNavigation();
 
- useEffect(() => {
-    preloadSvg();
-  }, []);
-
-  const preloadSvg = async () => {
-    try {
-      // Get the resolved path of the SVG file
-      const svgPath = Image.resolveAssetSource(require('../../assets/2.svg')).uri;
-      // Prefetch the image
-      await Image.prefetch(svgPath);
-      setSvgLoaded(true);
-    } catch (error) {
-      console.error('Failed to preload SVG:', error);
-    }
-  };
+ 
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -154,9 +140,12 @@ const Login = () => {
               >
                 <Text style={styles.loginButtonText}>Log In</Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>navigation.navigate("ForgotPassword")}>
               <Text style={styles.forgotPassword}>Forgot Password?</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.flexSpacer} />
+            {/* <View style={styles.flexSpacer} /> */}
             <View style={styles.logoContainer}>
             <YourSvgImage width={200} height={200} />
           </View>
@@ -209,7 +198,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     flex: 1,
+    justifyContent: 'space-between', // This will push the logo to the bottom
   },
+
   input: {
     width: "100%",
     padding: 15,
@@ -255,10 +246,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
     justifyContent: "center",
-    height: 200,
-    width: 200,
-    marginBottom: 20,
+    marginTop: 20, // Add some top margin to separate from inputs
   },
+
 
   logo: {
     // width: 100,
