@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  FlatList,
   ScrollView,
   TouchableOpacity,
   Image,
@@ -11,7 +12,7 @@ import { getAllBooks, getStudentDetailsByIds, getBookSummary } from "../services
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLoading } from "../navigation/AppWrapper";
-import Loader from "../components/Loader";
+import Loader from "../components/Loader"; // Adjust the path based on your file structure
 
 const StudentsScreen = () => {
   const [bookData, setBookData] = useState(null);
@@ -19,67 +20,121 @@ const StudentsScreen = () => {
   const [chapters, setChapters] = useState([]);
   const [activeTab, setActiveTab] = useState('students');
 
-  const { loading, setLoading } = useLoading();
+  const { loading, setLoading } = useLoading(); // Adjusted to include loading state
 
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token } = route.params;
   const insets = useSafeAreaInsets();
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch book summary
-        const summaryResponse = await getBookSummary(null, bookId, token);
-        const parsedSummaryData = JSON.parse(summaryResponse.data.data);
-
-        // Set book data
-        setBookData(parsedSummaryData.sjBooks);
-
-        // Set chapters data
-        const chaptersWithCount = parsedSummaryData.sjChapterss.map(chapter => {
-          const countInfo = parsedSummaryData.jChapterCounts.find(c => c.chapterId === chapter.chapterId);
-          return {
-            ...chapter,
-            studentCount: countInfo ? countInfo.studentCount : '0 / 0'
-          };
-        });
-        setChapters(chaptersWithCount);
-
         // Fetch all books to get student IDs
         const booksResponse = await getAllBooks(token);
-        const bookInfo = booksResponse.data.getAllBooksResponses.find(
+        console.log("Books response:", booksResponse.data);
+        
+        const bookUploadInfo = booksResponse.data.getAllBooksResponses.find(
           (item) => item.bookId === bookId
         );
-
-        if (bookInfo && bookInfo.studentCounts.studentIds) {
-          // Fetch student details
-          console.log("ids",bookInfo.studentCounts.studentIds)
-          const studentDetails = await getStudentDetailsByIds(
-            token,
-            bookInfo.studentCounts.studentIds
-          );
-          console.log(studentDetails);
-          setStudents(studentDetails);
+  
+        if (!bookUploadInfo || !bookUploadInfo.studentCounts.studentIds) {
+          console.log("No students found for this book");
+          setStudents([]);
+          setBookData(bookUploadInfo);
+          setLoading(false);
+          return;
         }
+  
+        console.log("Book upload info:", bookUploadInfo);
+        const studentIds = bookUploadInfo.studentCounts.studentIds.split(',');
+        console.log("Student IDs:", studentIds);
+  
+        // First, fetch the book summary without a specific student ID
+        const bookSummaryResponse = await getBookSummary(null, bookId, token);
+        console.log("Book summary response:", bookSummaryResponse.data);
+        
+        const parsedBookSummary = JSON.parse(bookSummaryResponse.data.data);
+        setBookData(parsedBookSummary.sjBooks);
+        setChapters(parsedBookSummary.sjChapterss);
+  
+        // Then, fetch student details one by one
+        const studentDetailsPromises = studentIds.map(async (studentId) => {
+          try {
+            console.log("Fetching details for student ID:", studentId);
+            const summaryResponse = await getBookSummary(studentId.toString(), bookId, token);
+            console.log("Summary response for student:", summaryResponse.data);
+            
+            const parsedSummaryData = JSON.parse(summaryResponse.data.data);
+            return parsedSummaryData.jStudent;
+          } catch (error) {
+            console.error(`Error fetching data for student ${studentId}:`, error);
+            // Log the full error object
+            console.error("Full error object:", JSON.stringify(error, null, 2));
+            return null;
+          }
+        });
+  
+        const studentDetails = await Promise.all(studentDetailsPromises);
+  
+        // Filter out any null or undefined values
+        const validStudentDetails = studentDetails.filter(student => student != null);
+  
+        console.log("Valid student details:", validStudentDetails);
+        setStudents(validStudentDetails);
+  
       } catch (error) {
         console.error("Error fetching data:", error);
+        // Log the full error object
+        console.error("Full error object:", JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
-  }, [bookId, token]);
+  }, [bookId, token]);  
+
+  // useEffect(() => {
+  //   const fetchStudents = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const booksResponse = await getAllBooks(token);
+  //       console.log(booksResponse.data.getAllBooksResponses);
+
+  //       const studentBookSummaryResponses =
+  //         booksResponse.data.getAllBooksResponses;
+  //       const bookUploadInfo = studentBookSummaryResponses.find(
+  //         (item) => item.bookId === bookId
+  //       );
+  //       setBookData(bookUploadInfo);
+
+  //       const studentIdsString = bookUploadInfo.studentCounts.studentIds;
+  //       if (studentIdsString) {
+  //         const studentDetails = await getStudentDetailsByIds(
+  //           token,
+  //           studentIdsString
+  //         );
+  //         console.log(studentDetails);
+  //         setStudents(studentDetails);
+  //       }
+  //     } catch (error) {
+  //       console.log("Error fetching students:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchStudents();
+  // }, [bookId, token]);
 
   const renderStudentCard = (student) => {
     return (
       <TouchableOpacity
-        key={student.studentId}
+        key={student.id}
         onPress={() =>
           navigation.navigate("StudentProfile", {
-            studentId: student.studentId,
+            studentId: student.id,
             token: token,
           })
         }
@@ -101,7 +156,6 @@ const StudentsScreen = () => {
       </TouchableOpacity>
     );
   };
-
   const renderChapterCard = (chapter) => {
     return (
       <View key={chapter.chapterId} style={styles.chapterContainer}>
@@ -111,14 +165,22 @@ const StudentsScreen = () => {
         <View style={styles.chapterDetails}>
           <Text style={styles.chapterTitle}>{chapter.title}</Text>
           <Text style={styles.chapterChapter}>{chapter.chapter}</Text>
+         
         </View>
         <View style={styles.chapterCountContainer}>
-          <Text style={styles.chapterCount}>{chapter.studentCount}</Text>
-        </View>
+        <Text style={styles.chapterCount}>{chapter.studentCount || '0 / 0'}</Text>
+      </View>
+        {/* <View style={styles.chapterStatus}>
+          {chapter.isUploaded ? (
+            <FontAwesome name="check-circle" size={24} color="#4CAF50" />
+          ) : (
+            <FontAwesome name="circle-o" size={24} color="#ccc" />
+          )}
+        </View> */}
       </View>
     );
   };
-
+  
   return (
     <View
       style={[
@@ -158,29 +220,30 @@ const StudentsScreen = () => {
               </View>
             </View>
             <View style={styles.tabContainer}>
-              <TouchableOpacity onPress={() => setActiveTab('students')}>
-                <Text style={activeTab === 'students' ? styles.tabTextActive : styles.tabTextInactive}>
-                  Students
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setActiveTab('chapters')}>
-                <Text style={activeTab === 'chapters' ? styles.tabTextActive : styles.tabTextInactive}>
-                  Chapters
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <ScrollView style={styles.scrollView}>
-              {activeTab === 'students' 
-                ? students.map((student) => renderStudentCard(student))
-                : chapters.map((chapter) => renderChapterCard(chapter))
-              }
-            </ScrollView>
+          <TouchableOpacity onPress={() => setActiveTab('students')}>
+            <Text style={activeTab === 'students' ? styles.tabTextActive : styles.tabTextInactive}>
+              Students
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('chapters')}>
+            <Text style={activeTab === 'chapters' ? styles.tabTextActive : styles.tabTextInactive}>
+              Chapters
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView style={styles.scrollView}>
+          {activeTab === 'students' ? 
+            students.map((student) => renderStudentCard(student)) :
+            chapters.map((chapter) => renderChapterCard(chapter))
+          }
+        </ScrollView>
           </View>
         )}
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

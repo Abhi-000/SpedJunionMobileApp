@@ -116,10 +116,11 @@ export const  assignBook = (bookId, studentIds, token) => {
 };
 
 export const getBookSummary = (studentId, bookId, token) => {
+  console.log("Calling getBookSummary with:");
+  console.log("Student ID:", studentId);
   console.log("Book ID:", bookId);
   console.log("Token:", token);
 
-  // Create the base request body
   const requestBody = {
     bookId: bookId,
     filters: {
@@ -129,12 +130,16 @@ export const getBookSummary = (studentId, bookId, token) => {
       pageCount: 1,
       conditions: [],
     },
+    summaryRequest: true // Add this line to satisfy the API requirement
   };
 
-  // If studentId is provided and not null, add it to the request body
-  if (studentId !== null && studentId !== undefined) {
-    requestBody.studentId = studentId;
+  // Only add studentId to the request body if it's provided and not null/undefined
+  if (studentId != null) {
+    // Convert studentId to a number and remove any leading/trailing whitespace
+    requestBody.studentId = Number(studentId.toString().trim());
   }
+
+  console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
   return api.post(
     "/Book/GetBookSummary",
@@ -145,7 +150,16 @@ export const getBookSummary = (studentId, bookId, token) => {
         "Content-Type": "application/json",
       },
     }
-  );
+  ).then(response => {
+    console.log("Successful response:", response.status, response.data);
+    return response;
+  }).catch(error => {
+    console.error("API call failed:");
+    console.error("Status:", error.response ? error.response.status : "Unknown");
+    console.error("Response data:", error.response ? error.response.data : "No response data");
+    console.error("Error message:", error.message);
+    throw error;
+  });
 };
 export const getRecommendedBooks = (studentId, token) => {
   return api.get(
