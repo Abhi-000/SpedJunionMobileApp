@@ -58,7 +58,7 @@ const UploadScreen = ({ route }) => {
         });
       });
       formData.append("StudentId", studentId);
-      formData.append("ChapterId", selectedChapters.join(",")); // Ensure ChapterId is correctly formatted
+      formData.append("ChapterId", selectedChapters); // Ensure ChapterId is correctly formatted
       formData.append("BookId", bookDetails.bookId);
       formData.append("SessionNumber", sessionId);
       

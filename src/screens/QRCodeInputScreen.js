@@ -94,6 +94,7 @@ const QRCodeInputScreen = ({ route }) => {
       if (currentChapter) {
         console.log("session", currentChapter.sessionId);
         setSessionId(currentChapter.sessionId);
+        setSelectedChapters(currentChapter.chapterId);
       } else {
         console.log("No current chapter found");
         setSessionId(null);

@@ -33,6 +33,7 @@ const StudentProfileScreen = () => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
+      console.log('route.params',  route.params)
       const response = await getJuniorProfile(
         route.params?.studentId,
         route.params?.token

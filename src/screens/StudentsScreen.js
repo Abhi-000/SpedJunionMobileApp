@@ -65,6 +65,7 @@ const StudentsScreen = () => {
         if (studentsResponse.success) {
           const parsedStudentsData = JSON.parse(studentsResponse.data);
           setStudents(parsedStudentsData);
+          console.log('parsedStudentsData: ',parsedStudentsData)
         } else {
           console.error("Error fetching student data:", studentsResponse.message);
         }
@@ -86,7 +87,7 @@ const StudentsScreen = () => {
         key={`${student.FirstName}-${student.LastName}`}
         onPress={() =>
           navigation.navigate("StudentProfile", {
-            studentId: student.id, // You might need to adjust this if the API doesn't provide an id
+            studentId: student.Id, // You might need to adjust this if the API doesn't provide an id
             token: token,
           })
         }

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://uat.spedathome.com:7253/api"; //development
+// const API_BASE_URL = "https://uat.spedathome.com:7253/api"; //development
+const API_BASE_URL = "https://app.spedatschool.com:7253/api"; //live
 ///const API_BASE_URL_1 = "https://testing.spedathome.com:7253/api"; //testing
 
 const api = axios.create({
@@ -253,14 +254,14 @@ export const getSessionWiseAssessmentDetails = async (
 
   try {
     const response = await fetch(
-      `https://uat.spedathome.com:7253/api/Book/GetSessionWiseAssessmentDetailsPost`,
+      `https://app.spedatschool.com:7253/api/Book/GetSessionWiseAssessmentDetails/${qrValue}/${studentId}`,
       {
-        method: "POST",
+        method: "GET",
         headers: headers,
-        body: JSON.stringify({
-          qrValue: qrValue,
-          studentId: studentId,
-        }),
+        // body: JSON.stringify({
+        //   qrValue: qrValue,
+        //   studentId: studentId,
+        // }),
       }
     );
     if (!response.ok) {
