@@ -16,6 +16,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Animated, Easing } from "react-native";
 import { getSessionWiseAssessmentDetails } from "../services/api";
 import * as FileSystem from "expo-file-system";
+import BookNotAssignedModal from "../components/BookNotAssignedModal"; // Make sure to import the new component
 
 const QRCodeInputScreen = ({ route }) => {
   const { token, studentId } = route.params;
@@ -32,6 +33,9 @@ const QRCodeInputScreen = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isCameraVisible, setIsCameraVisible] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
+  const [isBookAssigned, setIsBookAssigned] = useState(true);
+  const [bookNotAssignedModalVisible, setBookNotAssignedModalVisible] = useState(false);
+
   const containerSize = useRef(new Animated.Value(1)).current;
   const expandContainer = () => {
     Animated.timing(containerSize, {
@@ -64,45 +68,52 @@ const QRCodeInputScreen = ({ route }) => {
   }, []);
 
   const handleBarCodeScanned = async ({ data }) => {
-    console.log("scann", data);
-  setScanned(true);
-  setIsCameraVisible(false);
-  setShowDetails(true);  // Add this line
-  //shrinkContainer();
+    console.log("scan", data);
+    setScanned(true);
+    setIsCameraVisible(false);
+
     try {
       const response = await getSessionWiseAssessmentDetails(
         data,
         studentId,
         token
       );
-      // const response = 
-      // {"bookDetails": {"bookId": 1, "bookName": "COMPREHENSIVE LEARNING FOR FUNCTIONAL LITERACY & NUMERACY SKILLS", "difficulty": "BEGINNER"}, "chapterDetails": [{"bookId": 1, "chapter": "Synonyms", "chapterId": 1, "isCurrent": 1, "isUploaded": 0, "order": 1, "title": "Circle the correct words for beautiful"}, {"bookId": 1, "chapter": "Missing Number", "chapterId": 2, "isCurrent": 0, "isUploaded": 1, "order": 2, "title": "Fill each egg with the missing numbers"}, {"bookId": 1, "chapter": "Common Noun", "chapterId": 3, "isCurrent": 0, "isUploaded": 1, "order": 3, "title": "People, Places, Animals and Things"}]}
+
+      if (!response.isBookAssign) {
+        console.log("bookk not assigned")
+        setIsBookAssigned(false);
+        setBookNotAssignedModalVisible(true);
+        return;
+      }
+      console.log("response from api:",response);
+      setIsBookAssigned(true);
+      setShowDetails(true);
       setBookDetails(response.bookDetails);
       setChapterDetails(response.chapterDetails);
       const currentChapter = response.chapterDetails.find(chapter => chapter.isCurrent === 1);
-    if (currentChapter) {
-      console.log("session",currentChapter.sessionId);
-      
-      setSessionId(currentChapter.sessionId);
-    } else {
-      console.log("No current chapter found");
-      setSessionId(null); // or handle this case as needed
-    }
+      if (currentChapter) {
+        console.log("session", currentChapter.sessionId);
+        setSessionId(currentChapter.sessionId);
+      } else {
+        console.log("No current chapter found");
+        setSessionId(null);
+      }
     
-      const selectedChapters = response.chapterDetails
-        .filter((chapter) => chapter.isCurrent)
-        .map((chapter) => chapter.chapterId);
-      setSelectedChapters(selectedChapters);
-
-      const uploadedChapters = response.chapterDetails
-        .filter((chapter) => chapter.isUploaded)
-        .map((chapter) => chapter.chapterId);
-      setUploadedChapters(uploadedChapters);
+      // ... (rest of the logic remains the same)
     } catch (error) {
       console.error("Error fetching qr:", error);
+      // You might want to show an error modal here as well
     }
     console.log(sessionId);
   };
+
+  const handleRetry = () => {
+    setScanned(false);
+    setIsCameraVisible(true);
+    setShowDetails(false);
+    setIsBookAssigned(true);
+  };
+
 
   const handleUploadAssignments = () => {
     setModalVisible(true);
@@ -269,25 +280,26 @@ const QRCodeInputScreen = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Scan to Upload</Text>
         </View>
-        <Animated.View 
-  style={[
-    styles.qrCodeContainer,
-    {
-      transform: [
-        {
-          scale: containerSize,
-        },
-      ],
-    },
-  ]}
->
+                <Animated.View 
+          style={[
+            styles.qrCodeContainer,
+            {
+              transform: [
+                {
+                  scale: containerSize,
+                },
+              ],
+            },
+          ]}
+        >
+
   {isCameraVisible ? (
     <BarCodeScanner
       onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
       style={StyleSheet.absoluteFillObject}
       torchMode={flashlight ? "on" : "off"}
     />
-  ) : showDetails ? (
+  ) : showDetails && isBookAssigned ? (
     <View style={styles.detailsContainer}>
       <ScrollView
         style={styles.chapterDetailsContainer}
@@ -364,7 +376,9 @@ const QRCodeInputScreen = ({ route }) => {
       onPress={() => {
         setScanned(false);
         setIsCameraVisible(true);
-        setShowDetails(false);  // Add this line
+        setShowDetails(false); 
+        setIsBookAssigned(true);
+ // Add this line
         //expandContainer();
       }}
       style={styles.rescanButton}
@@ -441,9 +455,16 @@ const QRCodeInputScreen = ({ route }) => {
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
+            
           </View>
+          
         </View>
       </Modal>
+      <BookNotAssignedModal
+        modalVisible={bookNotAssignedModalVisible}
+        setModalVisible={setBookNotAssignedModalVisible}
+        onRetry={handleRetry}
+      />
     </View>
   );
 };

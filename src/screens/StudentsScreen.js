@@ -3,16 +3,15 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   ScrollView,
   TouchableOpacity,
   Image,
 } from "react-native";
-import { getAllBooks, getStudentDetailsByIds, getBookSummary } from "../services/api";
+import { getAllBooks, getStudentListByStudentIds, getBookSummary } from "../services/api";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLoading } from "../navigation/AppWrapper";
-import Loader from "../components/Loader"; // Adjust the path based on your file structure
+import Loader from "../components/Loader";
 
 const StudentsScreen = () => {
   const [bookData, setBookData] = useState(null);
@@ -20,12 +19,13 @@ const StudentsScreen = () => {
   const [chapters, setChapters] = useState([]);
   const [activeTab, setActiveTab] = useState('students');
 
-  const { loading, setLoading } = useLoading(); // Adjusted to include loading state
+  const { loading, setLoading } = useLoading();
 
   const route = useRoute();
   const navigation = useNavigation();
   const { bookId, token } = route.params;
   const insets = useSafeAreaInsets();
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -47,10 +47,10 @@ const StudentsScreen = () => {
         }
   
         console.log("Book upload info:", bookUploadInfo);
-        const studentIds = bookUploadInfo.studentCounts.studentIds.split(',');
+        const studentIds = bookUploadInfo.studentCounts.studentIds;
         console.log("Student IDs:", studentIds);
   
-        // First, fetch the book summary without a specific student ID
+        // Fetch the book summary without a specific student ID
         const bookSummaryResponse = await getBookSummary(null, bookId, token);
         console.log("Book summary response:", bookSummaryResponse.data);
         
@@ -58,34 +58,19 @@ const StudentsScreen = () => {
         setBookData(parsedBookSummary.sjBooks);
         setChapters(parsedBookSummary.sjChapterss);
   
-        // Then, fetch student details one by one
-        const studentDetailsPromises = studentIds.map(async (studentId) => {
-          try {
-            console.log("Fetching details for student ID:", studentId);
-            const summaryResponse = await getBookSummary(studentId.toString(), bookId, token);
-            console.log("Summary response for student:", summaryResponse.data);
-            
-            const parsedSummaryData = JSON.parse(summaryResponse.data.data);
-            return parsedSummaryData.jStudent;
-          } catch (error) {
-            console.error(`Error fetching data for student ${studentId}:`, error);
-            // Log the full error object
-            console.error("Full error object:", JSON.stringify(error, null, 2));
-            return null;
-          }
-        });
-  
-        const studentDetails = await Promise.all(studentDetailsPromises);
-  
-        // Filter out any null or undefined values
-        const validStudentDetails = studentDetails.filter(student => student != null);
-  
-        console.log("Valid student details:", validStudentDetails);
-        setStudents(validStudentDetails);
+        // Fetch student details using the new API
+        const studentsResponse = await getStudentListByStudentIds(token, studentIds);
+        console.log("Students response:", studentsResponse);
+        
+        if (studentsResponse.success) {
+          const parsedStudentsData = JSON.parse(studentsResponse.data);
+          setStudents(parsedStudentsData);
+        } else {
+          console.error("Error fetching student data:", studentsResponse.message);
+        }
   
       } catch (error) {
         console.error("Error fetching data:", error);
-        // Log the full error object
         console.error("Full error object:", JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
@@ -95,46 +80,13 @@ const StudentsScreen = () => {
     fetchData();
   }, [bookId, token]);  
 
-  // useEffect(() => {
-  //   const fetchStudents = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const booksResponse = await getAllBooks(token);
-  //       console.log(booksResponse.data.getAllBooksResponses);
-
-  //       const studentBookSummaryResponses =
-  //         booksResponse.data.getAllBooksResponses;
-  //       const bookUploadInfo = studentBookSummaryResponses.find(
-  //         (item) => item.bookId === bookId
-  //       );
-  //       setBookData(bookUploadInfo);
-
-  //       const studentIdsString = bookUploadInfo.studentCounts.studentIds;
-  //       if (studentIdsString) {
-  //         const studentDetails = await getStudentDetailsByIds(
-  //           token,
-  //           studentIdsString
-  //         );
-  //         console.log(studentDetails);
-  //         setStudents(studentDetails);
-  //       }
-  //     } catch (error) {
-  //       console.log("Error fetching students:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchStudents();
-  // }, [bookId, token]);
-
   const renderStudentCard = (student) => {
     return (
       <TouchableOpacity
-        key={student.id}
+        key={`${student.FirstName}-${student.LastName}`}
         onPress={() =>
           navigation.navigate("StudentProfile", {
-            studentId: student.id,
+            studentId: student.id, // You might need to adjust this if the API doesn't provide an id
             token: token,
           })
         }
@@ -142,20 +94,21 @@ const StudentsScreen = () => {
         <View style={styles.studentCard}>
           <Image
             style={styles.profileImage}
-            source={require("../../assets/sampleProfile.png")}
+            source={student.ProfilePic ? { uri: student.ProfilePic } : require("../../assets/sampleProfile.png")}
           />
           <View style={styles.profileDetails}>
             <Text style={styles.studentName}>
-              {student.name}
+              {`${student.FirstName} ${student.LastName}`}
             </Text>
             <Text style={styles.studentInfoText}>
-              Class {student.class} | Age {student.age} years
+              Class {student.Class} | Grade {student.Grade}
             </Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
+
   const renderChapterCard = (chapter) => {
     return (
       <View key={chapter.chapterId} style={styles.chapterContainer}>

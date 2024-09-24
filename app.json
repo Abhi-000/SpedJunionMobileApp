@@ -4,10 +4,10 @@
     "slug": "SpedJunior",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/spedJunior.png",
+    "icon": "./assets/spedJuniorIcon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/spedJunior.png",
+      "image": "./assets/spedJuniorIcon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/spedJunior.png",
+        "foregroundImage": "./assets/spedJuniorIcon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.SpedJunior",

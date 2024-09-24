@@ -28,6 +28,7 @@ const UploadScreen = ({ route }) => {
     sessionId
   } = route.params;
   console.log("session id:",sessionId);
+  console.log("bookDetails in Upload:",bookDetails);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [score, setScore] = useState("");

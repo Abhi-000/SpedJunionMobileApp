@@ -162,6 +162,25 @@ export const getBookSummary = (studentId, bookId, token) => {
   });
 };
 
+export const getStudentListByStudentIds = async (token, studentIds) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/Book/GetStudentListByStudentIds`,
+      { StudentIds: studentIds },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error in getStudentListByStudentIds:', error);
+    throw error;
+  }
+};
+
 export const getRecommendedBooks = (studentId, token) => {
   return api.get(
     `/Book/GetJSessionStudentBook/${studentId}`,
