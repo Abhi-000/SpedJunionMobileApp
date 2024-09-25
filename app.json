@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "SpedJunior",
-    "slug": "SpedJunior",
-    "version": "1.0.0",
+    "name": "SpEdJunior",
+    "displayName":"SpEdJunior",
+    "slug": "spedjunior",
+    "version": "2.0.1",
     "orientation": "portrait",
     "icon": "./assets/spedJuniorIcon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +23,7 @@
         "foregroundImage": "./assets/spedJuniorIcon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.SpedJunior",
+      "package": "com.spedatschool.SpEdJunior",
       "runtimeVersion": "1.0.0"
     },
     "web": {
@@ -30,7 +31,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "60c281a7-19ab-455a-842e-70269e3cf943"
+        "projectId": "a12219ec-1723-422b-bfae-a8dfcdddd776"
       }
     },
     "updates": {
