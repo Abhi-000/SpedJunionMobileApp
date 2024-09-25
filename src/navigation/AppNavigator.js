@@ -43,27 +43,24 @@ const AppNavigator = () => {
         }}
         initialRouteName="Splash" // Set Splash as the initial route
       >
-        <Stack.Screen
-          name="Splash"
-          component={SplashScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Books"
-          component={BooksScreen}
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+        <Stack.Screen name="TermsOfUse" component={TermsOfUse} />
+
+       
          <Stack.Screen
           name="HomeTabs"
           component={BottomTabNavigator}
           options={{ headerShown: false }}
           initialParams={{ token: '', studentId: '', referenceId: '', roleId: '', hasStudents: false }}
         />
+         {/* <Stack.Screen
+          name="Books"
+          component={BooksScreen}
+          options={{ headerShown: false }}
+        /> */}
         <Stack.Screen
           name="Success"
           component={SuccessScreen}
@@ -74,16 +71,7 @@ const AppNavigator = () => {
           component={AssignBookScreen}
           options={{ headerShown: false }}
         />
-         <Stack.Screen
-          name="PrivacyPolicy"
-          component={PrivacyPolicy}
-          options={{ headerShown: false }}
-        />
-         <Stack.Screen
-          name="TermsOfUse"
-          component={TermsOfUse}
-          options={{ headerShown: false }}
-        />
+      
         <Stack.Screen
           name="StudentProfile"
           component={StudentProfileScreen}
@@ -94,11 +82,7 @@ const AppNavigator = () => {
           component={MyProfileScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="ForgotPassword"
-          component={ForgotPasswordScreen}
-          options={{ headerShown: false }}
-        />
+        
         <Stack.Screen
           name="Summary"
           component={SummaryScreen}
