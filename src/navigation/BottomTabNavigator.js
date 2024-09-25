@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text, BackHandler } from "react-native";
+  import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../screens/HomeScreen";
 import BooksScreen from "../screens/BooksScreen";
@@ -118,6 +119,33 @@ const CustomTabBar = ({ state, descriptors, navigation, hasStudents }) => {
 const BottomTabNavigator = ({ route }) => {
   const { token, referenceId, roleId } = route.params;
   const [hasStudents, setHasStudents] = useState(false);
+  const [currentTab, setCurrentTab] = useState('Home');
+  const navigation = useNavigation();
+  const handleTabPress = (tabName) => {
+    setCurrentTab(tabName);
+  };
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (currentTab === 'Home') {
+          // Quit the app when back is pressed on the Home screen
+          BackHandler.exitApp();
+          return true;
+        } else if (currentTab === 'Books') {
+          // Navigate to Home when back is pressed on the Books screen
+          navigation.navigate('Home');
+          setCurrentTab('Home');
+          return true;
+        }
+        // Let the default back action happen for other screens
+        return false;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [currentTab, navigation])
+  );
 
   return (
     <Tab.Navigator
@@ -129,19 +157,28 @@ const BottomTabNavigator = ({ route }) => {
     >
       <Tab.Screen 
         name="Books"
-        options={{ tabBarLabel: 'Books',unmount: true  }}
+        options={{ tabBarLabel: 'Books', unmountOnBlur: true }}
+        listeners={{
+          tabPress: () => handleTabPress('Books'),
+        }}
       >
         {(props) => <BooksStack {...props} token={token} />}
       </Tab.Screen>
       <Tab.Screen 
         name="Home"
-        options={{ tabBarLabel: 'Home',unmount: true  }}
+        options={{ tabBarLabel: 'Home', unmountOnBlur: true }}
+        listeners={{
+          tabPress: () => handleTabPress('Home'),
+        }}
       >
         {(props) => <HomeStack {...props} token={token} referenceId={referenceId} roleId={roleId} setHasStudents={setHasStudents} />}
       </Tab.Screen>
       <Tab.Screen 
         name="Profile"
-        options={{ tabBarLabel: 'Profile',unmountOnBlur: true  }}
+        options={{ tabBarLabel: 'Profile', unmountOnBlur: true }}
+        listeners={{
+          tabPress: () => handleTabPress('Profile'),
+        }}
       >
         {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>

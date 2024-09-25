@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// const API_BASE_URL = "https://uat.spedathome.com:7253/api"; //development
+//const API_BASE_URL = "https://uat.spedathome.com:7253/api"; //development
 const API_BASE_URL = "https://app.spedatschool.com:7253/api"; //live
 ///const API_BASE_URL_1 = "https://testing.spedathome.com:7253/api"; //testing
 
@@ -125,9 +125,9 @@ export const getBookSummary = (studentId, bookId, token) => {
   const requestBody = {
     bookId: bookId,
     filters: {
-      sortBy: "bookId",
-      sortOrder: "DESC",
-      pageSize: 25,
+      sortBy: "chapterId",
+      sortOrder: "ASC",
+      pageSize: 40,
       pageCount: 1,
       conditions: [],
     },

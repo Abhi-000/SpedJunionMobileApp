@@ -155,6 +155,7 @@ const StudentProfileScreen = () => {
         },
       ]}
     >
+
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
@@ -193,26 +194,31 @@ const StudentProfileScreen = () => {
           <View style={styles.assignedBooksContainer}>
             <ScrollView style={styles.bookListContainer}>
               <View style={styles.buttonsContainer}>
-              {hasAssignedBooks && (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("QRCodeInput", {
-          token: token,
-          studentId: studentId,
-        })
-      }
-      style={styles.button}
-    >
-      <Text style={styles.buttonText}>Upload Assignment</Text>
-    </TouchableOpacity>
-  )}
+                {hasAssignedBooks && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("QRCodeInput", {
+                        token: token,
+                        studentId: studentId,
+                      })
+                    }
+                    style={[styles.button, styles.uploadButton]}
+                  >
+                    <Text style={styles.buttonText}>Upload Assignment</Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
-    onPress={() => navigation.navigate("Books", { token, studentId })}
-    style={[styles.button, !hasAssignedBooks && styles.fullWidthButton]}
-  >
-    <Text style={styles.buttonText}>Assign Books</Text>
-  </TouchableOpacity>
+                  onPress={() => navigation.navigate("Books", { token, studentId })}
+                  style={[
+                    styles.button,
+                    styles.assignButton,
+                    !hasAssignedBooks && styles.fullWidthButton
+                  ]}
+                >
+                  <Text style={styles.buttonText}>Assign Books</Text>
+                </TouchableOpacity>
               </View>
+
               { bookDetails.length>0 &&  (<Text style={styles.sectionTitle}>
                 Assigned Books & Assignments
               </Text>)}
@@ -269,8 +275,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   fullWidthButton: {
-    flex: 1,
+    flex: 0,
+    width: '100%',
+    marginLeft: 0,
   },
+
   profileContainer: {
     backgroundColor: "#ffffff",
     borderRadius: 20,
@@ -308,26 +317,38 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
+
   button: {
     backgroundColor: "white",
     borderColor: "green",
     borderWidth: 1,
     paddingVertical: 15,
-    marginBottom: 20,
     paddingHorizontal: 20,
     borderRadius: 30,
-    marginHorizontal: 5,
+    marginBottom: 10,
     alignItems: "center",
+    justifyContent: "center",
   },
+  assignButton: {
+    flex: 1,
+    marginLeft: 5,
+  },
+
+  uploadButton: {
+    flex: 1,
+    marginRight: 5,
+  },
+
   buttonText: {
     color: "green",
-    justifyContent: "center",
     fontSize: 16,
-  },
+    textAlign: 'center',
+  },  
   assignedBooksContainer: {
     flex: 1,
     backgroundColor: "white",

@@ -95,7 +95,7 @@ const StudentsScreen = () => {
         <View style={styles.studentCard}>
           <Image
             style={styles.profileImage}
-            source={student.ProfilePic ? { uri: student.ProfilePic } : require("../../assets/sampleProfile.png")}
+            source={require("../../assets/sampleProfile.png")}
           />
           <View style={styles.profileDetails}>
             <Text style={styles.studentName}>

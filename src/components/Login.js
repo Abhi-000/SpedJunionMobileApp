@@ -19,8 +19,6 @@ import { login } from "../services/api.js";
 import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
 import YourSvgImage from '../../assets/2.svg';
 import { Checkbox } from 'react-native-paper';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -28,10 +26,8 @@ const Login = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const [svgLoaded, setSvgLoaded] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigation = useNavigation();
-
- 
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -47,14 +43,21 @@ const Login = () => {
       console.log("API response:", response.data);
 
       if (response.data.token) {
-        console.log("Login successful:", response.data.referenceId);
-        navigation.navigate("HomeTabs", {
-          token: response.data.token,
-          referenceId: response.data.referenceId,
-          roleId: response.data.roleId,
-        });
+        const roleId = response.data.roleId;
+        if ([1, 2, 4].includes(roleId)) {
+          console.log("Login successful:", response.data.referenceId);
+          navigation.replace('HomeTabs', {token: response.data.token, referenceId : response.data.referenceId, roleId: roleId });
+          // navigation.navigate("HomeTabs", {
+          //   token: response.data.token,
+          //   referenceId: response.data.referenceId,
+          //   roleId: roleId,
+          // });
+        } else {
+          setErrorMessage("You do not have permission to access this application.");
+        }
       } else {
         console.log("Login failed: Incorrect credentials or token missing");
+        setModalVisible(true);
       }
     } catch (error) {
       setModalVisible(true);
@@ -90,14 +93,18 @@ const Login = () => {
             </Text>
           </View>
           <View style={styles.loginContainer}>
-            <View style={styles.passwordContainer}>
+            <View style={[styles.passwordContainer, errorMessage ? styles.inputError : null]}>
               <TextInput
                 style={styles.input}
                 placeholder="Email / Phone Number"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  setErrorMessage(""); // Clear error message when user starts typing
+                }}
               />
             </View>
+            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.input}
@@ -141,14 +148,13 @@ const Login = () => {
                 <Text style={styles.loginButtonText}>Log In</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() =>navigation.navigate("ForgotPassword")}>
-              <Text style={styles.forgotPassword}>Forgot Password?</Text>
+                onPress={() => navigation.navigate("ForgotPassword")}>
+                <Text style={styles.forgotPassword}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
-            {/* <View style={styles.flexSpacer} /> */}
             <View style={styles.logoContainer}>
-            <YourSvgImage width={200} height={200} />
-          </View>
+              <YourSvgImage width={200} height={200} />
+            </View>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -247,6 +253,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20, // Add some top margin to separate from inputs
+  },
+  inputError: {
+    borderColor: 'red',
+    borderWidth: 1,
+  },
+  errorText: {
+    marginTop:-10,
+    color: 'red',
+    marginBottom: 20,
+    textAlign: 'center',
   },
 
 
