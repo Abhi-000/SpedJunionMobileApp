@@ -30,7 +30,7 @@ const HomeStack = ({ token, referenceId, roleId, setHasStudents }) => (
 const BooksStack = ({ token }) => (
   <Stack.Navigator screenOptions={defaultStackScreenOptions}>
     <Stack.Screen name="Books">
-      {() => <BooksScreen token={token} />}
+      {() => <BooksScreen token={token}  studentId={null}/>}
     </Stack.Screen>
   </Stack.Navigator>
 );

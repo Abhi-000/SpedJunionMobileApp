@@ -482,7 +482,7 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
           {renderCategory(require("../../assets/studentsCategory.png"), "Students", () => navigation.navigate("StudentsSearch", { token }))}
           {renderCategory(require("../../assets/booksCategory.png"), "Books", () => navigation.navigate("Books", { token }))}
           {renderCategory(require("../../assets/scanCategory.png"), "Uploads", () => navigation.navigate("Scan", { token }))}
-          {renderCategory(require("../../assets/calendarCategory.png"), "Sessions", () => {})}
+          {/* {renderCategory(require("../../assets/calendarCategory.png"), "Sessions", () => {})} */}
         </View>
         {/* {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>): <Text></Text>} */}
         {students.length > 0 ? (

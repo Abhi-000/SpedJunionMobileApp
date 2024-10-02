@@ -11,7 +11,6 @@ import {
   ScrollView,
   Platform,
   Keyboard,
-  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,7 +26,19 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(true);
   const navigation = useNavigation();
+
+  const validateEmail = (email) => {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    setIsEmailValid(validateEmail(text));
+    setErrorMessage(""); // Clear any previous error messages
+  };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -36,6 +47,10 @@ const Login = () => {
   const handleLogin = async () => {
     if (!agreed) {
       alert("Please agree to the Privacy Policy and Terms of Use before logging in.");
+      return;
+    }
+    if (!isEmailValid) {
+      setErrorMessage("Please enter a valid email address.");
       return;
     }
     try {
@@ -47,11 +62,6 @@ const Login = () => {
         if ([1, 2, 4].includes(roleId)) {
           console.log("Login successful:", response.data.referenceId);
           navigation.replace('HomeTabs', {token: response.data.token, referenceId : response.data.referenceId, roleId: roleId });
-          // navigation.navigate("HomeTabs", {
-          //   token: response.data.token,
-          //   referenceId: response.data.referenceId,
-          //   roleId: roleId,
-          // });
         } else {
           setErrorMessage("You do not have permission to access this application.");
         }
@@ -93,18 +103,17 @@ const Login = () => {
             </Text>
           </View>
           <View style={styles.loginContainer}>
-            <View style={[styles.passwordContainer, errorMessage ? styles.inputError : null]}>
+            <View style={[styles.passwordContainer, !isEmailValid ? styles.inputError : null]}>
               <TextInput
                 style={styles.input}
                 placeholder="Email / Phone Number"
                 value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  setErrorMessage(""); // Clear error message when user starts typing
-                }}
+                onChangeText={handleEmailChange}
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
             </View>
-            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+            {!isEmailValid && <Text style={styles.errorText}>Please enter a valid email address</Text>}
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.input}
@@ -142,8 +151,8 @@ const Login = () => {
             <View style={styles.actions}>
               <TouchableOpacity
                 onPress={handleLogin}
-                style={[styles.loginButton, !agreed && styles.loginButtonDisabled]}
-                disabled={!agreed}
+                style={[styles.loginButton, (!agreed || !isEmailValid) && styles.loginButtonDisabled]}
+                disabled={!agreed || !isEmailValid}
               >
                 <Text style={styles.loginButtonText}>Log In</Text>
               </TouchableOpacity>
@@ -152,6 +161,7 @@ const Login = () => {
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
+            {errorMessage ? <Text style={styles.errorTextGeneral}>{errorMessage}</Text> : null}
             <View style={styles.logoContainer}>
               <YourSvgImage width={200} height={200} />
             </View>
@@ -261,8 +271,17 @@ const styles = StyleSheet.create({
   errorText: {
     marginTop:-10,
     color: 'red',
+    marginLeft: 10,
+    marginBottom: 20,
+    textAlign: 'left',
+  },
+  errorTextGeneral:
+  {
+    marginTop:10,
+    color: 'red',
     marginBottom: 20,
     textAlign: 'center',
+
   },
 
 

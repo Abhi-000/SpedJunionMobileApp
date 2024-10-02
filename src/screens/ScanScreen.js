@@ -112,7 +112,7 @@ const ScanScreen = ({ token }) => {
     >
       <View style={styles.topContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("HomeTabs")}
+          onPress={() => navigation.navigate("Home", { token })}
           style={styles.backButton}
         >
           <Image

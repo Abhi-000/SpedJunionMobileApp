@@ -24,7 +24,7 @@ const StudentProfileScreen = () => {
   const insets = useSafeAreaInsets();
   const { studentId, token } = route.params;
   const hasAssignedBooks = bookDetails.length > 0;
-
+  console.log("Student id",studentId);
 
   useEffect(() => {
     fetchStudents();
@@ -208,7 +208,10 @@ const StudentProfileScreen = () => {
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Books", { token, studentId })}
+                  onPress={() => navigation.navigate("Books", { 
+                    token: token, 
+                    studentId : studentId 
+                  })}
                   style={[
                     styles.button,
                     styles.assignButton,

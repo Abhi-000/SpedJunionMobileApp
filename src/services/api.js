@@ -101,6 +101,7 @@ export const getAllBooks = async (token) => {
 };
 
 export const  assignBook = (bookId, studentIds, token) => {
+  console.log("api",studentIds);
   return api.post(
     "/Book/AssignBook",
     {
@@ -183,8 +184,9 @@ export const getStudentListByStudentIds = async (token, studentIds) => {
 };
 
 export const getRecommendedBooks = (studentId, token) => {
+  console.log("inside api:", studentId, token);
   return api.get(
-    `/Book/GetJSessionStudentBook/${studentId}`,
+    `/Book/GetSpedJuniorBookList/${studentId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

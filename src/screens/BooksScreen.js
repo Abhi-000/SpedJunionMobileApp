@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLoading } from "../navigation/AppWrapper";
 import Loader from "../components/Loader"; // Adjust the path based on your file structure
 
-const BooksScreen = ({ token: propToken }) => {
+const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
   const [books, setBooks] = useState([]);
   const [recommendedBooks, setRecommendedBooks] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -28,9 +28,10 @@ const BooksScreen = ({ token: propToken }) => {
   const { loading, setLoading } = useLoading(); // Adjusted to include loading state
   const studentId = route.params?.studentId;
   const [modalVisible, setModalVisible] = useState(false);
-
+  console.log(route.params);
+  console.log("helo",studentId );
   const handleAssignBook = async (bookId) => {
-    console.log(bookId,studentId);
+    console.log("helo",bookId,studentId);
     if (studentId) {
       try {
         setLoading(true);
@@ -75,13 +76,17 @@ const BooksScreen = ({ token: propToken }) => {
 
   const fetchBooks = async (currentToken) => {
     try {
+      console.log("fetching", studentId, currentToken);
       setLoading(true);
       const booksResponse = await getAllBooks(currentToken);
       setBooks(booksResponse.data.getAllBooksResponses);
   
       if (studentId) {
+        console.log("helo inside recommneded");
         const recommendedResponse = await getRecommendedBooks(studentId, currentToken);
+        console.log("recommended:",recommendedResponse.data)
         setRecommendedBooks(recommendedResponse.data);
+        
       } else {
         setRecommendedBooks([]);
       }
@@ -237,7 +242,7 @@ const BooksScreen = ({ token: propToken }) => {
         <FlatList
           data={filterBooks()}
           renderItem={renderBook}
-          keyExtractor={(item) => item.bookId.toString()} // Update this line
+          //keyExtractor={(item) => item.bookId.toString()} // Update this line
           contentContainerStyle={styles.listContainer}
           ListHeaderComponent={<View style={styles.listHeader} />}
         />

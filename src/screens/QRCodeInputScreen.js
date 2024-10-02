@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef,useCallback  } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Modal,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,7 +17,8 @@ import * as ImagePicker from "expo-image-picker";
 import { Animated, Easing } from "react-native";
 import { getSessionWiseAssessmentDetails } from "../services/api";
 import * as FileSystem from "expo-file-system";
-import BookNotAssignedModal from "../components/BookNotAssignedModal"; // Make sure to import the new component
+import BookNotAssignedModal from "../components/BookNotAssignedModal";
+
 
 const QRCodeInputScreen = ({ route }) => {
   const { token, studentId } = route.params;
@@ -35,6 +37,8 @@ const QRCodeInputScreen = ({ route }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [isBookAssigned, setIsBookAssigned] = useState(true);
   const [bookNotAssignedModalVisible, setBookNotAssignedModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const containerSize = useRef(new Animated.Value(1)).current;
   const expandContainer = () => {
@@ -71,6 +75,8 @@ const QRCodeInputScreen = ({ route }) => {
     console.log("scan", data);
     setScanned(true);
     setIsCameraVisible(false);
+    setIsLoading(true);
+    setError(null);
 
     try {
       const response = await getSessionWiseAssessmentDetails(
@@ -80,17 +86,19 @@ const QRCodeInputScreen = ({ route }) => {
       );
 
       if (!response.isBookAssign) {
-        console.log("bookk not assigned")
+        console.log("book not assigned");
         setIsBookAssigned(false);
         setBookNotAssignedModalVisible(true);
         return;
       }
-      console.log("response from api:",response);
+
+      console.log("response from api:", response);
       setIsBookAssigned(true);
       setShowDetails(true);
-      setBookDetails(response.bookDetails);
-      setChapterDetails(response.chapterDetails);
-      const currentChapter = response.chapterDetails.find(chapter => chapter.isCurrent === 1);
+      setBookDetails(response.bookDetails || {});
+      setChapterDetails(response.chapterDetails || []);
+      
+      const currentChapter = (response.chapterDetails || []).find(chapter => chapter.isCurrent === 1);
       if (currentChapter) {
         console.log("session", currentChapter.sessionId);
         setSessionId(currentChapter.sessionId);
@@ -99,13 +107,12 @@ const QRCodeInputScreen = ({ route }) => {
         console.log("No current chapter found");
         setSessionId(null);
       }
-    
-      // ... (rest of the logic remains the same)
     } catch (error) {
       console.error("Error fetching qr:", error);
-      // You might want to show an error modal here as well
+      setError("Failed to fetch book details. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-    console.log(sessionId);
   };
 
   const handleRetry = () => {
@@ -281,7 +288,7 @@ const QRCodeInputScreen = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Scan to Upload</Text>
         </View>
-                <Animated.View 
+        <Animated.View 
           style={[
             styles.qrCodeContainer,
             {
@@ -293,40 +300,47 @@ const QRCodeInputScreen = ({ route }) => {
             },
           ]}
         >
-
-  {isCameraVisible ? (
-    <BarCodeScanner
-      onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-      style={StyleSheet.absoluteFillObject}
-      torchMode={flashlight ? "on" : "off"}
-    />
-  ) : showDetails && isBookAssigned ? (
-    <View style={styles.detailsContainer}>
-      <ScrollView
-        style={styles.chapterDetailsContainer}
-        contentContainerStyle={styles.chapterDetailsContent}
-      >
-        {chapterDetails && (
+          {isCameraVisible ? (
+            <BarCodeScanner
+              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+              style={StyleSheet.absoluteFillObject}
+              torchMode={flashlight ? "on" : "off"}
+            />
+          ) : isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#6A53A2" />
+              <Text style={styles.loadingText}>Loading book details...</Text>
+            </View>
+          ) : error ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+              <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+                <Text style={styles.retryButtonText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : showDetails && isBookAssigned ? (
             <View style={styles.detailsContainer}>
               <ScrollView
                 style={styles.chapterDetailsContainer}
                 contentContainerStyle={styles.chapterDetailsContent}
               >
-                <View style={styles.bookDetailsCard}>
-                  <View style={styles.bookDetails}>
-                    <Image
-                      source={require("../../assets/booksCategory.png")}
-                      style={styles.bookIcon}
-                    />
-                    <View style={styles.bookInfo}>
-                      <Text style={styles.bookDifficulty}>
-                        {bookDetails.difficulty}
-                      </Text>
-                      <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
+                {bookDetails && (
+                  <View style={styles.bookDetailsCard}>
+                    <View style={styles.bookDetails}>
+                      <Image
+                        source={require("../../assets/booksCategory.png")}
+                        style={styles.bookIcon}
+                      />
+                      <View style={styles.bookInfo}>
+                        <Text style={styles.bookDifficulty}>
+                          {bookDetails.difficulty}
+                        </Text>
+                        <Text style={styles.bookTitle}>{bookDetails.bookName}</Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-                {chapterDetails.map((chapter) => (
+                )}
+                {chapterDetails && chapterDetails.map((chapter) => (
                   <View
                     key={chapter.chapterId}
                     style={[
@@ -349,7 +363,7 @@ const QRCodeInputScreen = ({ route }) => {
                             : styles.defaultIndicator,
                         ]}
                       >
-                        {chapter.isUploaded ? (
+                        {chapter.isUploaded === 1 ? (
                           <Text style={styles.checkMark}>✓</Text>
                         ) : chapter.isCurrent ? (
                           <View style={styles.yellowMark} />
@@ -357,39 +371,38 @@ const QRCodeInputScreen = ({ route }) => {
                       </View>
                     </View>
                   </View>
-                  
                 ))}
-                 <TouchableOpacity
-        style={styles.uploadButton}
-        onPress={handleUploadAssignments}
-      >
-        <Text style={styles.uploadButtonText}>Upload Assignments</Text>
-      </TouchableOpacity>
+                {chapterDetails && chapterDetails.some(chapter => chapter.isCurrent === 1) && (
+                  <TouchableOpacity
+                    style={styles.uploadButton}
+                    onPress={handleUploadAssignments}
+                  >
+                    <Text style={styles.uploadButtonText}>
+                      {chapterDetails.find(chapter => chapter.isCurrent === 1).isUploaded === 1
+                        ? "Update Assignment"
+                        : "Upload Assignment"}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </ScrollView>
             </View>
-          ) }
-      </ScrollView>
-     
-    </View>
-  ) : null}
-  {scanned && (
-    <TouchableOpacity
-      onPress={() => {
-        setScanned(false);
-        setIsCameraVisible(true);
-        setShowDetails(false); 
-        setIsBookAssigned(true);
- // Add this line
-        //expandContainer();
-      }}
-      style={styles.rescanButton}
-    >
-      <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
-    </TouchableOpacity>
-  )}
-</Animated.View>
+          ) : null}
+          {scanned && (
+            <TouchableOpacity
+              onPress={handleRetry}
+              style={styles.rescanButton}
+            >
+              <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
+            </TouchableOpacity>
+          )}
+        </Animated.View>
 
-{!scanned && (<View style={styles.bottomContainer}>
+
+
+{!scanned && (
+   <View><Text style = {styles.bottomText}>SCAN THE QR CODE</Text>
+  <View style={styles.bottomContainer}>
+         
           <TouchableOpacity
             onPress={handlePickImage}
             style={styles.bottomButton}
@@ -422,6 +435,7 @@ const QRCodeInputScreen = ({ route }) => {
               style={styles.bottomIcon}
             />
           </TouchableOpacity> */}
+        </View>
         </View>)}
         
       </View>
@@ -475,6 +489,43 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "white",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6A53A2',
+  },
+  bottomText:
+  {
+    fontSize: 16,
+    textAlign:'center'
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#6A53A2',
+    padding: 10,
+    borderRadius: 5,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+
   topContainer: {
     flexDirection: "row",
     alignItems: "center",
