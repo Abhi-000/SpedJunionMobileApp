@@ -62,7 +62,7 @@ const AssignedBooksScreen = ({ token: propToken }) => {
         {/* <Text style={styles.bookDetails}>
           Assign Date: {new Date(item.assignDate).toLocaleDateString()}
         </Text> */}
-        <Text style={styles.bookDetails}>
+        {item.studentCounts.totalStudents!=0 ? (<View><Text style={styles.bookDetails}>
           Total Students: {item.studentCounts.totalStudents || 0}
         </Text>
         <TouchableOpacity
@@ -77,11 +77,15 @@ const AssignedBooksScreen = ({ token: propToken }) => {
         >
           <Text style={styles.buttonText}>Students</Text>
         </TouchableOpacity>
+        </View>):<View>
+        <Text style={styles.errorText}>Book is not assigned to anyone</Text>
+
+          </View>}
       </View>
     </View>
   );
 
-  const categories = ["All", "Beginner", "Intermediate", "Advanced"];
+  const categories = ["All", "Beginner", "Intermediate", "Advanced", "Cognitive", "Improvement"];
 
   return (
     <View
@@ -180,6 +184,12 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
+    fontWeight: "bold",
+    color: "black",
+  },
+  errorText:
+  {
+    fontSize: 12,
     fontWeight: "bold",
     color: "black",
   },

@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLoading } from "../navigation/AppWrapper";
 import Loader from "../components/Loader"; // Adjust the path based on your file structure
 
-const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
+const BooksScreen = ({ token, studentId }) => {
   const [books, setBooks] = useState([]);
   const [recommendedBooks, setRecommendedBooks] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -26,16 +26,16 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
   const route = useRoute();
   const insets = useSafeAreaInsets();
   const { loading, setLoading } = useLoading(); // Adjusted to include loading state
-  const studentId = route.params?.studentId;
+  //const studentId = route.params?.studentId;
   const [modalVisible, setModalVisible] = useState(false);
-  console.log(route.params);
+  console.log( studentId);
   console.log("helo",studentId );
   const handleAssignBook = async (bookId) => {
     console.log("helo",bookId,studentId);
     if (studentId) {
       try {
         setLoading(true);
-        const response = await assignBook(bookId, [studentId], propToken || route.params?.token);
+        const response = await assignBook(bookId, [studentId], token || route.params?.token);
         console.log(response.data);
         setLoading(false);
 
@@ -46,7 +46,7 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
           message: "Successfully Assigned To Students",
           buttonText: "Continue",
           nextScreen: "Books",
-          nextScreenParams: { token: propToken || route.params?.token, studentId },
+          nextScreenParams: { token: token || route.params?.token, studentId },
       });
     }
     else{
@@ -65,10 +65,10 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
         ? book.studentCounts.studentIds.split(",").map(id => parseInt(id))
         : [];
       console.log(alreadyAssignedStudents);
-      console.log("no student Id",route.params?.token, propToken);
+      console.log("no student Id",route.params?.token, token);
       navigation.navigate("AssignBook", {
         bookId: bookId,
-        token: propToken || route.params?.token,
+        token: token || route.params?.token,
         alreadyAssignedStudents: alreadyAssignedStudents
       });
     }
@@ -103,39 +103,30 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      const currentToken = propToken || route.params?.token;
+      const currentToken = token || route.params?.token;
       fetchBooks(currentToken);
-    }, [propToken])
+    }, [token])
   );
+
   const filterBooks = () => {
-    // Start with all recommended books
     let result = [...recommendedBooks];
-  
-    // Create a Set of book IDs that are in the recommended list
     const recommendedBookIds = new Set(result.map(book => book.bookId));
-  
-    // Filter and add remaining books that are not in the recommended list
     let remainingBooks = books.filter(book => !recommendedBookIds.has(book.bookId));
-  
-    // If a specific category is selected, filter the remaining books
-    console.log(selectedCategory);
+
     if (selectedCategory !== "All") {
       remainingBooks = remainingBooks.filter(
         (book) => book.difficulty === selectedCategory
       );
     }
-  
-    // Combine recommended books with remaining books
+
     result = [...result, ...remainingBooks];
-  
     return result;
   };
   
   
-  
   const renderBook = ({ item }) => {
     const isRecommended = recommendedBooks.some(book => book.bookId === item.bookId);
-  
+
     return (
       <View style={[styles.card, isRecommended && styles.recommendedCard]}>
         {isRecommended && (
@@ -168,8 +159,7 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
     );
   };
   
-  
-  const categories = ["All", "Beginner", "Intermediate", "Advanced"];
+  const categories = ["All", "Beginner", "Intermediate", "Advanced", "Cognitive", "Improvement"];
 
   return (
     <View
@@ -187,7 +177,7 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
       />
-      <Loader loading={loading} />
+      {/* <Loader loading={loading} /> */}
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <TouchableOpacity
@@ -204,7 +194,7 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
             style={styles.assignedButton}
             onPress={() =>
               navigation.navigate("AssignedBooks", {
-                token: propToken || route.params?.token,
+                token: token || route.params?.token,
               })
             }
           >
@@ -242,7 +232,6 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
         <FlatList
           data={filterBooks()}
           renderItem={renderBook}
-          //keyExtractor={(item) => item.bookId.toString()} // Update this line
           contentContainerStyle={styles.listContainer}
           ListHeaderComponent={<View style={styles.listHeader} />}
         />
@@ -250,6 +239,7 @@ const BooksScreen = ({ token: propToken , studentId : propStudentId}) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

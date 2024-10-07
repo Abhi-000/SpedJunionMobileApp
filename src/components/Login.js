@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { login } from "../services/api.js";
 import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
 import YourSvgImage from '../../assets/2.svg';
@@ -28,6 +29,50 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(true);
   const navigation = useNavigation();
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    try {
+      const storedCredentials = await AsyncStorage.getItem('userCredentials');
+      console.log(storedCredentials);
+      if (storedCredentials) {
+        const { email, password, token, referenceId,roleId, lastLoginTime } = JSON.parse(storedCredentials);
+        const currentTime = new Date().getTime();
+        const timeDifference = currentTime - lastLoginTime;
+        const hoursPassed = timeDifference / (1000 * 60 * 60);
+
+        if (hoursPassed >= 24) {
+          // If 24 hours have passed, attempt to refresh the token
+          await handleLogin(email, password, true);
+        } else {
+
+          // If less than 24 hours have passed, navigate to the home screen
+          navigation.replace('HomeTabs',{ token, referenceId, roleId });
+        }
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+    }
+  };
+
+  const storeCredentials = async (email, password, token, referenceId, roleId) => {
+    try {
+      const credentials = {
+        email,
+        password,
+        token,
+        referenceId,
+        roleId,
+        lastLoginTime: new Date().getTime()
+      };
+      await AsyncStorage.setItem('userCredentials', JSON.stringify(credentials));
+    } catch (error) {
+      console.error('Error storing credentials:', error);
+    }
+  };
+
 
   const validateEmail = (email) => {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -44,24 +89,31 @@ const Login = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const handleLogin = async () => {
-    if (!agreed) {
-      alert("Please agree to the Privacy Policy and Terms of Use before logging in.");
-      return;
+  const handleLogin = async (emailInput, passwordInput, isAutoLogin = false) => {
+    const loginEmail = isAutoLogin ? emailInput : email;
+    const loginPassword = isAutoLogin ? passwordInput : password;
+
+    if (!isAutoLogin) {
+      if (!agreed) {
+        alert("Please agree to the Privacy Policy and Terms of Use before logging in.");
+        return;
+      }
+      if (!isEmailValid) {
+        setErrorMessage("Please enter a valid email address.");
+        return;
+      }
     }
-    if (!isEmailValid) {
-      setErrorMessage("Please enter a valid email address.");
-      return;
-    }
+
     try {
-      const response = await login(email, password);
+      const response = await login(loginEmail, loginPassword);
       console.log("API response:", response.data);
 
       if (response.data.token) {
-        const roleId = response.data.roleId;
+        const { token, referenceId, roleId } = response.data;
         if ([1, 2, 4].includes(roleId)) {
-          console.log("Login successful:", response.data.referenceId);
-          navigation.replace('HomeTabs', {token: response.data.token, referenceId : response.data.referenceId, roleId: roleId });
+          console.log("Login successful:", referenceId);
+          await storeCredentials(loginEmail, loginPassword, token, referenceId, roleId);
+          navigation.replace('HomeTabs', { token, referenceId, roleId });
         } else {
           setErrorMessage("You do not have permission to access this application.");
         }
@@ -70,10 +122,13 @@ const Login = () => {
         setModalVisible(true);
       }
     } catch (error) {
-      setModalVisible(true);
+      if (error.message === "Network Error") {
+        setErrorMessage("Not connected to internet. Please check your connection and try again.");
+      } else {
+        setModalVisible(true);
+      }
     }
   };
-
   const handlePrivacyPolicy = () => {
     navigation.navigate("PrivacyPolicy");
   };

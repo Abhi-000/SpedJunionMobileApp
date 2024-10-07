@@ -23,6 +23,7 @@ const AssignBookScreen = () => {
   const { bookId, token, alreadyAssignedStudents } = route.params;
   const insets = useSafeAreaInsets();
   console.log(alreadyAssignedStudents);
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -43,11 +44,11 @@ const AssignBookScreen = () => {
   }, [alreadyAssignedStudents]);
 
   const handleSelectStudent = (studentId) => {
-    setSelectedStudents((prevSelected) =>
-      prevSelected.includes(studentId)
-        ? prevSelected.filter((id) => id !== studentId)
-        : [...prevSelected, studentId]
-    );
+    // setSelectedStudents((prevSelected) =>
+    //   prevSelected.includes(studentId)
+    //     ? prevSelected.filter((id) => id !== studentId)
+    //     : [...prevSelected, studentId]
+    // );
 
     setNewlySelectedStudents((prevNewlySelected) =>
       prevNewlySelected.includes(studentId)
@@ -75,6 +76,11 @@ const AssignBookScreen = () => {
 
   const filteredStudents = students.filter((student) =>
     student.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Check if any selected students are already assigned
+  const isDisabled = selectedStudents.some((id) =>
+    alreadyAssignedStudents.includes(id.toString())
   );
 
   return (
@@ -132,24 +138,31 @@ const AssignBookScreen = () => {
                 </View>
 
                 <CustomCheckBox
-                  isChecked={selectedStudents.includes(item.id)}
+                  isChecked={selectedStudents.includes(item.id) || newlySelectedStudents.includes(item.id)}
                   onPress={() => handleSelectStudent(item.id)}
                   checkBoxStyle={{ borderColor: "#000" }} // Black border when not checked
                   checkedStyle={{ backgroundColor: "#6A53A2" }} // Box color when checked
                   checkMarkStyle={{ color: "#fff" }} // White tick
+                  disabled={selectedStudents.includes(item.id)}
                 />
               </View>
             </View>
           )}
         />
-        <TouchableOpacity style={styles.submitButton} onPress={handleAssign}>
+        <TouchableOpacity
+          style={[
+            styles.submitButton,
+            isDisabled ? { backgroundColor: "gray" } : { backgroundColor: "#63C3A8" },
+          ]}
+          onPress={isDisabled ? null : handleAssign} // Prevent assignment if disabled
+          disabled={isDisabled} // Disable the button
+        >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -242,6 +255,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",
+    marginBottom:90,
     marginVertical: 10,
     marginHorizontal: 50,
   },

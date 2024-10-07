@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground,Linking  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getUserDetails } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LogoutModal from '../components/LogoutModal';
 import YourSvgImage from '../../assets/bell.svg';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLoading } from '../navigation/AppWrapper';
-const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, roleId: propRoleId  }) => {
-  //const { token, referenceId, roleId } = route.params;
+
+const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, roleId: propRoleId }) => {
   const [user, setUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
@@ -22,11 +22,9 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        //setLoading(true);
         const userDetails = await getUserDetails(token, referenceId, roleId);
         console.log(userDetails);
         setUser(userDetails);
-        //setLoading(false);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
@@ -34,8 +32,30 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
 
     fetchUserDetails();
   }, [referenceId, roleId]);
-
-
+  const S3_BUCKET_NAME = 'spedu-uploads';
+  const S3_REGION = 'ap-south-1';
+  
+  const getS3ImageUrl = (key) => {
+    console.log(`https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`);
+    return `https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`;
+  };
+  const handleLogout = async () => {
+    try {
+      console.log("Logging out...");
+      await AsyncStorage.removeItem('userCredentials');  // Ensure key is correct
+      const credsAfterRemoval = await AsyncStorage.getItem('userCredentials');
+      console.log('Credentials after removal:', credsAfterRemoval); // Should log 'null'
+      
+      setModalVisible(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+  
   return (
     <View
       style={[
@@ -48,22 +68,20 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
         },
       ]}
     >
-      <View style = {{backgroundColor: "#6A53A2",}}>
-       <LogoutModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-      />
+      <View style={{ backgroundColor: "#6A53A2" }}>
+        <LogoutModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          onLogout={handleLogout}
+        />
+
       <View style={styles.topContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Home', { token })}
-          style={styles.backButton}
-        >
-          <Image
-            style={styles.backButtonText}
-            source={require('../../assets/backButton.png')}
-          />
-          
-        </TouchableOpacity>
+      {/* <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.menuItem}>
+            <Ionicons name="log-out-outline" size={20} color="#6A53A2" />
+            <Text style={styles.menuText}>Log Out</Text>
+          </TouchableOpacity> */}
         
         <Text style={styles.headerTitle}>Profile</Text>
         {/* <Image
@@ -83,7 +101,8 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
         {(user && <View style={styles.profileContainer}>
           <Image
             style={styles.profileImage}
-            source={require('../../assets/sampleProfile.png')}
+            source={user.profileUrl
+              ? { uri: getS3ImageUrl(user.profileUrl) } : require("../../assets/sampleProfile.png")}
           />
           <Text style={styles.userName}>{user.name}</Text>
           <Text style={styles.userEmail}>{user.email}</Text>

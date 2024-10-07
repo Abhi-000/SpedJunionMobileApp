@@ -16,6 +16,7 @@ import {
   getJStudents,
   getStudentFilters,
   getUserDetails,
+  getJuniorProfile,
 } from "../services/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -23,6 +24,7 @@ import { FontAwesome, MaterialIcons } from "react-native-vector-icons";
 import { RadioButton } from "react-native-paper";
 import { useLoading } from "../navigation/AppWrapper";
 import YourSvgImage from '../../assets/bell.svg';
+
 
 const Home = ({ token, referenceId, roleId, setHasStudents }) => {
   console.log("reference: ", referenceId, roleId);
@@ -50,15 +52,15 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
   useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const response = await getJStudents(token);
-        setStudents(response.juniorStudentResponse);
-        setHasStudents(response.juniorStudentResponse.length > 0);
-      } catch (error) {
-        console.error("Error fetching students:", error);
-      }
-    };
+    // const fetchStudents = async () => {
+    //   try {
+    //     const response = await getJStudents(token);
+    //     setStudents(response.juniorStudentResponse);
+    //     setHasStudents(response.juniorStudentResponse.length > 0);
+    //   } catch (error) {
+    //     console.error("Error fetching students:", error);
+    //   }
+    // };
 
     fetchStudents();
   }, [token, setHasStudents]);
@@ -160,14 +162,24 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
     try {
       setLoading(true);
       const response = await getJStudents(token);
-      setStudents(response.juniorStudentResponse);
-      setFilteredStudents(response.juniorStudentResponse);
+      const studentsWithProfiles = await Promise.all(
+        response.juniorStudentResponse.map(async (student) => {
+          const profile = await getJuniorProfile(student.id, token);
+          return {
+            ...student,
+            spedStudentBookDetails: profile.spedStudentBookDetails || [],
+          };
+        })
+      );
+      setStudents(studentsWithProfiles);
+      setFilteredStudents(studentsWithProfiles);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching students:", error);
       setLoading(false);
     }
   };
+
 
 
 
@@ -230,7 +242,14 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
       setViewAll(false);
     }
   };
-
+  const S3_BUCKET_NAME = 'spedu-uploads';
+  const S3_REGION = 'ap-south-1';
+  
+  const getS3ImageUrl = (key) => {
+    //console.log(`https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`);
+    return `https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`;
+  };
+  
   const renderStudent = ({ item }) => (
     <TouchableOpacity
       onPress={() =>
@@ -242,7 +261,9 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
     >
       <View style={styles.studentCard}>
         <Image
-          source={require("../../assets/sampleProfile.png")}
+          source={item.studentProfilePic
+            ? { uri: getS3ImageUrl(item.studentProfilePic) }
+            : require("../../assets/sampleProfile.png")}
           style={styles.profilePic}
         />
         <View style={styles.studentInfo}>
@@ -253,9 +274,26 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
             Class {item.class} | Age {item.age} years
           </Text>
         </View>
+        {item.spedStudentBookDetails.length > 0 && (
+          <TouchableOpacity
+            style={styles.scanIcon}
+            onPress={() =>
+              navigation.navigate("QRCodeInput", {
+                token: token,
+                studentId: item.id,
+              })
+            }
+          >
+            <Image
+              source={require("../../assets/scanCategory.png")}
+              style={styles.scanImage}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );
+
 
   const removeFilter = (filterName) => {
     handleSearch(searchText);
@@ -477,13 +515,13 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
             </View>
           </Modal>
           <View style={styles.studentsContainer}>
-          {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>):<Text style={{ fontWeight: "bold", fontSize: 20, opacity:.6 }}>Categories</Text>}
-        <View style={styles.categories}>
+          {/* {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Categories</Text>):<Text style={{ fontWeight: "bold", fontSize: 20, opacity:.6 }}>Categories</Text>} */}
+        {/* <View style={styles.categories}>
           {renderCategory(require("../../assets/studentsCategory.png"), "Students", () => navigation.navigate("StudentsSearch", { token }))}
           {renderCategory(require("../../assets/booksCategory.png"), "Books", () => navigation.navigate("Books", { token }))}
           {renderCategory(require("../../assets/scanCategory.png"), "Uploads", () => navigation.navigate("Scan", { token }))}
-          {/* {renderCategory(require("../../assets/calendarCategory.png"), "Sessions", () => {})} */}
-        </View>
+          {/* {renderCategory(require("../../assets/calendarCategory.png"), "Sessions", () => {})} }
+        </View> */}
         {/* {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>): <Text></Text>} */}
         {students.length > 0 ? (
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
@@ -493,7 +531,7 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
             renderNoResultsMessage()
           ) : (
             <FlatList
-              data={viewAll ? filteredStudents : filteredStudents.slice(0, 5)}
+              data={students}
               renderItem={renderStudent}
               keyExtractor={(item) => item.id.toString()}
               style={styles.flatList}
@@ -672,6 +710,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E0E0E0",
   },
+  scanIcon: {
+    padding: 10,
+  },
+  scanImage: {
+    width: 30,
+    height: 30,
+  },
+
   profilePic: {
     width: 50,
     height: 50,

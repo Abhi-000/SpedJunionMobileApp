@@ -2,12 +2,29 @@ import React, { useState, useEffect, useCallback } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
 import { View, TouchableOpacity, StyleSheet, Text, BackHandler } from "react-native";
-  import { useNavigation, useFocusEffect } from '@react-navigation/native';
+  import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import HomeScreen from "../screens/HomeScreen";
-import BooksScreen from "../screens/BooksScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import SplashScreen from '../screens/SplashScreen';
+import LoginScreen from '../screens/LoginScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import PrivacyPolicy from '../screens/PrivacyPolicyScreen';
+import TermsOfUse from '../screens/TermsOfUseScreen';
+import AssignBookScreen from '../screens/AssignBookScreen';
+import SuccessScreen from '../screens/SuccessScreen';
+import BooksScreen from '../screens/BooksScreen';
+import ScanScreen from '../screens/ScanScreen';
+import QRCodeInputScreen from '../screens/QRCodeInputScreen';
+import HomeScreen from '../screens/HomeScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import MyProfileScreen from '../screens/MyProfileScreen';
+import EndSessionScreen from '../screens/EndSessionScreen';
+import StudentProfileScreen from "../screens/StudentProfileScreen";
+import SummaryScreen  from "../screens/SummaryScreen";
+import AssignSuccessScreen from "../screens/AssignSuccessScreen";
+import BookSummaryScreen from "../screens/BookSummaryScreen";
 import YourSvgImage from '../../assets/1.svg';
+import AssignedBooksScreen from "../screens/AssignedBooksScreen";
+import StudentsScreen from "../screens/StudentsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -24,20 +41,35 @@ const HomeStack = ({ token, referenceId, roleId, setHasStudents }) => (
     <Stack.Screen name="Home">
       {() => <HomeScreen token={token} referenceId={referenceId} roleId={roleId} setHasStudents={setHasStudents} />}
     </Stack.Screen>
+    {/* Add screens to Home stack */}
+    <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
+    <Stack.Screen name="Summary" component={SummaryScreen} />
+    <Stack.Screen name="AssignBook" component={AssignBookScreen} />
   </Stack.Navigator>
 );
 
-const BooksStack = ({ token }) => (
-  <Stack.Navigator screenOptions={defaultStackScreenOptions}>
-    <Stack.Screen name="Books">
-      {() => <BooksScreen token={token}  studentId={null}/>}
-    </Stack.Screen>
-  </Stack.Navigator>
-);
+const BooksStack = ({ token, navigation }) => {
+  const route = useRoute(); // Use this to access navigation parameters
+
+  return (
+    <Stack.Navigator screenOptions={defaultStackScreenOptions}>
+      <Stack.Screen name="Books">
+        {() => <BooksScreen token={token} studentId={route.params?.studentId} />}
+      </Stack.Screen>
+      {/* Add other screens to Books stack */}
+      <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
+      <Stack.Screen name="BookSummary" component={BookSummaryScreen} />
+      <Stack.Screen name="AssignBook" component={AssignBookScreen} />
+      <Stack.Screen name="Students" component={StudentsScreen} />
+      <Stack.Screen name="AssignedBooks" component={AssignedBooksScreen} />
+      <Stack.Screen name="AssignSuccess" component={AssignSuccessScreen} />
+    </Stack.Navigator>
+  );
+};
 
 const ProfileStack = ({ token, referenceId, roleId }) => (
   <Stack.Navigator screenOptions={defaultStackScreenOptions}>
-    <Stack.Screen name="Profile" options={{ headerShown: false }}>
+    <Stack.Screen name="Profile">
       {(props) => (
         <ProfileScreen
           {...props}
@@ -47,6 +79,9 @@ const ProfileStack = ({ token, referenceId, roleId }) => (
         />
       )}
     </Stack.Screen>
+    {/* Add screens to Profile stack */}
+    <Stack.Screen name="MyProfile" component={MyProfileScreen} />
+    <Stack.Screen name="EndSession" component={EndSessionScreen} />
   </Stack.Navigator>
 );
 
@@ -77,13 +112,19 @@ const CustomTabBar = ({ state, descriptors, navigation, hasStudents }) => {
 
         if (route.name === 'Home') {
           return (
+            <View>
             <TouchableOpacity
               key={index}
               onPress={onPress}
-              style={styles.homeButton}
+              //style={styles.homeButton}
             >
-              <YourSvgImage top={15} width={100} height={100} />
+              <YourSvgImage top={-20} width={100} height={100} />
+             
             </TouchableOpacity>
+             <Text style  = {{ position:'absolute', top:50, left:30}}>
+             {label}
+           </Text>
+           </View>
           );
         }
 
@@ -118,6 +159,7 @@ const CustomTabBar = ({ state, descriptors, navigation, hasStudents }) => {
 
 const BottomTabNavigator = ({ route }) => {
   const { token, referenceId, roleId } = route.params;
+  const studentId = null;
   const [hasStudents, setHasStudents] = useState(false);
   const [currentTab, setCurrentTab] = useState('Home');
   const navigation = useNavigation();
@@ -162,8 +204,9 @@ const BottomTabNavigator = ({ route }) => {
           tabPress: () => handleTabPress('Books'),
         }}
       >
-        {(props) => <BooksStack {...props} token={token} />}
+        {(props) => <BooksStack {...props} token={token} studentId={studentId} />}
       </Tab.Screen>
+      
       <Tab.Screen 
         name="Home"
         options={{ tabBarLabel: 'Home', unmountOnBlur: true }}
@@ -182,6 +225,7 @@ const BottomTabNavigator = ({ route }) => {
       >
         {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
+      
     </Tab.Navigator>
   );
 };

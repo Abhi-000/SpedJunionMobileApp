@@ -56,11 +56,11 @@ const AppNavigator = () => {
           options={{ headerShown: false }}
           initialParams={{ token: '', studentId: '', referenceId: '', roleId: '', hasStudents: false }}
         />
-         <Stack.Screen
+         {/* <Stack.Screen
           name="Books"
           component={BooksScreen}
           options={{ headerShown: false }}
-        />
+        /> */}
         <Stack.Screen
           name="Success"
           component={SuccessScreen}

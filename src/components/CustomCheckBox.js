@@ -7,9 +7,10 @@ const CustomCheckBox = ({
   checkBoxStyle,
   checkedStyle,
   checkMarkStyle,
+  disabled
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity disabled = {disabled} onPress={onPress} style={styles.container}>
       <View
         style={[
           styles.checkBox,

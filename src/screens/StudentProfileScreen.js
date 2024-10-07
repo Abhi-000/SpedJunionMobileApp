@@ -29,7 +29,13 @@ const StudentProfileScreen = () => {
   useEffect(() => {
     fetchStudents();
   }, [route.params?.studentId, route.params?.token]);
-
+  const S3_BUCKET_NAME = 'spedu-uploads';
+  const S3_REGION = 'ap-south-1';
+  
+  const getS3ImageUrl = (key) => {
+    console.log(`https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`);
+    return `https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`;
+  };
   const fetchStudents = async () => {
     try {
       setLoading(true);
@@ -178,7 +184,8 @@ const StudentProfileScreen = () => {
             <View style={styles.profileHeader}>
               <Image
                 style={styles.profileImage}
-                source={require("../../assets/sampleProfile.png")}
+                source={studentData.studentProfilePic
+                  ? { uri: getS3ImageUrl(studentData.studentProfilePic) } : require("../../assets/sampleProfile.png")}
               />
               <View style={styles.profileDetails}>
                 <Text style={styles.studentName}>{studentData.name}</Text>
@@ -209,8 +216,7 @@ const StudentProfileScreen = () => {
                 )}
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Books", { 
-                    token: token, 
-                    studentId : studentId 
+                    token: token,studentId: studentId 
                   })}
                   style={[
                     styles.button,

@@ -37,7 +37,7 @@ const UploadScreen = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [imagePreviewVisible, setImagePreviewVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  
   const [updatedUploadedChapters, setUpdatedUploadedChapters] =
     useState(uploadedChapters);
 
@@ -49,7 +49,7 @@ const UploadScreen = ({ route }) => {
       setCurrentChapter(selectedChapters[0]); // Set the first selected chapter as the current chapter
     }
   }, [selectedChapters]);
-
+  //console.log("selected chapter:"+selectedChapters[0].title,selectedChapters[0].chapter)
   const handleUpload = async (successScreen) => {
     try {
       const formData = new FormData();

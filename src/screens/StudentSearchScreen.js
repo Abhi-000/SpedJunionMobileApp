@@ -72,7 +72,13 @@ const StudentsSearchScreen = ({ route }) => {
       console.error("Error fetching filters:", error);
     }
   };
-
+  const S3_BUCKET_NAME = 'spedu-uploads';
+  const S3_REGION = 'ap-south-1';
+  
+  const getS3ImageUrl = (key) => {
+    console.log(`https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`);
+    return `https://${S3_BUCKET_NAME}.s3.${S3_REGION}.amazonaws.com/${key}`;
+  };
   const generateConditions = () => {
     const conditions = [];
     if (searchText) {
@@ -130,7 +136,8 @@ const StudentsSearchScreen = ({ route }) => {
     >
       <View style={styles.studentCard}>
         <Image
-          source={require("../../assets/sampleProfile.png")}
+          source={item.studentProfilePic
+            ? { uri: getS3ImageUrl(item.studentProfilePic) } : require("../../assets/sampleProfile.png")}
           style={styles.profilePic}
         />
         <View style={styles.studentInfo}>

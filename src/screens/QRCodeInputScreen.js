@@ -277,7 +277,7 @@ const QRCodeInputScreen = ({ route }) => {
         <View style={styles.topContainer}>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate("Scan", { token: route.params?.token })
+              navigation.navigate("Home", { token: route.params?.token })
             }
             style={styles.backButton}
           >
