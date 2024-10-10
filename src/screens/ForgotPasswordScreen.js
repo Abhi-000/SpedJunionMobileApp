@@ -51,7 +51,7 @@ const ForgotPasswordScreen = () => {
         <Text style={styles.headerText}>Enter your email address and we will send you a code</Text>
       </View>
       <View style={styles.formContainer}>
-        <Text style={styles.label}>Email / Phone Number</Text>
+        <Text style={styles.label}>Enter your registered email address here</Text>
         <TextInput
           style={styles.input}
           value={username}

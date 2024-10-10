@@ -10,7 +10,8 @@ import {
   Button,
   Image,
   ScrollView,
-  StatusBar
+  StatusBar,
+  ActivityIndicator
 } from "react-native";
 import {
   getJStudents,
@@ -27,6 +28,9 @@ import YourSvgImage from '../../assets/bell.svg';
 
 
 const Home = ({ token, referenceId, roleId, setHasStudents }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+
   console.log("reference: ", referenceId, roleId);
   const { setLoading } = useLoading();
 
@@ -158,9 +162,10 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
     fetchAndSetStudents();
   }, [selectedAge, selectedClass, filters]);
 
-  const fetchStudents = async () => {
+    const fetchStudents = async () => {
     try {
       setLoading(true);
+      setIsLoading(true);
       const response = await getJStudents(token);
       const studentsWithProfiles = await Promise.all(
         response.juniorStudentResponse.map(async (student) => {
@@ -173,14 +178,48 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
       );
       setStudents(studentsWithProfiles);
       setFilteredStudents(studentsWithProfiles);
-      setLoading(false);
+      setHasStudents(studentsWithProfiles.length > 0);
     } catch (error) {
       console.error("Error fetching students:", error);
+    } finally {
       setLoading(false);
+      setIsLoading(false);
+      setIsInitialized(true);
     }
   };
 
+  const renderContent = () => {
+    if (!isInitialized || isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          {/* <ActivityIndicator size="large" color="#6A53A2" /> */}
+          <Text style={styles.loadingText}>Loading students...</Text>
+        </View>
+      );
+    }
 
+    if (students.length === 0) {
+      return renderNoStudentsMessage();
+    }
+
+    if (isFiltering && filteredStudents.length === 0) {
+      return renderNoResultsMessage();
+    }
+
+    return (
+      <>
+        <Text style={styles.sectionTitle}>Students</Text>
+        <FlatList
+          data={filteredStudents}
+          renderItem={renderStudent}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.flatList}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        />
+      </>
+    );
+  };
 
 
   const fetchFilters = async () => {
@@ -523,10 +562,13 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
           {/* {renderCategory(require("../../assets/calendarCategory.png"), "Sessions", () => {})} }
         </View> */}
         {/* {students.length>0 ? (<Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>): <Text></Text>} */}
-        {students.length > 0 ? (
+        {/* {students.length > 0 ? (
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>Students</Text>
-        ) : null}
-        {students.length > 0 ? (
+         
+        ) : null
+        } */}
+         {renderContent()}
+        {/* {students.length > 0 ? (
           isFiltering && filteredStudents.length === 0 ? (
             renderNoResultsMessage()
           ) : (
@@ -541,7 +583,7 @@ const Home = ({ token, referenceId, roleId, setHasStudents }) => {
           )
         ) : (
           renderNoStudentsMessage()
-        )}
+        )} */}
       </View>
     </View>
       </View>
@@ -724,6 +766,22 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 15,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    fontSize: 20,
+    marginBottom: 10,
+  },
+
   studentInfo: {
     flex: 1,
   },

@@ -12,7 +12,7 @@ const DuplicateAssignment = ({modalVisible, setModalVisible}) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Duplicate data encountered</Text>
+          <Text style={styles.modalText}>Book is already assigned to this student</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.cancelButton}
