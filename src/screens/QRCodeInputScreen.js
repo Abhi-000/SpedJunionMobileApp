@@ -255,7 +255,7 @@ const QRCodeInputScreen = ({ route }) => {
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return <Text style = {{top:"50%",left:"12%", fontSize:20, justifyContent:'center',alignContent:'center'}}>Requesting for camera permission</Text>;
   }
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
@@ -501,7 +501,8 @@ const styles = StyleSheet.create({
   },
   bottomText:
   {
-    fontSize: 16,
+    fontWeight: 'bold',
+    fontSize: 18,
     textAlign:'center'
   },
   errorContainer: {
@@ -535,6 +536,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   backButton: {
+    top:15,
     position: "absolute",
     left: 15,
   },
@@ -543,6 +545,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   headerTitle: {
+    marginTop:20,
     fontSize: 20,
     fontWeight: "bold",
     color: "black",

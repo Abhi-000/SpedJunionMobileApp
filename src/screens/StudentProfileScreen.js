@@ -24,7 +24,7 @@ const StudentProfileScreen = () => {
   const insets = useSafeAreaInsets();
   const { studentId, token } = route.params;
   const hasAssignedBooks = bookDetails.length > 0;
-  console.log("Student id",studentId);
+  console.log("Student id",studentId, token);
 
   useEffect(() => {
     fetchStudents();

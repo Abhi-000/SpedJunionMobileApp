@@ -68,7 +68,7 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
         },
       ]}
     >
-      <View style={{ backgroundColor: "#6A53A2" }}>
+      <View >
         <LogoutModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
@@ -96,7 +96,7 @@ const ProfileScreen = ({ route, token: propToken, referenceId: propReferenceId, 
       <View style={styles.parentContainer}>
       <ImageBackground
         style = {styles.backgroundImage}
-        source={require("../../assets/wavyPattern.png")}
+        source={require("../../assets/Group 36.png")}
         >
         {(user && <View style={styles.profileContainer}>
           <Image
@@ -176,9 +176,13 @@ const styles = StyleSheet.create({
   },
   backgroundImage:
   {
-    flexGrow:1,
+    //flex:
+    //flexGrow:1,
+    marginTop:-25,
+    height:"100px",
     width:"100%",
-    resizeMode:'cover'
+    //height:"40%",
+    resizeMode:''
   },
   topContainer: {
     flexDirection: "row",
@@ -216,6 +220,8 @@ const styles = StyleSheet.create({
     textAlign: 'center', // Center the text within the Text component
   },
   parentContainer: {
+    marginTop:-30,
+    paddingTop:30,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     backgroundColor: '#6A53A2',
@@ -246,7 +252,7 @@ const styles = StyleSheet.create({
   },
   menu: {
     paddingBottom:"100%",
-    marginTop:20,
+    marginTop:10,
     width: '100%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,

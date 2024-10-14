@@ -51,12 +51,12 @@ const ForgotPasswordScreen = () => {
         <Text style={styles.headerText}>Enter your email address and we will send you a code</Text>
       </View>
       <View style={styles.formContainer}>
-        <Text style={styles.label}>Enter your registered email address here</Text>
+        {/* <Text style={styles.label}>Enter your registered email address here</Text> */}
         <TextInput
           style={styles.input}
           value={username}
           onChangeText={setUsername}
-          placeholder="Email / Phone Number"
+          placeholder="Enter your registered email address"
           keyboardType="email-address"
         />
         <TouchableOpacity style={styles.button} onPress={handleGetPassword}>

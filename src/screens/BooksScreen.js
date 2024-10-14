@@ -17,6 +17,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLoading } from "../navigation/AppWrapper";
 import Loader from "../components/Loader"; // Adjust the path based on your file structure
+import { CommonActions } from '@react-navigation/native';
 
 const BooksScreen = ({ token, studentId }) => {
   const [books, setBooks] = useState([]);
@@ -73,7 +74,29 @@ const BooksScreen = ({ token, studentId }) => {
       });
     }
   };
-
+  const handleBookNavigation = (navigation, studentId) => {
+    //if (navigation.canGoBack()) {
+      if (studentId) {
+        console.log("token before routing:",token);
+        // If studentId exists, try to go back to the StudentProfile screen
+        navigation.navigate('StudentProfile', { 
+          studentId:studentId, 
+          token: token || route.params?.token});
+      } else {
+        // If no studentId, go back to the Home screen
+        navigation.navigate('Home');
+      }
+    // } else {
+    //   // Fallback action: reset to the appropriate initial route
+    //   navigation.dispatch(
+    //     CommonActions.reset({
+    //       index: 0,
+    //       routes: [{ name: studentId ? 'StudentProfile' : 'Home', params: studentId ? { studentId } : undefined }],
+    //     })
+    //   );
+    // }
+  };
+  
   const fetchBooks = async (currentToken) => {
     try {
       console.log("fetching", studentId, currentToken);
@@ -123,7 +146,6 @@ const BooksScreen = ({ token, studentId }) => {
     return result;
   };
   
-  
   const renderBook = ({ item }) => {
     const isRecommended = recommendedBooks.some(book => book.bookId === item.bookId);
 
@@ -140,9 +162,9 @@ const BooksScreen = ({ token, studentId }) => {
         />
         <View style={styles.cardContent}>
           <Text style={styles.bookTitle}>{item.name}</Text>
-          <Text style={styles.bookDetails}>
+          {/* <Text style={styles.bookDetails}>
             For children from ages {item.ageGroup} years.
-          </Text>
+          </Text> */}
           <Text style={styles.difficultyText}>
             Difficulty: {item.difficulty.charAt(0) + item.difficulty.slice(1).toLowerCase()}
           </Text>
@@ -180,10 +202,10 @@ const BooksScreen = ({ token, studentId }) => {
       {/* <Loader loading={loading} /> */}
       <View style={styles.container}>
         <View style={styles.topContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Home")}
-            style={styles.backButton}
-          >
+        <TouchableOpacity
+      onPress={() => handleBookNavigation(navigation, studentId)}
+      style={styles.backButton}
+    >
             <Image
               style={styles.backButtonImage}
               source={require("../../assets/backButton.png")}
@@ -292,10 +314,11 @@ const styles = StyleSheet.create({
   
 
   headerTitle: {
+    marginTop:10,
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
-    padding: 20,
+    //padding: 20,
   },
   topContainer: {
     flexDirection: "row",
@@ -314,11 +337,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "black",
-  },
+  
   assignedButton: {
     backgroundColor: "#00bfa5",
     paddingVertical: 5,
@@ -360,15 +379,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   listContainer: {
-    paddingHorizontal: 20,
+    
+    paddingHorizontal: 10,
   },
   listHeader: {
     height: 20, // Adjust the height to add appropriate space
   },
   card: {
     flexDirection: "row",
-    padding: 10,
-    marginBottom: 5,
+    padding: 0,
+    //marginBottom: 5,
     marginHorizontal: 20,
     alignContent: "center",
     backgroundColor: "white",
@@ -384,13 +404,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   bookImage: {
-    width: 60,
-    height: 60,
+    width: 100,
+    height: 120,
     borderRadius: 5,
     marginRight: 10,
   },
   cardContent: {
     flex: 1,
+    gap:5,
     justifyContent: "center",
   },
   bookTitle: {

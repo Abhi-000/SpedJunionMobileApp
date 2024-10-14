@@ -64,7 +64,7 @@ const UploadScreen = ({ route }) => {
       formData.append("ChapterId", selectedChapters); // Ensure ChapterId is correctly formatted
       formData.append("BookId", bookDetails.bookId);
       formData.append("SessionNumber", sessionId);
-      
+      console.log(formData);
       const response = await uploadAssignments(token, formData);
       console.log(response.data);
       console.log("HELLO",successScreen, response.data.data, response.data);

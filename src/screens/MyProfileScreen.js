@@ -39,74 +39,82 @@ const MyProfileScreen = () => {
   }, [referenceId, roleId]);
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
-        },
-      ]}
-    >
-      <View style={styles.topContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Profile', { token })}
-          style={styles.backButton}
-        >
+    <View
+    style={[
+      styles.container,
+      {
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+      },
+    ]}
+  >
+      
+        <View style={styles.topContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile', { token })}
+            style={styles.backButton}
+          >
+            <Image
+              style={styles.backButtonText}
+              source={require('../../assets/backButton.png')}
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>My Profile</Text>
+        </View>
+        <View style={styles.profileContainer}>
           <Image
-            style={styles.backButtonText}
-            source={require('../../assets/backButton.png')}
+            style={styles.profileImage}
+            source={require('../../assets/sampleProfile.png')}
           />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Profile</Text>
-        {/* <Image
-          source={require("../../assets/notificationIcon.png")}
-          style={styles.topLogo}
-        /> */}
-      </View>
-      <View style={styles.profileContainer}>
-        <Image
-          style={styles.profileImage}
-          source={require('../../assets/sampleProfile.png')}
-        />
-        <Text style={styles.userName}>{user.name}</Text>
-        <Text style={styles.userEmail}>{user.email}</Text>
-        <Text style={styles.userSchoolName}>{user.schoolName}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Full Name</Text>
-        <Text style={styles.infoText}>{user.name}</Text>
-        <Text style={styles.label}>Email</Text>
-        <Text style={styles.infoText}>{user.email}</Text>
-        <Text style={styles.label}>Phone Number</Text>
-        <Text style={styles.infoText}>{user.phoneNumber}</Text>
-        <Text style={styles.label}>Gender</Text>
-        <Text style={styles.infoText}>{user.gender}</Text>
-        <Text style={styles.label}>School Name</Text>
-        <Text style={styles.infoText}>{user.schoolName}</Text>
-      </View>
-    </ScrollView>
+          <Text style={styles.userName}>{user.name}</Text>
+          <Text style={styles.userEmail}>{user.email}</Text>
+          <Text style={styles.userSchoolName}>{user.schoolName}</Text>
+        </View>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.infoContainer}>
+        
+          <Text style={styles.label}>Full Name</Text>
+          <Text style={styles.infoText}>{user.name}</Text>
+          <Text style={styles.label}>Email</Text>
+          <Text style={styles.infoText}>{user.email}</Text>
+          <Text style={styles.label}>Phone Number</Text>
+          <Text style={styles.infoText}>{user.phoneNumber}</Text>
+          {/* <Text style={styles.label}>Gender</Text>
+          <Text style={styles.infoText}>{user.gender}</Text> */}
+          <Text style={styles.label}>School Name</Text>
+          <Text style={styles.infoText}>{user.schoolName}</Text>
+         
+
+        </View>
+        </ScrollView>
+    </View>
   );
 };
+  
+  
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: '#f8f8f8',
   },
+  scrollViewContent: {
+    flexGrow: 7,
+  },
   topContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center', // Center content horizontally
+    justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
-    paddingTop:30,
+    paddingTop: 30,
     backgroundColor: '#f7f7f7',
-    position: 'relative', // Ensure the container is a positioned element for absolute children
+    position: 'relative',
   },
+
   backButton: {
     position: 'absolute', // Position the back button absolutely
     left: 20, // Align it to the left
@@ -157,6 +165,7 @@ const styles = StyleSheet.create({
     fontWeight: 'light',
   },
   infoContainer: {
+    flex:1,
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 20,
@@ -177,6 +186,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginBottom: 15,
     paddingVertical: 17,
+    backgroundColor:'lightgray',
     color: '#333',
   },
 });

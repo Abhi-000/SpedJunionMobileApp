@@ -169,24 +169,22 @@ const BottomTabNavigator = ({ route }) => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        if (currentTab === 'Home') {
-          // Quit the app when back is pressed on the Home screen
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+          return true;
+        } else if (currentTab === 'Home') {
+          // Quit the app when back is pressed on the Home screen and can't go back
           BackHandler.exitApp();
           return true;
-        } else if (currentTab === 'Books') {
-          // Navigate to Home when back is pressed on the Books screen
-          navigation.navigate('Home');
-          setCurrentTab('Home');
-          return true;
         }
-        // Let the default back action happen for other screens
+        // Let the default back action happen for other cases
         return false;
       };
-
+  
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
+  
       return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    }, [currentTab, navigation])
+    }, [navigation, currentTab])
   );
 
   return (

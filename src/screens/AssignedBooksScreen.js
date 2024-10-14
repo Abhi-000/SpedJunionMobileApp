@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     paddingBottom: 30,
+ 
     backgroundColor: "#f7f7f7",
   },
   backButton: {
@@ -184,6 +185,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
+    marginTop:20,
     fontWeight: "bold",
     color: "black",
   },
@@ -223,14 +225,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   listContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal:10,
+    paddingBottom:70,
   },
   listHeader: {
-    height: 20, // Adjust the height to add appropriate space
+    height: 20,
+     // Adjust the height to add appropriate space
   },
   card: {
     flexDirection: "row",
-    padding: 10,
+    padding: 2,
     marginBottom: 5,
     marginHorizontal: 20,
     alignContent: "center",
@@ -246,7 +250,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     position: "relative", // Add position relative to position the level box
-    paddingTop: 40, // Add padding to create space for the level box
+    //paddingTop: 40, // Add padding to create space for the level box
   },
   levelBox: {
     position: "absolute",
@@ -264,14 +268,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   bookImage: {
-    width: 60,
-    height: 60,
+    width: 100,
+    height: 120,
     borderRadius: 5,
     marginRight: 10,
-    marginTop: 10,
+    //marginTop: 10,
   },
   cardContent: {
     flex: 1,
+    
     justifyContent: "center",
     paddingLeft: 10,
     paddingTop: 10,
@@ -284,7 +289,7 @@ const styles = StyleSheet.create({
   bookDetails: {
     fontSize: 14,
     color: "#555",
-    marginBottom: 2, // Reduced margin to remove extra space
+    marginBottom: 10, // Reduced margin to remove extra space
   },
   studentsButton: {
     backgroundColor: "#E7F1ED",
