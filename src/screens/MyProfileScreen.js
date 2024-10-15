@@ -2,19 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { getUserDetails } from '../services/api';
 
 const MyProfileScreen = () => {
   const route = useRoute();
-  console.log(route.params);
   const { token, referenceId, roleId } = route.params;
   const [user, setUser] = useState({
     name: '',
     email: '',
     phoneNumber: '',
     gender: '',
-    schoolName : ''
+    schoolName: ''
   });
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -39,30 +37,26 @@ const MyProfileScreen = () => {
   }, [referenceId, roleId]);
 
   return (
-    <View
-    style={[
-      styles.container,
-      {
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
-      },
-    ]}
-  >
+    <View style={[styles.container, {
+      paddingTop: insets.top,
+      paddingBottom: insets.bottom,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+    }]}>
+      <View style={styles.topContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Profile', { token })}
+          style={styles.backButton}
+        >
+          <Image
+            style={styles.backButtonText}
+            source={require('../../assets/backButton.png')}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>My Profile</Text>
+      </View>
       
-        <View style={styles.topContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Profile', { token })}
-            style={styles.backButton}
-          >
-            <Image
-              style={styles.backButtonText}
-              source={require('../../assets/backButton.png')}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>My Profile</Text>
-        </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.profileContainer}>
           <Image
             style={styles.profileImage}
@@ -72,36 +66,29 @@ const MyProfileScreen = () => {
           <Text style={styles.userEmail}>{user.email}</Text>
           <Text style={styles.userSchoolName}>{user.schoolName}</Text>
         </View>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.infoContainer}>
         
+        <View style={styles.infoContainer}>
           <Text style={styles.label}>Full Name</Text>
           <Text style={styles.infoText}>{user.name}</Text>
           <Text style={styles.label}>Email</Text>
           <Text style={styles.infoText}>{user.email}</Text>
           <Text style={styles.label}>Phone Number</Text>
           <Text style={styles.infoText}>{user.phoneNumber}</Text>
-          {/* <Text style={styles.label}>Gender</Text>
-          <Text style={styles.infoText}>{user.gender}</Text> */}
           <Text style={styles.label}>School Name</Text>
           <Text style={styles.infoText}>{user.schoolName}</Text>
-         
-
         </View>
-        </ScrollView>
+      </ScrollView>
     </View>
   );
 };
-  
-  
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: '#f8f8f8',
   },
   scrollViewContent: {
-    flexGrow: 7,
+    flexGrow: 1,
   },
   topContainer: {
     flexDirection: 'row',
@@ -114,10 +101,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f7f7f7',
     position: 'relative',
   },
-
   backButton: {
-    position: 'absolute', // Position the back button absolutely
-    left: 20, // Align it to the left
+    position: 'absolute',
+    left: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -129,13 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
-    textAlign: 'center', // Center the text within the Text component
-  },
-  topLogo: {
-    width: 60,
-    height: 60,
-    position: 'absolute', // Position the logo absolutely
-    right: 20, // Align it to the right
+    textAlign: 'center',
   },
   profileContainer: {
     alignItems: 'center',
@@ -165,12 +145,13 @@ const styles = StyleSheet.create({
     fontWeight: 'light',
   },
   infoContainer: {
-    flex:1,
+    flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    paddingBottom:30,
   },
   label: {
     fontSize: 16,
@@ -186,10 +167,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginBottom: 15,
     paddingVertical: 17,
-    backgroundColor:'lightgray',
+    backgroundColor: 'lightgray',
     color: '#333',
   },
 });
-
 
 export default MyProfileScreen;

@@ -148,52 +148,56 @@ const StudentsScreen = () => {
       ]}
     >
       <Loader loading={loading} />
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Image
-              style={styles.backButtonText}
-              source={require("../../assets/backButton.png")}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Summary</Text>
-        </View>
-        {bookData && (
-          <View style={styles.bookInfoContainer}>
-            <View style={styles.bookContainer}>
-              <Image
-                style={{ width: 50, height: 50 }}
-                source={require("../../assets/booksCategory.png")}
-              />
-              <View style={styles.bookDetails}>
-                <Text style={styles.bookDifficulty}>{bookData.difficulty}</Text>
-                <Text style={styles.bookName}>{bookData.bookName}</Text>
-              </View>
-            </View>
-            <View style={styles.tabContainer}>
-          <TouchableOpacity onPress={() => setActiveTab('students')}>
-            <Text style={activeTab === 'students' ? styles.tabTextActive : styles.tabTextInactive}>
-              Students
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setActiveTab('chapters')}>
-            <Text style={activeTab === 'chapters' ? styles.tabTextActive : styles.tabTextInactive}>
-              Chapters
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView style={styles.scrollView}>
-          {activeTab === 'students' ? 
-            students.map((student) => renderStudentCard(student)) :
-            chapters.map((chapter) => renderChapterCard(chapter))
-          }
-        </ScrollView>
-          </View>
-        )}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Image
+            style={styles.backButtonText}
+            source={require("../../assets/backButton.png")}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Summary</Text>
       </View>
+      {bookData && (
+        <View style={styles.bookInfoContainer}>
+          <View style={styles.bookContainer}>
+            <Image
+              style={{ width: 50, height: 50 }}
+              source={require("../../assets/booksCategory.png")}
+            />
+            <View style={styles.bookDetails}>
+              <Text style={styles.bookDifficulty}>{bookData.difficulty}</Text>
+              <Text style={styles.bookName}>{bookData.bookName}</Text>
+            </View>
+          </View>
+          <View style={styles.tabContainer}>
+            <TouchableOpacity onPress={() => setActiveTab('students')}>
+              <Text style={activeTab === 'students' ? styles.tabTextActive : styles.tabTextInactive}>
+                Students
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setActiveTab('chapters')}>
+              <Text style={activeTab === 'chapters' ? styles.tabTextActive : styles.tabTextInactive}>
+                Chapters
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.scrollView}>
+            {activeTab === 'students' ? (
+              <View style={styles.studentsContainer}>
+                {students.map((student) => renderStudentCard(student))}
+                
+              </View>
+            ) : (
+              <View style={styles.chaptersContainer}>
+                {chapters.map((chapter) => renderChapterCard(chapter))}
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      )}
     </View>
   );
 };
@@ -285,8 +289,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
+  },
+  studentsContainer: {
     padding: 20,
   },
+  chaptersContainer: {
+    padding: 20,
+  },
+
+
   studentCard: {
     flexDirection: "row",
     alignItems: "center",

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { BackHandler } from 'react-native';
+
 import {
   View,
   Text,
@@ -74,29 +76,27 @@ const BooksScreen = ({ token, studentId }) => {
       });
     }
   };
-  const handleBookNavigation = (navigation, studentId) => {
-    //if (navigation.canGoBack()) {
-      if (studentId) {
-        console.log("token before routing:",token);
-        // If studentId exists, try to go back to the StudentProfile screen
-        navigation.navigate('StudentProfile', { 
-          studentId:studentId, 
-          token: token || route.params?.token});
-      } else {
-        // If no studentId, go back to the Home screen
-        navigation.navigate('Home');
-      }
-    // } else {
-    //   // Fallback action: reset to the appropriate initial route
-    //   navigation.dispatch(
-    //     CommonActions.reset({
-    //       index: 0,
-    //       routes: [{ name: studentId ? 'StudentProfile' : 'Home', params: studentId ? { studentId } : undefined }],
-    //     })
-    //   );
-    // }
+  const handleBookNavigation = () => {
+    if (studentId) {
+      console.log("token before routing:", token);
+      // If studentId exists, navigate to the StudentProfile screen
+      navigation.navigate('StudentProfile', { 
+        studentId: studentId, 
+        token: token || route.params?.token
+      });
+    } else {
+      // If no studentId, go back to the Home screen
+      navigation.navigate('Home');
+    }
+    return true; // Prevents default back action
   };
-  
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBookNavigation);
+
+    return () => backHandler.remove();
+  }, [navigation, studentId, token, route.params]);
+
   const fetchBooks = async (currentToken) => {
     try {
       console.log("fetching", studentId, currentToken);
@@ -314,7 +314,8 @@ const styles = StyleSheet.create({
   
 
   headerTitle: {
-    marginTop:10,
+    left:10,
+    //marginTop:10,
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
