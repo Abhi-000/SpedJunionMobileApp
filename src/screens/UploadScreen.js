@@ -45,30 +45,36 @@ const UploadScreen = ({ route }) => {
   const allChaptersUploaded = chapterDetails.length-1 <= updatedUploadedChapters.length;
 
   useEffect(() => {
+    console.log("hello");
     if (selectedChapters.length > 0) {
       setCurrentChapter(selectedChapters[0]); // Set the first selected chapter as the current chapter
     }
   }, [selectedChapters]);
   //console.log("selected chapter:"+selectedChapters[0].title,selectedChapters[0].chapter)
   const handleUpload = async (successScreen) => {
+    console.log("submit pressed");
     try {
       const formData = new FormData();
-      selectedFiles.forEach((file, index) => {
+      
+      // Ensure we're sending the file with the correct field name and format
+      if (selectedFiles.length > 0) {
+        const file = selectedFiles[0];
         formData.append("UploadUrl", {
           uri: file.uri,
-          name: file.name,
-          type: "image/jpeg",
+          type: "image/jpeg", // Make sure this matches your file type
+          name: file.uri.split('/').pop() || 'image.jpg', // Extract filename from URI or use default
         });
-      });
+      }
+
       formData.append("StudentId", studentId);
       formData.append("ChapterId", selectedChapters); // Ensure ChapterId is correctly formatted
       formData.append("BookId", bookDetails.bookId);
       formData.append("SessionNumber", sessionId);
-      console.log(formData);
+      console.log("form data:",formData);
       const response = await uploadAssignments(token, formData);
-      console.log(response.data);
+      console.log("response:",response.data);
       console.log("HELLO",successScreen, response.data.data, response.data);
-      if (response.data.success && successScreen) {
+      if ((response.data.success && successScreen) ||response.data.message == "Re-upload the assignment.") {
         setUpdatedUploadedChapters((prev) => [...prev, currentChapter]);
         setCurrentChapter(null); // Reset current chapter after upload
         navigation.navigate("Success", {
@@ -83,7 +89,8 @@ const UploadScreen = ({ route }) => {
         //   token,
         //   studentId,
         // });
-      } else if(successScreen || !response.data.success){
+      } 
+      else if(successScreen || !response.data.success){
         setModalVisible(true);
         //Alert.alert("Error", "Failed to upload assignments.");
       }
@@ -150,6 +157,7 @@ const UploadScreen = ({ route }) => {
     });
   };
   const handleImagePreview = (imageUri) => {
+    console.log("hey");
     setSelectedImage(imageUri);
     setImagePreviewVisible(true);
   };

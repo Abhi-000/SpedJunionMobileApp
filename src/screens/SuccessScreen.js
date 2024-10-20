@@ -8,6 +8,12 @@ const SuccessScreen = () => {
   const { title, message, buttonText, nextScreen, nextScreenParams } = route.params;
 
   const handleNavigation = () => {
+    console.log("next screen: " + nextScreen);
+    // First pop back to remove the Success screen from the stack
+    navigation.goBack();
+    // Then pop back again to remove the AssignBook screen
+    navigation.goBack();
+    // Finally, ensure we're on the Books screen with the correct params
     navigation.navigate(nextScreen, nextScreenParams);
   };
 
@@ -20,15 +26,14 @@ const SuccessScreen = () => {
       </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleNavigation}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleNavigation}>
         <Text style={styles.buttonText}>{buttonText}</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {

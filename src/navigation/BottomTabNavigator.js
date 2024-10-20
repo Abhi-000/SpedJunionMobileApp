@@ -36,17 +36,98 @@ const defaultStackScreenOptions = {
   ...TransitionPresets.DefaultTransition,
 };
 
-const HomeStack = ({ token, referenceId, roleId, setHasStudents }) => (
-  <Stack.Navigator screenOptions={defaultStackScreenOptions}>
-    <Stack.Screen name="Home">
-      {() => <HomeScreen token={token} referenceId={referenceId} roleId={roleId} setHasStudents={setHasStudents} />}
-    </Stack.Screen>
-    {/* Add screens to Home stack */}
-    <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
-    <Stack.Screen name="Summary" component={SummaryScreen} />
-    <Stack.Screen name="AssignBook" component={AssignBookScreen} />
-  </Stack.Navigator>
-);
+const HomeStack = ({ token, referenceId, roleId, setHasStudents }) => {
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Get the navigation state
+        const navState = navigation.getState();
+        
+        // Check if we're in the HomeStack and on the first screen
+        const isInHomeTab = navState.routes[navState.index].name === 'Home';
+        let isFirstScreenInStack;
+        if(navState.routes[navState.index].state){
+         isFirstScreenInStack = navState.routes[navState.index].state.index==0;
+        }
+        else 
+        {
+           isFirstScreenInStack = navState.routes[navState.index].state ==null
+        }
+        const parentNav = navigation.getParent();
+          const parentState = parentNav?.getState();
+          console.log("parent nav:",parentNav);
+          console.log("parent state:",parentState.routes.state);
+          console.log("nav state:",navState.routes[navState.index].state)
+        console.log(isInHomeTab, isFirstScreenInStack);
+        // If we're in the Home tab and on the first screen (main Home screen)
+        if (isInHomeTab && isFirstScreenInStack) {
+          // Check if we're in HomeTabs
+          // const parentNav = navigation.getParent();
+          // const parentState = parentNav?.getState();
+          // console.log("parent nav:",parentNav);
+          // console.log("parent state:",parentState);
+          BackHandler.exitApp();
+                return true;
+          // If we're in HomeTabs and on the Home tab
+    
+          // if (parentState?.routes[parentState.index].name === 'HomeTabs') {
+           
+          // }
+        }
+        
+        // // For other screens, go back normally
+        // if (navigation.canGoBack()) {
+        //   navigation.goBack();
+        //   return true;
+        // }
+        
+        return false;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
+
+
+  return (
+    <Stack.Navigator screenOptions={defaultStackScreenOptions}>
+      <Stack.Screen 
+        name="Home"
+        options={{ headerShown: false }}
+      >
+        {() => (
+          <HomeScreen 
+            token={token} 
+            referenceId={referenceId} 
+            roleId={roleId} 
+            setHasStudents={setHasStudents} 
+          />
+        )}
+      </Stack.Screen>
+      <Stack.Screen 
+        name="StudentProfile" 
+        component={StudentProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="Summary" 
+        component={SummaryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="AssignBook" 
+        component={AssignBookScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+
 
 const BooksStack = ({ token, navigation }) => {
   const route = useRoute(); // Use this to access navigation parameters
@@ -166,26 +247,8 @@ const BottomTabNavigator = ({ route }) => {
   const handleTabPress = (tabName) => {
     setCurrentTab(tabName);
   };
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (navigation.canGoBack()) {
-          navigation.goBack();
-          return true;
-        } else if (currentTab === 'Home') {
-          // Quit the app when back is pressed on the Home screen and can't go back
-          BackHandler.exitApp();
-          return true;
-        }
-        // Let the default back action happen for other cases
-        return false;
-      };
   
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-  
-      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    }, [navigation, currentTab])
-  );
+
 
   return (
     <Tab.Navigator
@@ -212,8 +275,17 @@ const BottomTabNavigator = ({ route }) => {
           tabPress: () => handleTabPress('Home'),
         }}
       >
-        {(props) => <HomeStack {...props} token={token} referenceId={referenceId} roleId={roleId} setHasStudents={setHasStudents} />}
+        {(props) => (
+          <HomeStack 
+            {...props} 
+            token={token} 
+            referenceId={referenceId} 
+            roleId={roleId} 
+            setHasStudents={setHasStudents} 
+          />
+        )}
       </Tab.Screen>
+
       <Tab.Screen 
         name="Profile"
         options={{ tabBarLabel: 'Profile', unmountOnBlur: true }}
@@ -223,7 +295,6 @@ const BottomTabNavigator = ({ route }) => {
       >
         {() => <ProfileStack token={token} referenceId={referenceId} roleId={roleId} />}
       </Tab.Screen>
-      
     </Tab.Navigator>
   );
 };

@@ -373,6 +373,7 @@ const styles = StyleSheet.create({
   },
   bookListContainer: {
     flex: 1,
+    marginBottom:50
   },
   bookCard: {
     backgroundColor: "#fff",

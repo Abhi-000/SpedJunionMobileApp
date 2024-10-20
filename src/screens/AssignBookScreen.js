@@ -62,6 +62,8 @@ const AssignBookScreen = () => {
       console.log(newlySelectedStudents);
       const response = await assignBook(bookId, newlySelectedStudents, token);
       console.log("res:", response.data);
+      
+      // Navigate to Success screen with the correct params
       navigation.navigate("Success", {
         title: "Successfully Assigned",
         message: "Successfully Assigned To Students",
@@ -73,6 +75,8 @@ const AssignBookScreen = () => {
       console.error("Error assigning book:", error);
     }
   };
+  
+
 
   const filteredStudents = students.filter((student) =>
     student.firstName.toLowerCase().includes(searchTerm.toLowerCase())
