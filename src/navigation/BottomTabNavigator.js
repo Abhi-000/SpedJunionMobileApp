@@ -25,6 +25,7 @@ import BookSummaryScreen from "../screens/BookSummaryScreen";
 import YourSvgImage from '../../assets/1.svg';
 import AssignedBooksScreen from "../screens/AssignedBooksScreen";
 import StudentsScreen from "../screens/StudentsScreen";
+import ExitConfirmationModal from '../components/ExitConfirmationModal';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -38,51 +39,30 @@ const defaultStackScreenOptions = {
 
 const HomeStack = ({ token, referenceId, roleId, setHasStudents }) => {
   const navigation = useNavigation();
-  const route = useRoute();
+  const [exitModalVisible, setExitModalVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        // Get the navigation state
+        console.log("back pressed");
         const navState = navigation.getState();
-        
-        // Check if we're in the HomeStack and on the first screen
         const isInHomeTab = navState.routes[navState.index].name === 'Home';
         let isFirstScreenInStack;
         if(navState.routes[navState.index].state){
-         isFirstScreenInStack = navState.routes[navState.index].state.index==0;
+          isFirstScreenInStack = navState.routes[navState.index].state.index === 0;
+        } else {
+          isFirstScreenInStack = navState.routes[navState.index].state == null;
         }
-        else 
-        {
-           isFirstScreenInStack = navState.routes[navState.index].state ==null
-        }
-        const parentNav = navigation.getParent();
-          const parentState = parentNav?.getState();
-          console.log("parent nav:",parentNav);
-          console.log("parent state:",parentState.routes.state);
-          console.log("nav state:",navState.routes[navState.index].state)
-        console.log(isInHomeTab, isFirstScreenInStack);
-        // If we're in the Home tab and on the first screen (main Home screen)
+
         if (isInHomeTab && isFirstScreenInStack) {
-          // Check if we're in HomeTabs
-          // const parentNav = navigation.getParent();
-          // const parentState = parentNav?.getState();
-          // console.log("parent nav:",parentNav);
-          // console.log("parent state:",parentState);
-          BackHandler.exitApp();
-                return true;
-          // If we're in HomeTabs and on the Home tab
-    
-          // if (parentState?.routes[parentState.index].name === 'HomeTabs') {
-           
-          // }
+          setExitModalVisible(true);
+          return true;
         }
-        
-        // // For other screens, go back normally
-        // if (navigation.canGoBack()) {
-        //   navigation.goBack();
-        //   return true;
-        // }
+        else{
+          console.log("else");
+          navigation.goBack();
+          return false;
+        }
         
         return false;
       };
@@ -92,46 +72,85 @@ const HomeStack = ({ token, referenceId, roleId, setHasStudents }) => {
     }, [navigation])
   );
 
+  const handleExitConfirm = () => {
+    setExitModalVisible(false);
+    BackHandler.exitApp();
+  };
 
   return (
-    <Stack.Navigator screenOptions={defaultStackScreenOptions}>
-      <Stack.Screen 
-        name="Home"
-        options={{ headerShown: false }}
-      >
-        {() => (
-          <HomeScreen 
-            token={token} 
-            referenceId={referenceId} 
-            roleId={roleId} 
-            setHasStudents={setHasStudents} 
-          />
-        )}
-      </Stack.Screen>
-      <Stack.Screen 
-        name="StudentProfile" 
-        component={StudentProfileScreen}
-        options={{ headerShown: false }}
+    <>
+      <Stack.Navigator screenOptions={defaultStackScreenOptions}>
+        <Stack.Screen 
+          name="Home"
+          options={{ headerShown: false }}
+        >
+          {() => (
+            <HomeScreen 
+              token={token} 
+              referenceId={referenceId} 
+              roleId={roleId} 
+              setHasStudents={setHasStudents} 
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen 
+          name="StudentProfile" 
+          component={StudentProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Summary" 
+          component={SummaryScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="AssignBook" 
+          component={AssignBookScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+
+      <ExitConfirmationModal
+        modalVisible={exitModalVisible}
+        setModalVisible={setExitModalVisible}
+        onConfirm={handleExitConfirm}
       />
-      <Stack.Screen 
-        name="Summary" 
-        component={SummaryScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen 
-        name="AssignBook" 
-        component={AssignBookScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
+    </>
   );
 };
 
-
-
 const BooksStack = ({ token, navigation }) => {
-  const route = useRoute(); // Use this to access navigation parameters
+  const route = useRoute();
+  
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        console.log("back pressed");
+        const navState = navigation.getState();
+        const isInHomeTab = navState.routes[navState.index].name === 'Books';
+        let isFirstScreenInStack;
+        if(navState.routes[navState.index].state){
+          isFirstScreenInStack = navState.routes[navState.index].state.index === 0;
+        } else {
+          isFirstScreenInStack = navState.routes[navState.index].state == null;
+        }
+        console.log("is in books:"+ isInHomeTab + "," + isFirstScreenInStack);
+        if (isInHomeTab && isFirstScreenInStack) {
+          navigation.navigate("Home");
+          return true;
+        }
+        else{
+          console.log("else");
+          navigation.goBack();
+          return true;
+        }
+      };
 
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
   return (
     <Stack.Navigator screenOptions={defaultStackScreenOptions}>
       <Stack.Screen name="Books">

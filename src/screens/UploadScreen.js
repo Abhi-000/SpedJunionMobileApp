@@ -81,7 +81,7 @@ const UploadScreen = ({ route }) => {
           title: "Successfully Submitted",
           message: "Assignment submitted sucesfully",
           buttonText: "Continue",
-          nextScreen: "Scan",
+          nextScreen: "Home",
           nextScreenParams: { token },
         });
         // Navigate to ScanScreen on successful upload

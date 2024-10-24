@@ -19,6 +19,7 @@ import { login } from "../services/api.js";
 import IncorrectPasswordModal from "./IncorrectPasswordModal.js";
 import YourSvgImage from '../../assets/2.svg';
 import { Checkbox } from 'react-native-paper';
+import NetInfo from "@react-native-community/netinfo";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,27 +36,32 @@ const Login = () => {
 
   const checkLoginStatus = async () => {
     try {
+      // First check internet connection
+      const networkState = await NetInfo.fetch();
+      if (!networkState.isConnected) {
+        console.log("No internet connection during auto-login check");
+        return; // Don't proceed with auto-login if there's no internet
+      }
+  
       const storedCredentials = await AsyncStorage.getItem('userCredentials');
       console.log(storedCredentials);
       if (storedCredentials) {
-        const { email, password, token, referenceId,roleId, lastLoginTime } = JSON.parse(storedCredentials);
+        const { email, password, token, referenceId, roleId, lastLoginTime } = JSON.parse(storedCredentials);
         const currentTime = new Date().getTime();
         const timeDifference = currentTime - lastLoginTime;
         const hoursPassed = timeDifference / (1000 * 60 * 60);
-
+  
         if (hoursPassed >= 24) {
-          // If 24 hours have passed, attempt to refresh the token
           await handleLogin(email, password, true);
         } else {
-
-          // If less than 24 hours have passed, navigate to the home screen
-          navigation.replace('HomeTabs',{ token, referenceId, roleId });
+          navigation.replace('HomeTabs', { token, referenceId, roleId });
         }
       }
     } catch (error) {
       console.error('Error checking login status:', error);
     }
   };
+  
 
   const storeCredentials = async (email, password, token, referenceId, roleId) => {
     try {

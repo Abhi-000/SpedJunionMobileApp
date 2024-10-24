@@ -16,8 +16,11 @@ const AppWrapper = ({ children }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    let isNavigating = false; // Flag to prevent multiple navigations
+
     const unsubscribe = NetInfo.addEventListener(state => {
-      if (!state.isConnected) {
+      if (!state.isConnected && !isNavigating) {
+        isNavigating = true; // Set flag before navigation
         Alert.alert(
           'No Internet Connection',
           'You are not connected to the internet. Please try again later',
@@ -25,9 +28,10 @@ const AppWrapper = ({ children }) => {
             {
               text: 'OK',
               onPress: () => {
-                if (navigation) {
-                  navigation.navigate('Login');
-                }
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Login' }],
+                });
               },
             },
           ],
@@ -36,8 +40,34 @@ const AppWrapper = ({ children }) => {
       }
     });
 
-    return () => unsubscribe();
+    // Check connection state immediately on mount
+    NetInfo.fetch().then(state => {
+      if (!state.isConnected && !isNavigating) {
+        isNavigating = true;
+        Alert.alert(
+          'No Internet Connection',
+          'You are not connected to the internet. Please try again later',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Login' }],
+                });
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, [navigation]);
+
 
   // Custom hook to handle screen transitions
   const useScreenTransition = () => {
