@@ -193,11 +193,13 @@ const Login = () => {
               </TouchableWithoutFeedback>
             </View>
             <View style={styles.checkboxContainer}>
-              <Checkbox
-                status={agreed ? 'checked' : 'unchecked'}
-                onPress={() => setAgreed(!agreed)}
-                color="#00bfa5"
-              />
+  <Checkbox
+    status={agreed ? 'checked' : 'unchecked'}
+    onPress={() => setAgreed(!agreed)}
+    color="#00bfa5"
+    uncheckedColor={Platform.OS === 'ios' ? '#007aff' : undefined}
+  />
+
               <Text style={styles.checkboxText}>
                 I agree to the{' '}
                 <Text style={styles.linkText} onPress={handlePrivacyPolicy}>
@@ -355,7 +357,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    width: '100%', // Ensure full width
+    paddingHorizontal: 10, // Add some horizontal padding
   },
+  
+  
   checkboxText: {
     flex: 1,
     marginLeft: 8,
