@@ -58,7 +58,18 @@ const QRCodeInputScreen = ({ route }) => {
       useNativeDriver: false,
     }).start();
   };
+  const isLastAssignment = useCallback(() => {
+    if (!chapterDetails) return false;
+    
+    // Get the chapter being currently uploaded
+    const currentChapterId = selectedChapters;
   
+    // Filter out the current chapter and check if all others are uploaded
+    const otherChapters = chapterDetails.filter(chapter => chapter.chapterId !== currentChapterId);
+    const allOthersUploaded = otherChapters.every(chapter => chapter.isUploaded === 1);
+    
+    return allOthersUploaded;
+  }, [chapterDetails, selectedChapters]);  
   useEffect(() => {
     console.log("Updated sessionId:", sessionId);
   }, [sessionId]);
@@ -150,7 +161,8 @@ const QRCodeInputScreen = ({ route }) => {
           selectedFiles: result.assets,
           selectedChapters,
           uploadedChapters,
-          sessionId
+          sessionId,
+          isLastAssignment: isLastAssignment()
         });
       }
     } catch (error) {
@@ -165,7 +177,8 @@ const QRCodeInputScreen = ({ route }) => {
     chapterDetails, 
     selectedChapters, 
     uploadedChapters, 
-    sessionId  // Include sessionId in the dependency array
+    sessionId,
+    isLastAssignment    // Include sessionId in the dependency array
   ]);
 
 
@@ -210,7 +223,8 @@ const QRCodeInputScreen = ({ route }) => {
           selectedFiles: result.assets,
           selectedChapters: selectedChapters,
           uploadedChapters: uploadedChapters,
-          sessionId:sessionId
+          sessionId:sessionId,
+          isLastAssignment: isLastAssignment() 
         });
       }
     } catch (error) {
@@ -225,7 +239,8 @@ const QRCodeInputScreen = ({ route }) => {
     chapterDetails, 
     selectedChapters, 
     uploadedChapters, 
-    sessionId
+    sessionId,
+    isLastAssignment  
 
   ]);
 

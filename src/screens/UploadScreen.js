@@ -25,7 +25,8 @@ const UploadScreen = ({ route }) => {
     selectedChapters,
     selectedFiles,
     uploadedChapters,
-    sessionId
+    sessionId,
+    isLastAssignment
   } = route.params;
   console.log("session id:",sessionId);
   console.log("bookDetails in Upload:",bookDetails);
@@ -238,7 +239,7 @@ const UploadScreen = ({ route }) => {
             <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteFile}>
               <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.submitButton} onPress={() => handleUpload(true)}>
+            <TouchableOpacity style={styles.submitButton} onPress={() => handleUpload(!isLastAssignment)}>
               <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
           </View>
